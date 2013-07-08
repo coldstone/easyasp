@@ -244,7 +244,7 @@ class Easp_Cache_Info
 			Case "Recordset"
 				Easp.Fso.CreateFile FilePath, "rs"
 				Easp.Fso.DelFile FilePath
-				o_value.Save FilePath, adPersistXML
+				o_value.Save FilePath, 1
 				If CountEnabled Then Easp_CacheCount_Change Me.Name, 1
 			Case "String"
 				Easp.Fso.CreateFile FilePath, o_value
