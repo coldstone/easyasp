@@ -135,10 +135,9 @@ Class EasyAsp_db
 				Dim tDb : If Instr(strDB,":")>0 Then : tDb = strDB : Else : tDb = Server.MapPath(strDB) : End If
 				TempStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="&tDb&";Jet OLEDB:Database Password="&p&";"
 			Case "2","MYSQL"
+				'服务器需要安装MySQL ODBC驱动，下载地址 http://dev.mysql.com/downloads/connector/odbc/3.51.html
 				If port = "" Then port = "3306"
-				TempStr = "Driver={mySQL};Server="&s&";Port="&port&";Option=131072;Stmt=;Database="&strDB&";Uid="&u&";Pwd="&p&";"
-			Case "3","ORACLE"
-				TempStr = "Provider=msdaora;Data Source="&s&";User Id="&u&";Password="&p&";"
+				TempStr = "Driver={MySQL ODBC 3.51 Driver};Server="&s&";Port="&port&";charset=UTF8;Database="&strDB&";User="&u&";Password="&p&";Option=3;"
 		End Select
 		Set OpenConn = CreatConn(TempStr)
 	End Function
@@ -156,28 +155,32 @@ Class EasyAsp_db
 		Set CreatConn = objConn
 	End Function
 	Private Function GetDataType(ByVal connObj)
+		If Easp.Has(s_dbType) Then
+			If isNumeric(s_dbType) Then
+				GetDataType = Split("MSSQL,ACCESS,MYSQL",",")(cInt(s_dbType))
+			Else
+				GetDataType = UCase(s_dbType)
+			End If
+			Exit Function
+		End If
 		Dim str,i : str = UCase(connObj.Provider)
-		Dim MSSQL, ACCESS, MYSQL, ORACLE
+		Dim MSSQL, ACCESS, MYSQL
 		MSSQL = Split("SQLNCLI10, SQLXMLOLEDB, SQLNCLI, SQLOLEDB, MSDASQL",", ")
 		ACCESS = Split("MICROSOFT.ACE.OLEDB.12.0, MICROSOFT.JET.OLEDB.4.0",", ")
-		MYSQL = "MYSQLPROV"
-		ORACLE = Split("MSDAORA, OLEDB.ORACLE",", ")
+		MYSQL = Split("MYSQLPROV, MSDASQL.1",", ")
 		For i = 0 To Ubound(MSSQL)
-			If Instr(str,MSSQL(i))>0 Then
+			If str = MSSQL(i) Then
 				GetDataType = "MSSQL" : Exit Function
 			End If
 		Next
 		For i = 0 To Ubound(ACCESS)
-			If Instr(str,ACCESS(i))>0 Then
+			If str = ACCESS(i) Then
 				GetDataType = "ACCESS" : Exit Function
 			End If
 		Next
-		If Instr(str,MYSQL)>0 Then
-			GetDataType = "MYSQL" : Exit Function
-		End If
-		For i = 0 To Ubound(ORACLE)
-			If Instr(str,ORACLE(i))>0 Then
-				GetDataType = "ORACLE" : Exit Function
+		For i = 0 To Ubound(MYSQL)
+			If str = MYSQL(i) Then
+				GetDataType = "MYSQL" : Exit Function
 			End If
 		Next
 	End Function
@@ -187,7 +190,7 @@ Class EasyAsp_db
 		Dim rs, tmp, fID, tmpID : fID = "" : tmpID = 0
 		tmp = Easp_Param(TableName)
 		If Easp.Has(tmp(1)) Then : TableName = tmp(0) : fID = tmp(1) : tmp = "" : End If
-		Set rs = GRS("Select " & Easp.IIF(fID<>"", "Max("&fID&")", "Top 1 *") & " From ["&TableName&"]")
+		Set rs = GRS("Select " & Easp.IIF(fID<>"", "Max("&fID&")", "Top 1 *") & " From "&TableName&"")
 		If rs.eof Then
 			AutoID = 1 : Exit Function
 		Else
@@ -196,7 +199,7 @@ Class EasyAsp_db
 				AutoID = rs.Fields.Item(0).Value + 1 : Exit Function
 			Else
 				Dim newRs
-				Set newRs = GRS("Select Max("&rs.Fields.Item(0).Name&") From ["&TableName&"]")
+				Set newRs = GRS("Select Max("&rs.Fields.Item(0).Name&") From "&TableName&"")
 				tmpID = newRS.Fields.Item(0).Value + 1
 				newRs.Close() : Set newRs = Nothing
 			End If
@@ -226,7 +229,7 @@ Class EasyAsp_db
 		strSelect = "Select "
 		If ShowN > 0 Then strSelect = strSelect & "Top " & ShowN & " "
 		strSelect = strSelect & Easp.IIF(FieldsList <> "", FieldsList, "* ")
-		strSelect = strSelect & " From [" & TableName & "]"
+		strSelect = strSelect & " From " & TableName & ""
 		If isArray(Condition) Then
 			strSelect = strSelect & " Where " & ValueToSql(TableName,Condition,1)
 		Else
@@ -353,7 +356,7 @@ Class EasyAsp_db
 	'取得某一指定纪录的详细资料
 	Public Function GetRecordDetail(ByVal TableName,ByVal Condition)
 		Dim strSelect
-		strSelect = "Select * From [" & TableName & "] Where " & ValueToSql(TableName,Condition,1)
+		strSelect = "Select * From " & TableName & " Where " & ValueToSql(TableName,Condition,1)
 		Set GetRecordDetail = GRS(strSelect)
 	End Function
 	'GetRecordDetail方法的缩写
@@ -383,7 +386,7 @@ Class EasyAsp_db
 			Exit Function
 		End If
 		Condition = Easp.IIF(Easp.isN(Condition),""," Where " & ValueToSql(TableName,Condition,1))
-		sql = "Select Top " & showN & " " & fi & " From ["&TableName&"]" & Condition
+		sql = "Select Top " & showN & " " & fi & " From "&TableName&"" & Condition
 		Select Case s_dbType
 			Case "ACCESS" : Randomize
 				sql = sql & " Order By Rnd(-(" & IdField & "+" & Rnd() & "))"
@@ -425,7 +428,7 @@ Class EasyAsp_db
 		o = Easp_Param(TableName) : If Easp.Has(o(1)) Then TableName = o(0)
 		TempFiled = ValueToSql(TableName,ValueList,2)
 		TempValue = ValueToSql(TableName,ValueList,3)
-		TempSQL = "Insert Into [" & TableName & "] (" & TempFiled & ") Values (" & TempValue & ")"
+		TempSQL = "Insert Into " & TableName & " (" & TempFiled & ") Values (" & TempValue & ")"
 		wAddRecord = TempSQL
 	End Function
 	'AddRecord方法的缩写
@@ -452,7 +455,7 @@ Class EasyAsp_db
 	'返回更新记录时生成的SQL语句
 	Public Function wUpdateRecord(ByVal TableName,ByVal Condition,ByVal ValueList)
 		Dim TmpSQL
-		TmpSQL = "Update ["&TableName&"] Set "
+		TmpSQL = "Update "&TableName&" Set "
 		TmpSQL = TmpSQL & ValueToSql(TableName,ValueList,0)
 		If Easp.Has(Condition) Then TmpSQL = TmpSQL & " Where " & ValueToSql(TableName,Condition,1)
 		wUpdateRecord = TmpSQL
@@ -492,7 +495,7 @@ Class EasyAsp_db
 				End If
 			End If
 		End If
-		Sql = "Delete From ["&TableName&"] Where " & Easp.IIF(IDFieldName="", ValueToSql(TableName,Condition,1), "["&IDFieldName&"] In (" & IDValues & ")")
+		Sql = "Delete From "&TableName&" Where " & Easp.IIF(IDFieldName="", ValueToSql(TableName,Condition,1), ""&IDFieldName&" In (" & IDValues & ")")
 		wDeleteRecord = Sql
 	End Function
 	'DeleteRecord方法的缩写
@@ -508,7 +511,7 @@ Class EasyAsp_db
 		'On Error Resume Next
 		Dim rs,Sql,arrTemp,arrStr,TempStr,i
 		TempStr = "" : arrStr = ""
-		Sql = "Select "&GetFieldNames&" From ["&TableName&"] Where " & ValueToSql(TableName,Condition,1)
+		Sql = "Select "&GetFieldNames&" From "&TableName&" Where " & ValueToSql(TableName,Condition,1)
 		Set rs = GRS(Sql)
 		If Not rs.Eof Then
 			If Instr(GetFieldNames,",") > 0 Then
@@ -628,27 +631,27 @@ Class EasyAsp_db
 		If IsArray(ValueList) Then
 			StrTemp = ""
 			Dim rsTemp, CurrentField, CurrentValue, i
-			Set rsTemp = GRS("Select Top 1 * From [" & TableName & "] Where 1 = -1")
+			Set rsTemp = GRS("Select Top 1 * From " & TableName & " Where 1 = -1")
 			For i = 0 to Ubound(ValueList)
 				CurrentField = Easp_Param(ValueList(i))(0)
 				CurrentValue = Easp_Param(ValueList(i))(1)
 				If i <> 0 Then StrTemp = StrTemp & Easp.IIF(sType=1, " And ", ", ")
 				If sType = 2 Then
-					StrTemp = StrTemp & "[" & CurrentField & "]"
+					StrTemp = StrTemp & "" & CurrentField & ""
 				Else
 					Select Case rsTemp.Fields(CurrentField).Type
 						Case 8,129,130,133,134,200,201,202,203
-							StrTemp = StrTemp & Easp.IIF(sType = 3, "'"&CurrentValue&"'", "[" & CurrentField & "] = '"&CurrentValue&"'")
+							StrTemp = StrTemp & Easp.IIF(sType = 3, "'"&CurrentValue&"'", "" & CurrentField & " = '"&CurrentValue&"'")
 						Case 7,135
 							CurrentValue = Easp.IIF(Easp.IsN(CurrentValue),"NULL","'"&CurrentValue&"'")
-							StrTemp = StrTemp & Easp.IIF(sType = 3, CurrentValue, "[" & CurrentField & "] = " & CurrentValue)
+							StrTemp = StrTemp & Easp.IIF(sType = 3, CurrentValue, "" & CurrentField & " = " & CurrentValue)
 						Case 11
 							Dim tmpTF, tmpTFV : tmpTFV = UCase(cstr(Trim(CurrentValue)))
 							tmpTF = Easp.IIF(tmpTFV="TRUE" or tmpTFV = "1", Easp.IIF(s_dbType="ACCESS","True","1"), Easp.IIF(s_dbType="ACCESS",Easp.IIF(tmpTFV="","NULL","False"),Easp.IIF(tmpTFV="","NULL","0")))
-							StrTemp = StrTemp & Easp.IIF(sType = 3, tmpTF, "[" & CurrentField & "] = " & tmpTF)
+							StrTemp = StrTemp & Easp.IIF(sType = 3, tmpTF, "" & CurrentField & " = " & tmpTF)
 						Case Else
 							CurrentValue = Easp.IIF(Easp.IsN(CurrentValue),"NULL",CurrentValue)
-							StrTemp = StrTemp & Easp.IIF(sType = 3, CurrentValue, "[" & CurrentField & "] = " & CurrentValue)
+							StrTemp = StrTemp & Easp.IIF(sType = 3, CurrentValue, "" & CurrentField & " = " & CurrentValue)
 					End Select
 				End If
 			Next
@@ -712,18 +715,18 @@ Class EasyAsp_db
 						If i_recordCount>0 Then rs.AbsolutePage = i_pageIndex
 						Set GetPageRecord = rs : Exit Function
 					ElseIf s_dbType = "2" or s_dbType = "MYSQL" Then
-						Sql = "Select "& fi & " From [" & Table & "]"
+						Sql = "Select "& fi & " From " & Table & ""
 						If Easp.Has(Where) Then Sql = Sql & " Where " & Where
 						If Easp.Has(Condition(2)) Then Sql = Sql & " Order By " & Condition(2)
 						Sql = Sql & " Limit " & i_pageSize*(i_pageIndex-1) & ", " & i_pageSize
 					Else
 						If Ubound(Condition)<>3 Then Easp.Error.Raise 27
 						Sql = "Select Top " & i_pageSize & " " & fi
-						Sql = Sql & " From [" & Table & "]"
+						Sql = Sql & " From " & Table & ""
 						If Easp.Has(Where) Then Sql = Sql & " Where " & Where
 						If i_pageIndex > 1 Then
 							Sql = Sql & " " & Easp.IIF(Easp.isN(Where), "Where", "And") & " " & Condition(3) & " Not In ("
-							Sql = Sql & "Select Top " & i_pageSize * (i_pageIndex-1) & " " & Condition(3) & " From [" & Table & "]"
+							Sql = Sql & "Select Top " & i_pageSize * (i_pageIndex-1) & " " & Condition(3) & " From " & Table & ""
 							If Easp.Has(Where) Then Sql = Sql & " Where " & Where
 							If Easp.Has(Condition(2)) Then Sql = Sql & " Order By " & Condition(2)
 							Sql = Sql & ") "
