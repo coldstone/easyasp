@@ -5,13 +5,13 @@
 '## Feature     :   Database Control
 '## Version     :   v2.2 Alpha
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2010/01/26 16:08:30
+'## Update Date :   2013/07/09 15:32:30
 '## Description :   EasyAsp database controller
 '##
 '######################################################################
 Class EasyAsp_db
-	Private s_dbType, s_pageParam, s_pageSpName
-	Private i_queryType, i_errNumber, i_pageIndex, i_pageSize, i_pageCount, i_recordCount
+	Private s_dbType, s_pageParam, s_pageSpName, s_lastSQL
+	Private i_errNumber, i_pageIndex, i_pageSize, i_pageCount, i_recordCount, i_lastRows
 	Private o_conn, o_pageDic
 	Private Sub Class_Initialize()
 		Easp.Error(11) = "无效的查询条件，无法获取记录集！"
@@ -37,7 +37,8 @@ Class EasyAsp_db
 		Easp.Error(30) = "获取分页数据出错，使用自定义分页存储过程时必须包含@@RecordCount和@@PageCount输出参数！"
 		Easp.Error(31) = "获取分页数据出错，使用存储过程获取分页数据时条件参数必须为数组！"
 		s_dbType       = ""
-		i_queryType    = 0
+		s_lastSQL      = ""
+		i_lastRows     = 0
 		s_pageParam    = "page"
 		i_pageSize     = 20
 		s_pageSpName   = "easp_sp_pager"
@@ -71,13 +72,8 @@ Class EasyAsp_db
 		DatabaseType = s_dbType
 	End Property
 	'设置获取记录集的方式
+	'（取消command方式取记录集，此属性已失效）
 	Public Property Let QueryType(ByVal str)
-		str = Lcase(str)
-		If str = "1" or str = "command" Then
-			i_queryType = 1
-		Else
-			i_queryType = 0
-		End If
 	End Property
 	'设置和读取分页每页数量
 	Public Property Let PageSize(ByVal num)
@@ -106,11 +102,24 @@ Class EasyAsp_db
 	Public Property Let PageSpName(ByVal str)
 		s_pageSpName = str
 	End Property
+	'返回最后一个SQL语句
+	Public Property Get LastSQL()
+		LastSQL = s_lastSQL
+	End Property
+	'返回最后一个操作受影响的行数
+	Public Property Get LastAffectedRows()
+		LastAffectedRows = i_lastRows
+	End Property
 	'建新Easp数据库类实例
 	Public Function [New]()
 		Set [New] = New EasyASP_db
 	End Function
+
 	'生成数据库连接字符串
+	'参数：	@dbType		- 数据库类型
+	'		@strDB		- 数据库名称
+	'		@strServer	- 服务器地址及认证信息
+	'返回：	ADODB.Connection对象
 	Public Function OpenConn(ByVal dbType, ByVal strDB, ByVal strServer)
 		Dim TempStr, objConn, s, u, p, port
 		s = "" : u = "" : p = "" : port = ""
@@ -141,7 +150,10 @@ Class EasyAsp_db
 		End Select
 		Set OpenConn = CreatConn(TempStr)
 	End Function
+
 	'建立数据库连接对象
+	'参数：	@ConnStr	- 数据库连接字符串
+	'返回：	ADODB.Connection对象
 	Public Function CreatConn(ByVal ConnStr)
 		'On Error Resume Next
 		Dim objConn : Set objConn = Server.CreateObject("ADODB.Connection")
@@ -154,6 +166,10 @@ Class EasyAsp_db
 		End If
 		Set CreatConn = objConn
 	End Function
+
+	'(私)查询连接数据库类型
+	'参数：	@connObj	- Connection对象
+	'返回：	String
 	Private Function GetDataType(ByVal connObj)
 		If Easp.Has(s_dbType) Then
 			If isNumeric(s_dbType) Then
@@ -184,7 +200,10 @@ Class EasyAsp_db
 			End If
 		Next
 	End Function
+
 	'自动获取唯一序列号（自动编号）
+	'参数：	@TableName	- 数据表名称
+	'返回：	Int
 	Public Function AutoID(ByVal TableName)
 		'On Error Resume Next
 		Dim rs, tmp, fID, tmpID : fID = "" : tmpID = 0
@@ -208,11 +227,21 @@ Class EasyAsp_db
 		If Err.number <> 0 Then Easp.Error.Raise 14
 		AutoID = tmpID
 	End Function
+
 	'取得符合条件的纪录列表
+	'参数：	@TableName	- 数据表名称[:字段名称][:数量]
+	'		@Condition	- 数组参数（Array("字段:值")） 或 字符串(不含Where)
+	'		@OrderField	- 排序字段及升降序
+	'返回：	ADODB.RecordSet对象
 	Public Function GetRecord(ByVal TableName,ByVal Condition,ByVal OrderField)
 		Set GetRecord = GRS(wGetRecord(TableName,Condition,OrderField))
 	End Function
+
 	'返回取记录集时生成的SQL语句
+	'参数：	@TableName	- 数据表名称[:字段名称][:数量]
+	'		@Condition	- 数组参数（Array("字段:值")） 或 字符串(不含Where)
+	'		@OrderField	- 排序字段及升降序
+	'返回：	String
 	Public Function wGetRecord(ByVal TableName,ByVal Condition,ByVal OrderField)
 		Dim strSelect, FieldsList, ShowN, o, p
 		FieldsList = "" : ShowN = 0
@@ -238,6 +267,7 @@ Class EasyAsp_db
 		If OrderField <> "" Then strSelect = strSelect & " Order By " & OrderField
 		wGetRecord = strSelect
 	End Function
+
 	'GetRecord方法的缩写
 	Public Function GR(ByVal TableName,ByVal Condition,ByVal OrderField)
 		Set GR = GetRecord(TableName, Condition, OrderField)
@@ -246,28 +276,24 @@ Class EasyAsp_db
 	Public Function wGR(ByVal TableName,ByVal Condition,ByVal OrderField)
 		wGR = wGetRecord(TableName, Condition, OrderField)
 	End Function
+
 	'根据sql语句返回记录集
+	'参数：	@s		- SQL语句
+	'返回：	ADODB.RecordSet对象
 	Public Function GetRecordBySQL(ByVal s)
 		'On Error Resume Next
-		If i_queryType = 1 Then
-			Dim cmd : Set cmd = Server.CreateObject("ADODB.Command")
-			With cmd
-				.ActiveConnection = o_conn
-				.CommandText = s
-				Set GetRecordBySQL = .Execute
-			End With
-			Set cmd = Nothing
-		Else
-			Dim rs : Set rs = Server.CreateObject("Adodb.Recordset")
-			With rs
-				.ActiveConnection = o_conn
-				.CursorType = 1
-				.LockType = 1
-				.Source = s
-				.Open
-			End With
-			Set GetRecordBySQL = rs
-		End If
+		Dim rs
+		Set rs = Server.CreateObject("Adodb.Recordset")
+		With rs
+			.ActiveConnection = o_conn
+			.CursorType = 1
+			.LockType = 1
+			.Source = s
+			.Open
+		End With
+		s_lastSQL = s
+		i_lastRows = rs.RecordCount
+		Set GetRecordBySQL = rs
 		Easp_DbQueryTimes = Easp_DbQueryTimes + 1
 		If Err.number <> 0 Then
 			Easp.Error.Msg = "<br />" & s
@@ -275,11 +301,16 @@ Class EasyAsp_db
 			Err.Clear
 		End If
 	End Function
+
 	'GetRecordBySQL方法的缩写
 	Public Function GRS(ByVal s)
 		Set GRS = GetRecordBySQL(s)
 	End Function
+	
 	'根据记录集生成Json格式代码
+	'参数：	@jRs	- RecordSet对象
+	'		@jName	- 名称[:总条数名称[:notjs]] (notjs表示不进行js编码)
+	'返回：	String
 	Public Function Json(ByVal jRs, ByVal jName)
 		'On Error Resume Next
 		Dim tmpStr, rs, fi, o, totalName, total, tName, tValue, notjs
@@ -315,7 +346,11 @@ Class EasyAsp_db
 		If Err.number <> 0 Then Easp.Error.Raise 15
 		Json = tmpStr
 	End Function
+
 	'生成指定长度的不重复的字符串
+	'参数：	@length		- 生成的字符串长度
+	'		@TableField	- [数据表:字段名]
+	'返回：	String
 	Public Function RandStr(length,TableField)
 		'On Error Resume Next
 		Dim tb, fi, tmpStr, rs
@@ -334,7 +369,12 @@ Class EasyAsp_db
 		Loop
 		If Err.number <> 0 Then Easp.Error.Raise 16
 	End Function
+	
 	'生成一个不重复的随机数
+	'参数：	@min		- 随机数的最小值
+	'		@max		- 随机数的最大值
+	'		@TableField	- [数据表:字段名]
+	'返回：	Int
 	Public Function Rand(min,max,TableField)
 		'On Error Resume Next
 		Dim tb, fi, tmpInt, rs
@@ -353,7 +393,11 @@ Class EasyAsp_db
 		Loop
 		If Err.number <> 0 Then Easp.Error.Raise 17
 	End Function
+
 	'取得某一指定纪录的详细资料
+	'参数：	@TableName	- 数据表名称
+	'		@Condition	- 数组参数（Array("字段:值")） 或 字符串(不含Where)
+	'返回：	ADODB.RecordSet对象
 	Public Function GetRecordDetail(ByVal TableName,ByVal Condition)
 		Dim strSelect
 		strSelect = "Select * From " & TableName & " Where " & ValueToSql(TableName,Condition,1)
@@ -363,7 +407,11 @@ Class EasyAsp_db
 	Public Function GRD(ByVal TableName,ByVal Condition)
 		Set GRD = GetRecordDetail(TableName, Condition)
 	End Function
+
 	'取指定数量的随机记录
+	'参数：	@TableName	- 数据表名称:字段名称:数量
+	'		@Condition	- 数组参数（Array("字段:值")） 或 字符串(不含Where)
+	'返回：	ADODB.RecordSet对象
 	Public Function GetRandRecord(ByVal TableName,ByVal Condition)
 		Dim sql,o,p,fi,IdField,showN,where
 		o = Easp_Param(TableName)
@@ -394,8 +442,6 @@ Class EasyAsp_db
 				sql = sql & " Order By newid()"
 			Case "MYSQL"
 				sql = "Select " & fi & " From " & TableName & Condition & " Order By rand() limit " & showN
-			Case "ORACLE"
-				sql = "Select " & fi & " From (Select " & fi & " From "&TableName&" Order By dbms_random.value) " & Easp.IIF(Easp.isN(Condition),"Where",Condition & " And") & " rownum < " & Int(showN)+1
 		End Select
 		Set GetRandRecord = GRS(sql)
 	End Function
@@ -403,7 +449,11 @@ Class EasyAsp_db
 	Public Function GRR(ByVal TableName,ByVal Condition)
 		Set GRR = GetRandRecord(TableName,Condition)
 	End Function
+
 	'添加一个新的纪录
+	'参数：	@TableName	- 数据表名称[:ID字段名称]
+	'		@ValueList	- 数组参数（Array("字段:值")）
+	'返回：	Boolean (成功True,失败False)
 	Public Function AddRecord(ByVal TableName,ByVal ValueList)
 		'On Error Resume Next
 		Dim o,s : o = Easp_Param(TableName)
@@ -419,10 +469,14 @@ Class EasyAsp_db
 		If Easp.Has(o(1)) Then
 			AddRecord = AutoID(o(0)&":"&o(1))-1
 		Else
-			AddRecord = 1
+			AddRecord = -1
 		End If
 	End Function
+
 	'返回添加记录时生成的SQL语句
+	'参数：	@TableName	- 数据表名称[:ID字段名称]
+	'		@ValueList	- 数组参数（Array("字段:值")）
+	'返回：	String
 	Public Function wAddRecord(ByVal TableName,ByVal ValueList)
 		Dim TempSQL, TempFiled, TempValue, o
 		o = Easp_Param(TableName) : If Easp.Has(o(1)) Then TableName = o(0)
@@ -431,6 +485,7 @@ Class EasyAsp_db
 		TempSQL = "Insert Into " & TableName & " (" & TempFiled & ") Values (" & TempValue & ")"
 		wAddRecord = TempSQL
 	End Function
+
 	'AddRecord方法的缩写
 	Public Function AR(ByVal TableName,ByVal ValueList)
 		AR = AddRecord(TableName,ValueList)
@@ -439,7 +494,12 @@ Class EasyAsp_db
 	Public Function wAR(ByVal TableName,ByVal ValueList)
 		wAR = wAddRecord(TableName,ValueList)
 	End Function
+
 	'根据条件更新一条或多条记录
+	'参数：	@TableName	- 数据表名称
+	'		@Condition	- 数组参数（Array("字段:值")） 或 字符串(不含Where)
+	'		@ValueList	- 数组参数（Array("字段:值")） 或 字符串
+	'返回：	Boolean (成功True,失败False)
 	Public Function UpdateRecord(ByVal TableName,ByVal Condition,ByVal ValueList)
 		'On Error Resume Next
 		Dim s : s = wUpdateRecord(TableName,Condition,ValueList)
@@ -450,9 +510,14 @@ Class EasyAsp_db
 			UpdateRecord = 0
 			Exit Function
 		End If
-		UpdateRecord = 1
+		UpdateRecord = -1
 	End Function
+
 	'返回更新记录时生成的SQL语句
+	'参数：	@TableName	- 数据表名称
+	'		@Condition	- 数组参数（Array("字段:值")） 或 字符串(不含Where)
+	'		@ValueList	- 数组参数（Array("字段:值")） 或 字符串
+	'返回：	String
 	Public Function wUpdateRecord(ByVal TableName,ByVal Condition,ByVal ValueList)
 		Dim TmpSQL
 		TmpSQL = "Update "&TableName&" Set "
@@ -460,6 +525,7 @@ Class EasyAsp_db
 		If Easp.Has(Condition) Then TmpSQL = TmpSQL & " Where " & ValueToSql(TableName,Condition,1)
 		wUpdateRecord = TmpSQL
 	End Function
+
 	'UpdateRecord方法的缩写
 	Public Function UR(ByVal TableName,ByVal Condition,ByVal ValueList)
 		UR = UpdateRecord(TableName, Condition, ValueList)
@@ -468,7 +534,11 @@ Class EasyAsp_db
 	Public Function wUR(ByVal TableName,ByVal Condition,ByVal ValueList)
 		wUR = wUpdateRecord(TableName, Condition, ValueList)
 	End Function
+
 	'按条件删除指定的记录
+	'参数：	@TableName	- 数据表名称
+	'		@Condition	- 数组参数（Array("字段:值")） 或 ID字段名:ID串 或 条件字符串
+	'返回：	Boolean (成功True,失败False)
 	Public Function DeleteRecord(ByVal TableName,ByVal Condition)
 		'On Error Resume Next
 		Dim s : s = wDeleteRecord(TableName,Condition)
@@ -479,9 +549,13 @@ Class EasyAsp_db
 			DeleteRecord = 0
 			Exit Function
 		End If
-		DeleteRecord = 1
+		DeleteRecord = -1
 	End Function
+
 	'返回删除记录时生成的SQL语句
+	'参数：	@TableName	- 数据表名称
+	'		@Condition	- 数组参数（Array("字段:值")） 或 ID字段名:ID串 或 条件字符串
+	'返回：	String
 	Public Function wDeleteRecord(ByVal TableName,ByVal Condition)
 		Dim IDFieldName, IDValues, Sql, p : IDFieldName = "" : IDValues = ""
 		If Not isArray(Condition) Then
@@ -498,6 +572,7 @@ Class EasyAsp_db
 		Sql = "Delete From "&TableName&" Where " & Easp.IIF(IDFieldName="", ValueToSql(TableName,Condition,1), ""&IDFieldName&" In (" & IDValues & ")")
 		wDeleteRecord = Sql
 	End Function
+
 	'DeleteRecord方法的缩写
 	Public Function DR(ByVal TableName,ByVal Condition)
 		DR = DeleteRecord(TableName, Condition)
@@ -506,7 +581,12 @@ Class EasyAsp_db
 	Public Function wDR(ByVal TableName,ByVal Condition)
 		wDR = wDeleteRecord(TableName, Condition)
 	End Function
+
 	'从某一表中根据条件获取某条记录的其他字段的值
+	'参数：	@TableName		- 数据表名称
+	'		@Condition		- 数组参数（Array("字段:值")） 或 字符串
+	'		@GetFieldNames	- 获取的字段名列表
+	'返回：	Array（多字段） 或 记录值（单字段）
 	Public Function ReadTable(ByVal TableName,ByVal Condition,ByVal GetFieldNames)
 		'On Error Resume Next
 		Dim rs,Sql,arrTemp,arrStr,TempStr,i
@@ -533,7 +613,11 @@ Class EasyAsp_db
 	Public Function RT(ByVal TableName,ByVal Condition,ByVal GetFieldNames)
 		RT = ReadTable(TableName, Condition, GetFieldNames)
 	End Function
+
 	'调用存储过程
+	'参数：	@spName		- 存储过程名称:调用类型
+	'		@spParam	- 数组参数（Array("字段:值")） 或 空字符串
+	'返回：	String / Array / Object
 	Public Function doSP(ByVal spName, ByVal spParam)
 		'On Error Resume Next
 		Dim p, spType, cmd, outParam, i, NewRS : spType = ""
@@ -599,23 +683,26 @@ Class EasyAsp_db
 		If Err.number <> 0 Then Easp.Error.Raise 24
 		Err.Clear
 	End Function
+
 	'释放记录集对象
-	Public Function C(ByRef ObjRs)
+	'参数：	@ObjRs	- ASP对象
+	'返回：	无
+	Public Sub C(ByRef ObjRs)
 		On Error Resume Next
 		ObjRs.close()
 		Set ObjRs = Nothing
 		Err.Clear
-	End Function
+	End Sub
+
 	'执行指定的SQL语句,可返回记录集
+	'参数：	@s		- SQL语句字符串
+	'返回：	Boolean / ADODB.RecordSet
 	Public Function Exec(ByVal s)
 		'On Error Resume Next
 		If Lcase(Left(s,6)) = "select" Then
-			Dim i : i = i_queryType
-			i_queryType = 1
 			Set Exec = GRS(s)
-			i_queryType = i
 		Else
-			Exec = 1 : DoExecute(s)
+			Exec = -1 : DoExecute(s)
 			If Err.number <> 0 Then Exec = 0
 		End If
 		If Err.number <> 0 Then
@@ -625,6 +712,16 @@ Class EasyAsp_db
 		End If
 	End Function
 	
+	
+	'（私）将数组参数转换为SQL语句
+	'参数：	@TableName	- 数据表名称
+	'		@ValueList	- 数组参数（Array("字段:值")） 或 条件字符串
+	'		@sType		- 输出的SQL语句类型
+	'					  0 : 字段 = 值, 字段 = 值
+	'					  1 : 字段 = 值 And 字段 = 值
+	'					  2 : 字段, 字段
+	'					  3 : 值, 值
+	'返回：	String SQL字符片段
 	Private Function ValueToSql(ByVal TableName, ByVal ValueList, ByVal sType)
 		'On Error Resume Next
 		Dim StrTemp : StrTemp = ValueList
@@ -660,17 +757,29 @@ Class EasyAsp_db
 		End If
 		ValueToSql = StrTemp
 	End Function
+
+	'（私）执行sql语句并返回影响的行数
+	'参数：	@sql	- SQL语句
+	'返回：	Int
 	Private Function DoExecute(ByVal sql)
-		Dim ExecuteCmd : Set ExecuteCmd = Server.CreateObject("ADODB.Command")
-		With ExecuteCmd
-			.ActiveConnection = o_conn
-			.CommandText = sql
-			DoExecute = .Execute
-		End With
-		Set ExecuteCmd = Nothing
+		Dim i_row : i_row = 0
+		o_conn.Execute sql, i_row
+		i_lastRows = i_row
+		s_lastSQL = sql
+		DoExecute = i_row
 	End Function
+	
 	'以下是分页程序部分
 	'获取分页后的记录集
+	'参数：	@PageSetup	- 获取分页数据的方式[:页码的URL参数名称][:每页显示的记录数]
+	'					  获取分页数据的方式可以为以下：
+	'					   0 或 "array" - 用数组设置数据库查询条件生成分页
+	'					   1 或 "sql" - 直接用SQL语句生成分页
+	'					   2 或 "rs" - 直接用已经存在的记录集生成分页
+	'					   MSSQL存储过程名称 - 用以该字符串命名的存储过程生成分页
+	'					   ""(空字符串) - 使用默认的存储过程分页
+	'		@Condition	- 数组参数（Array("字段:值")） 或 SQL语句 或 ADODB.RecordSet对象
+	'返回：	ADODB.RecordSet
 	Public Function GetPageRecord(ByVal PageSetup, ByVal Condition)
 		'On Error Resume Next
 		Dim pType,spResult,rs,o,p,Sql,n,i,spReturn
@@ -782,7 +891,11 @@ Class EasyAsp_db
 	Public Function GPR(ByVal PageSetup, ByVal Condition)
 		Set GPR = GetPageRecord(PageSetup, Condition)
 	End Function
+
 	'即时生成分页导航链接
+	'参数：	@PagerHtml		- 分页导航模板
+	'		@PagerConfig	- 分页导航配置
+	'返回：	String
 	Public Function Pager(ByVal PagerHtml, ByRef PagerConfig)
 		'On Error Resume Next
 		Dim pList, pListStart, pListEnd, pFirst, pPrev, pNext, pLast
@@ -923,18 +1036,28 @@ Class EasyAsp_db
 		Set cfg = Nothing
 		Pager = vbCrLf & tmpStr & vbCrLf
 	End Function
+
 	'配置分页样式
+	'参数：	@PagerName		- 分页导航配置名称
+	'		@PagerHtml		- 分页导航模板
+	'		@PagerConfig	- 分页导航配置
+	'返回：	无
 	Public Sub SetPager(ByVal PagerName, ByVal PagerHtml, ByRef PagerConfig)
 		If PagerName = "" Then PagerName = "default"
 		If Easp.Has(PagerHtml) Then o_pageDic.item(PagerName&"_html") = PagerHtml
 		If Easp.Has(PagerConfig) Then o_pageDic.item(PagerName&"_config") = PagerConfig
 	End Sub
+
 	'调用分页样式
+	'参数：	@PagerName	- 分页导航配置名称
+	'返回：	String
 	Public Function GetPager(ByVal PagerName)
 		If PagerName = "" Then PagerName = "default"
 		GetPager = Pager(o_pageDic(PagerName&"_html"),o_pageDic(PagerName&"_config"))
 	End Function
-	'取得当前页码
+
+	'（私）取得当前页码
+	'返回：	Int
 	Private Function GetCurrentPage()
 		Dim rqParam, thisPage : thisPage = 1
 		rqParam = Easp.Get(s_pageParam)
@@ -943,7 +1066,10 @@ Class EasyAsp_db
 		End If
 		GetCurrentPage = thisPage
 	End Function
-	'返回除去页码的当前URL参数
+
+	'（私）返回带新页码的当前URL参数
+	'参数：	@pageNumer	- 页码数
+	'返回：	String
 	Private Function GetRQ(pageNumer)
 		GetRQ = Easp.ReplaceUrl(s_pageParam, pageNumer)
 	End Function
