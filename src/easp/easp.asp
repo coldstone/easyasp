@@ -6,7 +6,7 @@ Option Explicit
 '## Feature     :   EasyAsp Class
 '## Version     :   v2.2 alpha
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2013/1/30 10:10
+'## Update Date :   2014/1/23 09:54
 '## Description :   EasyAsp Class
 '##
 '######################################################################
@@ -22,7 +22,7 @@ Class EasyAsp
 	Private s_path, s_plugin, s_fsoName, s_dicName, s_charset, s_rq, s_bom
 	Private s_url, s_rwtS, s_rwtU, s_cores
 	Private o_md5, o_rwt, o_ext, o_regex, o_fso
-	Private b_cooen, b_debug, i_rule
+	Private b_cooen, b_debug, i_rule, i_newId
 	Private Sub Class_Initialize()
 		s_path		= "/easp/"
 		s_plugin	= s_path & "plugin/"
@@ -39,6 +39,7 @@ Class EasyAsp
 		i_rule		= 1
 		b_cooen		= False
 		b_debug		= False
+		i_newId		= 0
 		Set o_rwt 	= Server.CreateObject(s_dicName)
 		Set o_ext 	= Server.CreateObject(s_dicName)
 		Set o_regex = New Regexp
@@ -287,6 +288,29 @@ Class EasyAsp
 			s = Replace(s,"{" & t & "}",v,1,-1,1)
 		End If
 		FormatReplace = s
+	End Function
+	'服务器端生成唯一不重复编号(10位字符串)
+	Public Function NewID()
+		Dim id
+		If i_newId = 0 Then
+			i_newId = (DateDiff("s","1970-01-01",DateTime(Now(),"y-mm-dd"))+Timer())*10000
+		End If
+		i_newId = i_newId + 1
+		id = i_newId
+		NewID = NumberToString(id)
+	End Function
+	Private Function NumberToString(n)
+		Dim t(10), v, c, m
+		c = 10
+		v = n / 36
+		Do While v > 0 And c > 0
+			c = c - 1
+			m = Int(n - Int(n / 36) * 36)
+			t(c) = Chr(IIF(m<10, m+48, m+55))
+			n = v
+			v = n / 36
+		Loop
+		NumberToString = Join(t,"")
 	End Function
 	'服务器端跳转
 	Sub RR(ByVal u)
