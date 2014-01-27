@@ -164,6 +164,13 @@ Class EasyAsp_Tpl
 						Assign s & "." & i, v.Fields(i).Value
 					Next
 				End If
+			'替换字典集标签
+			Case "Dictionary"
+				If v.Count > 0 Then
+					For Each i In v
+						Assign s & "." & i, v(i)
+					Next
+				End If
 			'替换Easp超级数组标签
 			Case "EasyAsp_List"
 				If v.Size > 0 Then
