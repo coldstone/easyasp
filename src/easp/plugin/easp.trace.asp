@@ -426,8 +426,10 @@ Class EasyAsp_Trace
 		If TypeName(con)<>"Connection" Then Exit Sub
 		Dim t,i,j,k,db,f,s,arr1,arr2,dbtype : j = 0 : k = 0
 		Set t = con.OpenSchema(20,Array(Empty,Empty,Empty,"TABLE"))
+		If Easp.IsN(t) Then arr1 = NULL Else arr1 = t.GetRows(-1)
 		arr1 = t.GetRows(-1)
 		Set t = con.OpenSchema(20,Array(Empty,Empty,Empty,"VIEW"))
+		If Easp.IsN(t) Then arr2 = NULL Else arr2 = t.GetRows(-1)
 		arr2 = t.GetRows(-1)
 		Easp.C(t)
 		tpl "type", "数据库"
@@ -443,6 +445,7 @@ Class EasyAsp_Trace
 		Set db = Easp.db.New
 		db.Conn = con
 		dbtype = db.DatabaseType
+		If Easp.Has(arr1) Then
 		For i = 0 To Ubound(arr1,2)
 			If isall = 0 Then
 				tpl.Tag("no") = "表"
@@ -478,6 +481,8 @@ Class EasyAsp_Trace
 			End If
 			k = k + 1
 		Next
+		End If
+		If Easp.Has(arr2) Then
 		For i = 0 To Ubound(arr2,2)
 			If isall = 0 Then
 				tpl.Tag("no") = "视图"
@@ -513,6 +518,7 @@ Class EasyAsp_Trace
 			End If
 			k = k + 1
 		Next
+		End If
 		Easp.C(db)
 		tpl "count", k
 		Set t = Nothing
