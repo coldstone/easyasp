@@ -1,12 +1,19 @@
 ﻿<%
 '#################################################################################
-'##	easp.json2.asp
+'##	easp.test.asp
 '##	------------------------------------------------------------------------------
-'##	Feature		:	EasyAsp JSON2 Plugin
-'##	Version		:	v1.0
+'##	Feature		:	EasyAsp Plugin Class Sample
+'##	Version		:	v0.1
 '##	Author		:	Coldstone(coldstone[at]qq.com)
 '##	Update Date	:	2009/12/3 12:23
-'##	Description	:	Parse a JSON String to an ASP Object
+'##	Description	:	EasyAsp's plugin should be like this file as follow:
+'					1.	File name should be like this: 'easp.***.asp'.  The '***'
+'						is your plugin's name, with lower-case letters as better.
+'					2.	Class's name should be like this: 'EasyAsp_***'. The '***'
+'						is your plugin's name, lower-case letters after the '_'
+'						are not required.
+'					3.	You must put your file(s) in 'plugin' folder or any other
+'						folder you setted with the property 'Easp.PluginPath'.
 '#################################################################################
 Class EasyAsp_Json2
 

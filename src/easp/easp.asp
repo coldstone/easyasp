@@ -6,7 +6,7 @@ Option Explicit
 '## Feature     :   EasyAsp Class
 '## Version     :   v2.2 alpha
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014/1/23 09:32
+'## Update Date :   2014/1/23 09:54
 '## Description :   EasyAsp Class
 '##
 '######################################################################

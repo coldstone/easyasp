@@ -282,7 +282,7 @@ Class EasyAsp_Trace
 										tpl.TagStr "table", GetTable(3)
 										tpl "cname", "字段名"
 										tpl "cvalue", "字段值"
-                    If Not o.Bof Then o.MoveFirst
+										o.MoveFirst
 										While Not o.Eof
 											tpl "i", i+1
 											For j = 0 To o.Fields.Count-1
@@ -560,7 +560,7 @@ Class EasyAsp_Trace
 			Case 72 tmp = "uniqueidentifier"
 			Case 128
 				Select Case flag
-					Case 116,20 tmp = "binary(" & maxlen & ")"
+					Case 116,20 tmp = "binaray(" & maxlen & ")"
 					Case 230,134 tmp = "image"
 					Case 624,528 tmp = "timestamp"
 					Case 100,4 tmp = "varbinary(" & maxlen & ")"

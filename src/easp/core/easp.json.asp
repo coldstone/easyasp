@@ -153,7 +153,7 @@ Class EasyAsp_JSON
 		If Easp.isN(s) Then JsEncode__ = "" : Exit Function
 		Dim arr1, arr2, i, j, c, p, t
 		arr1 = Array(&h27,&h22,&h5C,&h2F,&h08,&h0C,&h0A,&h0D,&h09)
-		arr2 = Array(&h27,&h22,&h5C,&h2F,&h62,&h66,&h6E,&h72,&h74)
+		arr2 = Array(&h27,&h22,&h5C,&h2F,&h62,&h66,&h6E,&h72,&h749)
 		For i = 1 To Len(s)
 			p = True
 			c = Mid(s, i, 1)

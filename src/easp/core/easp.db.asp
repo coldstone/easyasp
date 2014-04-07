@@ -281,7 +281,7 @@ Class EasyAsp_db
 	'参数：	@s		- SQL语句
 	'返回：	ADODB.RecordSet对象
 	Public Function GetRecordBySQL(ByVal s)
-		'On Error Resume Next
+		On Error Resume Next
 		Dim rs
 		Set rs = Server.CreateObject("Adodb.Recordset")
 		With rs
