@@ -149,7 +149,7 @@ End If
 Easp.Db.Close(rs)
                 %></form>
               </table>
-              <%=Easp.Db.GetPager("")%>
+              <%=Easp.Db.GetPager("bootstrap")%>
               <div class="modal fade" id="win-new-info" role="dialog" aria-hidden="true" tabindex="-1">
                 <div class="modal-dialog">
                   <div class="modal-content">

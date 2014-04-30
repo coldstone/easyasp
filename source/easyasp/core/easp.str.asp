@@ -539,12 +539,12 @@ Class EasyASP_String
     Dim o_matches, m, s
     Set o_matches = Match(string, "<[^>]+>")
     For Each m In o_matches
-      Easp.WNH m.value
+      Easp.PrintHtml m.value
       s = Replace(Lcase(m.value), "[\s""'`]*((j\s*a\s*v\s*a|v\s*b|l\s*i\s*v\s*e)\s*s\s*c\s*r\s*i\s*p\s*t\s*|m\s*o\s*c\s*h\s*a):[^\s""'`>]+", "")
       s = o_re.Re(s, "/*", "")
       s = o_re.Re(s, "*/", "")
       s = Replace(s, ":expression[^;}]+", ":0;")
-      Easp.WT s
+      Easp.PrintHtml s
       string = o_re.Re(string, m.Value, s)
     Next
     Set o_matches = Nothing
@@ -825,15 +825,15 @@ Class EasyASP_String
   End Function
   '输出javascript的alert警告框消息
   Public Sub JsAlert(ByVal string)
-    Easp.WE JavaScript(FormatString("alert('{1}');history.go(-1);",JsEncode(string),1))
+    Easp.PrintEnd JavaScript(FormatString("alert('{1}');history.go(-1);",JsEncode(string),1))
   End Sub
   '输出javascript的alert警告框消息并跳转到其他页面
   Public Sub JsAlertUrl(ByVal string, ByVal url)
-    Easp.WE JavaScript(FormatString("alert('{1}');location.href='{2}';",Array(JsEncode(string),url),1))
+    Easp.PrintEnd JavaScript(FormatString("alert('{1}');location.href='{2}';",Array(JsEncode(string),url),1))
   End Sub
   '输出javascript的选择消息框并根据选择跳转到不同的页面
   Public Sub JsConfirmUrl(ByVal string, ByVal yesUrl, ByVal cancelUrl)
-    Easp.WE JavaScript(FormatString("location.href=confirm('{1}')?'{2}':'{3}';",Array(JsEncode(string),yesUrl,cancelUrl),1))
+    Easp.PrintEnd JavaScript(FormatString("location.href=confirm('{1}')?'{2}':'{3}';",Array(JsEncode(string),yesUrl,cancelUrl),1))
   End Sub
 
   '取指定长度的随机字符串

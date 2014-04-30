@@ -129,11 +129,11 @@ Class EasyASP_Db
     'Easp.Console connstr
     CreateConnection.Open ConnStr
     '如果打开连接成功
-    If Err.number <> 0 Or CreateConnection.Errors.Count <> 0 Then
+    If Err.number <> 0 Then
       If Request.ServerVariables("LOCAL_ADDR") = Request.ServerVariables("REMOTE_ADDR") Then
         Easp.Error.Detail = ", (""" & ConnStr & """)"
+        Easp.Error.FunctionName = "Easp.Db.CreatConnection (easp.db.asp, line 130)"
       End If
-      Easp.Error.FunctionName = "Easp.Db.CreatConnection (easp.db.asp, line 130)"
       Easp.Error.Raise "error-db-conn"
     End If
   End Function
