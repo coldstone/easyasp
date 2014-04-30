@@ -603,7 +603,7 @@ Class EasyASP_String
               o.Close : Set o = Nothing
               SB.Append "]}"
             End If
-          Case "Dictionary", "IRequestDictionary", "IReadCookie", "EasyASP_Json_Object"
+          Case "Dictionary", "IRequestDictionary", "IReadCookie", "EasyASP_Json_Object", "Errors"
           '字典对象
             Dim isString
             If TypeName(o) = "IReadCookie" Then
