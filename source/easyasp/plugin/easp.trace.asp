@@ -212,7 +212,7 @@ Class EasyAsp_Trace
 							TraceDb dbtmp, t
 							If dbtmp.State = 0 Then dbtmp.Open
 						Case Else
-							If Easp.Test(o,"^:db\.(.+)$") Then
+							If Easp.Str.Test(o,"^:db\.(.+)$") Then
 						    Set dbtmp = Easp.db.GetConn()
 								s = Easp.Str.Replace(o,"^:db\.(.+)$","$1")
 								tpl "type", "数据表"
