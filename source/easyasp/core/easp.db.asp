@@ -19,20 +19,20 @@ Class EasyASP_Db
 
   '构造方法
   Private Sub Class_Initialize()
-    Easp.Error("error-db-conn") = "无法连接到数据库|:数据库服务器端连接错误{0}|请检查数据库连接信息是否正确！"
-    Easp.Error("error-db-noconn") = "数据库连接出错|:连接对象 {0} 不存在|请检查是否用 Easp.Db.SetConnection 方法设置了该连接"
-    Easp.Error("error-db-execute") = "执行数据库查询错误|:(SQL) {0}"
-    Easp.Error("error-db-batchselect") = "数据库批量执行出错|:批量执行不能是Select语句：(SQL) {0}|"
-    Easp.Error("error-db-executebatch") = "数据库批量执行出错|:批量执行SQL语句出错，已回滚。(SQL) {0}|"
-    Easp.Error("error-db-paramarray") = "数据库批量执行出错|:参数 {0} 中元素数量与其它数组参数元素数量不一致|"
-    Easp.Error("error-db-select") = "数据库查询出错|:无效的查询语句，无法获取记录集。(SQL) {0}|"
-    Easp.Error("error-db-getrecordset") = "数据库查询出错|:获取分页数据出错，无法获取记录集。(SQL) {0}|"
-    Easp.Error("error-db-insert") = "数据库插入数据出错|:向表 {0} 中插入数据 {1} 出错|"
-    Easp.Error("error-db-insertbatch") = "数据库批量插入数据出错|:向表 {0} 中批量插入数据 {1} 出错， 已回滚|"
-    Easp.Error("error-db-delete") = "数据库删除数据出错|:(SQL) {0}|"
-    Easp.Error("error-db-deletebatch") = "数据库批量删除数据出错|:(SQL) {0}|"
-    Easp.Error("error-db-update") = "数据库更新数据出错|:(SQL) {0}|"
-    Easp.Error("error-db-updatebatch") = "数据库批量更新数据出错|:(SQL) {0}|"
+    Easp.Error("error-db-conn") = Easp.Lang("error-db-conn")
+    Easp.Error("error-db-noconn") = Easp.Lang("error-db-noconn")
+    Easp.Error("error-db-execute") = Easp.Lang("error-db-execute")
+    Easp.Error("error-db-batchselect") = Easp.Lang("error-db-batchselect")
+    Easp.Error("error-db-executebatch") = Easp.Lang("error-db-executebatch")
+    Easp.Error("error-db-paramarray") = Easp.Lang("error-db-paramarray")
+    Easp.Error("error-db-select") = Easp.Lang("error-db-select")
+    Easp.Error("error-db-getrecordset") = Easp.Lang("error-db-getrecordset")
+    Easp.Error("error-db-insert") = Easp.Lang("error-db-insert")
+    Easp.Error("error-db-insertbatch") = Easp.Lang("error-db-insertbatch")
+    Easp.Error("error-db-delete") = Easp.Lang("error-db-delete")
+    Easp.Error("error-db-deletebatch") = Easp.Lang("error-db-deletebatch")
+    Easp.Error("error-db-update") = Easp.Lang("error-db-update")
+    Easp.Error("error-db-updatebatch") = Easp.Lang("error-db-updatebatch")
     Set o_connections = Server.CreateObject("Scripting.Dictionary")
     '记录默认连接的事务层次
     i_transLevel = 0
@@ -352,7 +352,7 @@ Class EasyASP_Db
         .ActiveConnection = Nothing
         i_queryTimes = i_queryTimes + 1
         If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
-          Easp.Console "(执行时间：" & Easp.GetScriptTimeByTimer(sTimer) & "s， 读取记录数：" & ExecuteSql.RecordCount & ")"
+          Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.Lang("db-record-count") & "：" & ExecuteSql.RecordCount & ")"
         End If
         'conn.CursorLocation = currentCursor
       ElseIf executeType = 2 Then
@@ -362,7 +362,7 @@ Class EasyASP_Db
         ExecuteSql = (affectedRows>0)
         i_queryTimes = i_queryTimes + 1
         If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
-          Easp.Console "(执行时间：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.IIF(ExecuteSql, "执行成功", "执行失败") & "， 受影响的行数：" & affectedRows & ")"
+          Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.IIF(ExecuteSql, Easp.Lang("db-query-success"), Easp.Lang("db-query-fail")) & "， " & Easp.Lang("db-affected-rows") & "：" & affectedRows & ")"
         End If
       Else'If executeType = 0 Then
       '返回受影响的行数
@@ -371,7 +371,7 @@ Class EasyASP_Db
         ExecuteSql = affectedRows
         i_queryTimes = i_queryTimes + 1
         If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
-          Easp.Console "(执行时间：" & Easp.GetScriptTimeByTimer(sTimer) & "s， 受影响的行数：" & affectedRows & ")"
+          Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.Lang("db-affected-rows") & "：" & affectedRows & ")"
         End If
       End If
     End With
@@ -405,7 +405,7 @@ Class EasyASP_Db
       'If Easp.Debug Then
         Easp.Error.SetErrors e, conn, Null
         Easp.Error.FunctionName = "Easp.Db." & funName
-        Easp.Error.Detail = detail & "，可执行的SQL语句请在Console中查看。"
+        Easp.Error.Detail = detail & Easp.Lang("db-see-sql-in-console")
         Easp.Error.Raise "error-db-" & name
       'End If
     End If
@@ -634,10 +634,11 @@ Class EasyASP_Db
     Set GetRecordSet = ExecuteSql(conn, s_sql, 1)
     '输出执行时间及执行结果
     If b_insideSql And Easp.Console.ShowSqlTime Then
-      s_tmp = "(执行时间：" & Easp.GetScriptTimeByTimer(t_start) & "s"
-      s_tmp = s_tmp & "， 记录数：" & i_rsSize & "[" & i_minRow & "-" & i_maxRow & "/" & i_recordCount & "]"
-      s_tmp = s_tmp & "， 每页" & i_pageSize & "条， 第" & i_pageIndex & "/" & i_pageCount
-      s_tmp = s_tmp & "页)"
+      s_tmp = "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(t_start) & "s"
+      s_tmp = s_tmp & Easp.Str.Format(Easp.Lang("db-pager-in-console"), Array(i_rsSize, i_minRow, i_maxRow, i_recordCount, i_pageSize, i_pageIndex, i_pageCount))
+      's_tmp = s_tmp & "， 记录数：" & i_rsSize & "[" & i_minRow & "-" & i_maxRow & "/" & i_recordCount & "]"
+      's_tmp = s_tmp & "， 每页" & i_pageSize & "条， 第" & i_pageIndex & "/" & i_pageCount
+      's_tmp = s_tmp & "页)"
       Easp.Console s_tmp
     End If
     Easp.Console.ShowSql = b_insideSql
@@ -858,7 +859,7 @@ Class EasyASP_Db
       Case "input"
         '生成跳转文本框
         s_jumpValue = "this.value"
-        s_jump = " <input type=""text"" size=""3"" title=""请输入要跳转到的页数并回车"" " & Easp.IfHas(o_cfg("jumpplus"),"")
+        s_jump = " <input type=""text"" size=""3"" title=""" & Easp.Lang("db-pager-input-text") & """ " & Easp.IfHas(o_cfg("jumpplus"),"")
         '回车键执行跳转
         s_jump = s_jump & " onkeydown=""javascript:if(event.charCode==13||event.keyCode==13){if(!isNaN(" & s_jumpValue & ")){"
         s_jump = s_jump & Easp.IIF(o_cfg("jumpaction")="",Easp.IIF(Lcase(Left(o_cfg("link"),11))="javascript:",Replace(Mid(o_cfg("link"),12),"*",s_jumpValue),"document.location.href='" & Replace(o_cfg("link"),"*","'+" & s_jumpValue & "+'") & "';"),Replace(o_cfg("jumpaction"),"*", s_jumpValue))
@@ -868,7 +869,7 @@ Class EasyASP_Db
         s_jumpValue = "this.options[this.selectedIndex].value"
         s_jump = " <select " & Easp.IfHas(o_cfg("jumpplus"),"") & " onchange=""javascript:"
         s_jump = s_jump & Easp.IIF(o_cfg("jumpaction")="",Easp.IIF(Lcase(Left(o_cfg("link"),11))="javascript:",Replace(Mid(o_cfg("link"),12),"*",s_jumpValue),"document.location.href='" & Replace(o_cfg("link"),"*","'+" & s_jumpValue & "+'") & "';"),Replace(o_cfg("jumpaction"),"*",s_jumpValue))
-        s_jump = s_jump & """ title=""请选择要跳转到的页数""> "
+        s_jump = s_jump & """ title=""" & Easp.Lang("db-pager-select-text") & """> "
         '下拉框下拉菜单数量
         If o_cfg("jumplong")=0 Then
           For i = 1 To o_cfg("pagecount")
@@ -1302,17 +1303,17 @@ Class EasyASP_Db
   '开始一个事务
   Public Function BeginTrans(ByRef conn)
     BeginTrans = conn.BeginTrans
-    If Easp.Console.ShowSql Then Easp.Console "数据库事务（第" & BeginTrans & "级）已开始："
+    If Easp.Console.ShowSql Then Easp.Console Easp.Str.Format(Easp.Lang("db-trans-start"), BeginTrans)
   End Function
   '回滚一个事务
   Public Sub RollbackTrans(ByRef conn)
     conn.RollbackTrans
-    If Easp.Console.ShowSql Then Easp.Console "数据库事务已回滚。"
+    If Easp.Console.ShowSql Then Easp.Console Easp.Lang("db-trans-rollback")
   End Sub
   '提交一个事务
   Public Sub CommitTrans(ByRef conn)
     conn.CommitTrans
-    If Easp.Console.ShowSql Then Easp.Console "数据库事务已提交。"
+    If Easp.Console.ShowSql Then Easp.Console Easp.Lang("db-trans-commit")
   End Sub
   '开始默认连接的事务
   Public Sub Begin()

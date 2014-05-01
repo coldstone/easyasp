@@ -24,19 +24,19 @@ Class EasyASP_Fso
     b_force       = True
     b_overwrite   = True
     s_sizeformat  = "K"
-    Easp.Error("error-fso-filenotfound") = "读取文件错误|:文件 {0} 未找到|请检查输入文件名是否正确"
-    Easp.Error("error-fso-write") = "写入文件错误|:保存文件 ""{0}"" 时出错|请检查文件夹是否有写权限"
-    Easp.Error("error-fso-md") = "创建文件夹错误|:创建文件夹 ""{0}"" 时出错|请检查文件夹是否有写权限"
-    Easp.Error("error-fso-list") = "读取文件列表失败|:列出文件夹 ""{0}"" 中的内容时出错|"
-    Easp.Error("error-fso-attrfile") = "设置属性失败|:文件 ""{0}"" 不存在|"
-    Easp.Error("error-fso-attr") = "设置属性失败||"
-    Easp.Error("error-fso-copy") = "复制失败|:源文件 ""{0}"" 不存在|"
-    Easp.Error("error-fso-move") = "移动失败|:源文件 ""{0}"" 不存在|"
-    Easp.Error("error-fso-del") = "删除失败|:文件 ""{0}"" 不存在|"
-    Easp.Error("error-fso-renamefile") = "重命名失败|:源文件不存在 ""{0}""|"
-    Easp.Error("error-fso-rename") = "重命名失败|:已存在同名文件 ""{0}""|"
-    Easp.Error("error-fso-control") = "文件或文件夹操作错误|:{0}{1}失败（{2}{3}）|"
-    Easp.Error("error-fso-ctrlnotfound") = "文件或文件夹操作错误|:{0}{1}失败，{2}{1}不存在（{3}）|"
+    Easp.Error("error-fso-filenotfound") = Easp.Lang("error-fso-filenotfound")
+    Easp.Error("error-fso-write") = Easp.Lang("error-fso-write")
+    Easp.Error("error-fso-md") = Easp.Lang("error-fso-md")
+    Easp.Error("error-fso-list") = Easp.Lang("error-fso-list")
+    Easp.Error("error-fso-attrfile") = Easp.Lang("error-fso-attrfile")
+    Easp.Error("error-fso-attr") = Easp.Lang("error-fso-attr")
+    Easp.Error("error-fso-copy") = Easp.Lang("error-fso-copy")
+    Easp.Error("error-fso-move") = Easp.Lang("error-fso-move")
+    Easp.Error("error-fso-del") = Easp.Lang("error-fso-del")
+    Easp.Error("error-fso-renamefile") = Easp.Lang("error-fso-renamefile")
+    Easp.Error("error-fso-rename") = Easp.Lang("error-fso-rename")
+    Easp.Error("error-fso-control") = Easp.Lang("error-fso-control")
+    Easp.Error("error-fso-ctrlnotfound") = Easp.Lang("error-fso-ctrlnotfound")
   End Sub
 
   Private Sub Class_Terminate
@@ -569,17 +569,17 @@ Class EasyASP_Fso
     ff = absPath(fromPath) : tf = absPath(toPath)
     If FOF = 0 Then
     '如果是文件
-      oc = isFile(ff) : of = "File" : oi = "文件"
+      oc = isFile(ff) : of = "File" : oi = Easp.Lang("fso-file")
     ElseIf FOF = 1 Then
     '如果是文件夹
-      oc = isFolder(ff) : of = "Folder" : oi = "文件夹"
+      oc = isFolder(ff) : of = "Folder" : oi = Easp.Lang("fso-folder")
     End If
     If MOC = 0 Then
-      ot = "Copy" : os = "复制"
+      ot = "Copy" : os = Easp.Lang("fso-copy")
     ElseIf MOC = 1 Then
-      ot = "Move" : os = "移动"
+      ot = "Move" : os = Easp.Lang("fso-move")
     ElseIf MOC = 2 Then
-      ot = "Delete" : os = "删除"
+      ot = "Delete" : os = Easp.Lang("fso-delete")
     End If
     If oc Then
     '如果文件或文件夹存在
@@ -610,7 +610,7 @@ Class EasyASP_Fso
         FOFO = False
         If Easp.Debug Then
           Easp.Error.FunctionName = "Easp.Fso.FOFO"
-          Easp.Error.Detail = Array(os, oi, frompath, Easp.IIF(MOC=2,"",os&"到 "&toPath))
+          Easp.Error.Detail = Array(os, oi, frompath, Easp.IIF(MOC =2 , "", os & Easp.Lang("fso-to") & toPath))
           Easp.Error.Raise "error-fso-control"
         End If
       End If
@@ -633,7 +633,7 @@ Class EasyASP_Fso
         FOFO = False
         If Easp.Debug Then
           Easp.Error.FunctionName = "Easp.Fso.FOFO"
-          Easp.Error.Detail = Array(os, oi, frompath, Easp.IIF(MOC=2, "", os&"到 "&toPath))
+          Easp.Error.Detail = Array(os, oi, frompath, Easp.IIF(MOC = 2, "", os & Easp.Lang("fso-to") & toPath))
           Easp.Error.Raise "error-fso-control"
         End If
       End If
@@ -641,7 +641,7 @@ Class EasyASP_Fso
       FOFO = False
       If Easp.Debug Then
         Easp.Error.FunctionName = "Easp.Fso.FOFO"
-        Easp.Error.Detail = Array(os, oi, Easp.IIF(MOC=2,"","源"), frompath)
+        Easp.Error.Detail = Array(os, oi, Easp.IIF(MOC = 2, "", Easp.Lang("fso-source")), frompath)
         Easp.Error.Raise "error-fso-ctrlnotfound"
       End If
     End If

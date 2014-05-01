@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Cache Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com) & SunYu
-'## Update Date :   2014-04-2 21:54:40
+'## Update Date :   2014-05-01 23:54:53
 '## Description :   Save and Get Cache With EasyASP
 '##
 '######################################################################
@@ -20,9 +20,9 @@ Class EasyASP_Cache
     CountEnabled = True
     Expires = 5
     FileType = ".easpcache"
-    Easp.Error("error-cache-notfound") = "缓存处理出错|:缓存文件 ""{0}"" 不存在"
-    Easp.Error("error-cache-invalid-object") = "缓存处理出错|:当前对象 ""{0}"" 不允许缓存到内存缓存"
-    Easp.Error("error-cache-invalid-file") = "缓存处理出错|:当前内容 ""{0}"" 不允许缓存到文件缓存"
+    Easp.Error("error-cache-notfound") = Easp.Lang("error-cache-notfound")
+    Easp.Error("error-cache-invalid-object") = Easp.Lang("error-cache-invalid-object")
+    Easp.Error("error-cache-invalid-file") = Easp.Lang("error-cache-invalid-file")
   End Sub
   '析构函数
   Private Sub Class_Terminate

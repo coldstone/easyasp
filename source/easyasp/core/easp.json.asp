@@ -15,15 +15,15 @@ Class EasyASP_Json
   Private b_encode
 
   Private Sub Class_Initialize()
-    Easp.Error("error-json-invalid-json") = "Json解析出错|:Json格式不正确，只能以 ""{"" 或 ""["" 开头|"
-    Easp.Error("error-json-missing-brace") = "Json解析出错|:缺少 ""}"" 号 &gt;&gt; {0}|"
-    Easp.Error("error-json-missing-bracket") = "Json解析出错|:缺少 ""]"" 号 &gt;&gt; {0}|"
-    Easp.Error("error-json-wrong-key") = "Json解析出错|:解析键值(key) ""{0}"" 时出错|"
-    Easp.Error("error-json-wrong-array") = "Json解析出错|:解析数组时出错 &gt;&gt; {0}|"
-    Easp.Error("error-json-invalid-boolean") = "Json解析出错|:无效的boolean值在第 {0} 个字符 &gt;&gt; {1}|"
-    Easp.Error("error-json-invalid-null") = "Json解析出错|:无效的null值在第 {0} 个字符 &gt;&gt; {1}|"
-    Easp.Error("error-json-invalid-key") = "Json解析出错|:无效的键值(key)在第 {0} 个字符 &gt;&gt; {1}|"
-    Easp.Error("error-json-create-json") = "生成Json字符串出错|:键值(key)：{0}, 值(value)：{1}|"
+    Easp.Error("error-json-invalid-json") = Easp.Lang("error-json-invalid-json")
+    Easp.Error("error-json-missing-brace") = Easp.Lang("error-json-missing-brace")
+    Easp.Error("error-json-missing-bracket") = Easp.Lang("error-json-missing-bracket")
+    Easp.Error("error-json-wrong-key") = Easp.Lang("error-json-wrong-key")
+    Easp.Error("error-json-wrong-array") = Easp.Lang("error-json-wrong-array")
+    Easp.Error("error-json-invalid-boolean") = Easp.Lang("error-json-invalid-boolean")
+    Easp.Error("error-json-invalid-null") = Easp.Lang("error-json-invalid-null")
+    Easp.Error("error-json-invalid-key") = Easp.Lang("error-json-invalid-key")
+    Easp.Error("error-json-create-json") = Easp.Lang("error-json-create-json")
     b_encode = True
   End Sub
   

@@ -15,12 +15,12 @@ Class EasyASP_Http
   Private s_data, s_url, s_ohtml, o_rh', a_rh()
   
   Private Sub Class_Initialize
-    Easp.Error("error-http-object") = "获取远程HTTP内容出错|:服务器不支持XMLHTTP组件|请重新安装服务器XMLHTTP组件"
-    Easp.Error("error-http-serverdown") = "远程服务器没有响应|:远程地址 ""{0}"" 没有响应|"
-    Easp.Error("error-http-status") = "获取远程Http内容出错|:远程地址 ""{0}"" 不可访问，错误代码 {1} |"
-    Easp.Error("error-http-remote") = "获取远程Http内容出错|:远程地址： ""{0}"" ， 方法： {1} |"
-    Easp.Error("error-http-wrongstart") = "截取远程Http内容出错|:目标源码中未找到定位开始字符串 ""{0}""|"
-    Easp.Error("error-http-wrongend") = "截取远程Http内容出错|:目标源码中未找到定位结束字符串 ""{0}""|"
+    Easp.Error("error-http-object") = Easp.Lang("error-http-object")
+    Easp.Error("error-http-serverdown") = Easp.Lang("error-http-serverdown")
+    Easp.Error("error-http-status") = Easp.Lang("error-http-status")
+    Easp.Error("error-http-remote") = Easp.Lang("error-http-remote")
+    Easp.Error("error-http-wrongstart") = Easp.Lang("error-http-wrongstart")
+    Easp.Error("error-http-wrongend") = Easp.Lang("error-http-wrongend")
     '编码默认为空，将自动获取编码
     CharSet = ""
     '异步模式关闭

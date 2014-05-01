@@ -18,16 +18,16 @@ Class EasyASP_Xml
     s_filePath = ""
     s_xsltPath = ""
     IsOpen = False
-    Easp.Error("error-xml-nocom") = "XML文件操作出错|:服务器未安装XMLDOM组件|:请在服务器安装MSXML2.DOMDocument组件"
-    Easp.Error("error-xml-domopen") = "打开XML文档出错|:打开XML文档 ""{0}"" 出错|"
-    Easp.Error("error-xml-domload") = "加载XML文档出错|:加载XML文档 ""{0}"" 出错|"
-    Easp.Error("error-xml-savedom") = "保存XML文档出错|:要保存在 {0} 的文档未处于打开状态|"
-    Easp.Error("error-xml-find") = "未在XML中找到目标对象|:目标对象 {0} 不存在|"
-    Easp.Error("error-xml-notdom") = "载入XML出错|:目标不是有效的XML对象|"
-    Easp.Error("error-xml-notnode") = "载入XML节点出错|:节点不是有效的XML元素集合对象， 它是 {0} 对象|"
-    Easp.Error("error-xml-prevel") = "查找XML节点出错|:节点 {0} 没有上一个同级元素|"
-    Easp.Error("error-xml-nextel") = "查找XML节点出错|:节点 {0} 没有下一个同级元素|"
-    Easp.Error("error-xml-findel") = "查找XML节点出错|:节点 {0} 中未找到目标节点 {1}|"
+    Easp.Error("error-xml-nocom") = Easp.Lang("error-xml-nocom")
+    Easp.Error("error-xml-domopen") = Easp.Lang("error-xml-domopen")
+    Easp.Error("error-xml-domload") = Easp.Lang("error-xml-domload")
+    Easp.Error("error-xml-savedom") = Easp.Lang("error-xml-savedom")
+    Easp.Error("error-xml-find") = Easp.Lang("error-xml-find")
+    Easp.Error("error-xml-notdom") = Easp.Lang("error-xml-notdom")
+    Easp.Error("error-xml-notnode") = Easp.Lang("error-xml-notnode")
+    Easp.Error("error-xml-prevel") = Easp.Lang("error-xml-prevel")
+    Easp.Error("error-xml-nextel") = Easp.Lang("error-xml-nextel")
+    Easp.Error("error-xml-findel") = Easp.Lang("error-xml-findel")
   End Sub
   
   '析构函数

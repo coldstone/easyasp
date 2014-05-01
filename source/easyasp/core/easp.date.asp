@@ -51,42 +51,42 @@ Class EasyASP_Date
     If isDate(iFormat) Or Easp.IsN(iFormat) Then
       '如果第二个参数为空，则设定为和现在时间相比较
       If Easp.IsN(iFormat) Then : iFormat = Now() : pastTime = true : End If
-      dire = "后" : If DateDiff("s",iFormat,iTime)<0 Then : dire = "前" : before = True : End If
+      dire = Easp.Lang("date-after") : If DateDiff("s",iFormat,iTime)<0 Then : dire = Easp.Lang("date-ago") : before = True : End If
       diffs = Abs(DateDiff("s",iFormat,iTime))
       diffd = Abs(DateDiff("d",iFormat,iTime))
       diffw = Abs(DateDiff("ww",iFormat,iTime))
       diffm = Abs(DateDiff("m",iFormat,iTime))
       diffy = Abs(DateDiff("yyyy",iFormat,iTime))
-      If diffs < 60 Then Format = "刚刚" : Exit Function
-      If diffs < 1800 Then Format = Int(diffs\60) & "分钟" & dire : Exit Function
-      If diffs < 2400 Then Format = "半小时"  & dire : Exit Function
-      If diffs < 3600 Then Format = Int(diffs\60) & "分钟" & dire : Exit Function
+      If diffs < 60 Then Format = Easp.Lang("date-justnow") : Exit Function
+      If diffs < 1800 Then Format = Int(diffs\60) & Easp.Lang("date-minutes")  & dire : Exit Function
+      If diffs < 2400 Then Format = Easp.Lang("date-halfhour")  & dire : Exit Function
+      If diffs < 3600 Then Format = Int(diffs\60) & Easp.Lang("date-minutes")  & dire : Exit Function
       If diffs < 259200 Then
-        If diffd = 3 Then Format = "3天" & dire & " " & iiHour & ":" & iiMinute : Exit Function
-        If diffd = 2 Then Format = Easp.IIF(before,"前天 ","后天 ") & iiHour & ":" & iiMinute : Exit Function
-        If diffd = 1 Then Format = Easp.IIF(before,"昨天 ","明天 ") & iiHour & ":" & iiMinute : Exit Function
-        Format = Int(diffs\3600) & "小时" & dire : Exit Function
+        If diffd = 3 Then Format = Easp.Lang("date-3days") & dire & " " & iiHour & ":" & iiMinute : Exit Function
+        If diffd = 2 Then Format = Easp.IIF(before,Easp.Lang("date-daybeforeyesterday"), Easp.Lang("date-dayaftertomorrow")) & iiHour & ":" & iiMinute : Exit Function
+        If diffd = 1 Then Format = Easp.IIF(before,Easp.Lang("date-yesterday"),Easp.Lang("date-tomorrow")) & iiHour & ":" & iiMinute : Exit Function
+        Format = Int(diffs\3600) & Easp.Lang("date-hours") & dire : Exit Function
       End If
-      If diffd < 7 Then Format = diffd & "天" & dire & " " & iiHour & ":" & iiMinute : Exit Function
+      If diffd < 7 Then Format = diffd & Easp.Lang("date-days")  & dire & " " & iiHour & ":" & iiMinute : Exit Function
       '如果第二个参数为空，则只显示2周内的相差时间
       If diffd < 14 Then
-        If diffw = 1 Then Format = Easp.IIF(before,"上星期","下星期") & iWeek(tWeek) & " " & iiHour & ":" & iiMinute : Exit Function
-        If Not pastTime Then Format = diffd & "天" & dire : Exit Function
+        If diffw = 1 Then Format = Easp.IIF(before,Easp.Lang("date-lastweek"),Easp.Lang("date-nextweek")) & iWeek(tWeek) & " " & iiHour & ":" & iiMinute : Exit Function
+        If Not pastTime Then Format = diffd & Easp.Lang("date-days") & dire : Exit Function
       End If
       '如果第二个参数为具体时间，则显示3年内的相差时间
       If Not pastTime Then
         If diffd < 31 Then
-          If diffm = 2 Then Format = "2个月" & dire : Exit Function
-          If diffm = 1 Then Format = Easp.IIF(before,"上个月","下个月") & iDay & "日" : Exit Function
-          Format = diffw & "星期" & dire : Exit Function
+          If diffm = 2 Then Format = Easp.Lang("date-2months") & dire : Exit Function
+          If diffm = 1 Then Format = Easp.IIF(before,Easp.Lang("date-lastmonth"),Easp.Lang("date-nextmonth")) & iDay & Easp.Lang("date-day") : Exit Function
+          Format = diffw & Easp.Lang("date-weeks") & dire : Exit Function
         End If
         If diffm < 36 Then
-          If diffy = 3 Then Format = "3年" & dire : Exit Function
-          If diffy = 2 Then Format = Easp.IIF(before,"前年","后年") & iMonth & "月" : Exit Function
-          If diffy = 1 Then Format = Easp.IIF(before,"去年","明年") & iMonth & "月" : Exit Function
-          Format = diffm & "个月" & dire : Exit Function
+          If diffy = 3 Then Format = Easp.Lang("date-3years") & dire : Exit Function
+          If diffy = 2 Then Format = Easp.IIF(before,Easp.Lang("date-yearbeforelast"),Easp.Lang("date-yearafternext")) & iMonth & Easp.Lang("date-month") : Exit Function
+          If diffy = 1 Then Format = Easp.IIF(before,Easp.Lang("date-last"),Easp.Lang("date-next")) & iMonth & Easp.Lang("date-month") : Exit Function
+          Format = diffm & Easp.Lang("date-months") & dire : Exit Function
         End If
-        Format = diffy & "年" & dire : Exit Function
+        Format = diffy & Easp.Lang("date-years") & dire : Exit Function
       Else
         '如时间超过上述范围则直接显示
         iFormat = "yyyy-mm-dd hh:ii"
