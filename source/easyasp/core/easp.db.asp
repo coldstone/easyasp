@@ -41,7 +41,7 @@ Class EasyASP_Db
     i_pageSize   = 25
     Set o_pager = Server.CreateObject("Scripting.Dictionary")
     o_pager.CompareMode = 1
-    SetPager "", "{first}{prev}{liststart}{list}{listend}{next}{last} {jump}", Array("jump:select", "jumplong:0")
+    SetPager "", "{first}{prev}{liststart}{list}{listend}{next}{last} {jump}", Array("jump:select", "jumplong:20")
     SetPager "bootstrap", "{first}{prev}{list}{next}{last}", Array("listtype:ul", "listclass:pagination pagination-sm", "currentclass:active")
     SetPager "bootstrap.pager", "{prev}{next}", Array("listtype:ul", "currentclass:active", "prev:Previous", "next:Next")
     SetPager "bootstrap.pagerside", "{prev}{next}", Array("listtype:ul", "currentclass:active", "prevclass:previous", "nextclass:next", "prev:&larr; Older", "next:Newer &rarr;")
