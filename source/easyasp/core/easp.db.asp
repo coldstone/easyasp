@@ -593,7 +593,7 @@ Class EasyASP_Db
       sql = sql & " " & s_order
     End If
     '取总记录数
-    s_sqlCount = "SELECT COUNT(0) FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Count_Table"
+    s_sqlCount = "SELECT COUNT(*) FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Count_Table"
     Set rsTmp = ExecuteSql(conn, s_sqlCount, 1)
     i_queryTimes = i_queryTimes - 1
     i_recordCount = rsTmp(0)
@@ -636,9 +636,6 @@ Class EasyASP_Db
     If b_insideSql And Easp.Console.ShowSqlTime Then
       s_tmp = "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(t_start) & "s"
       s_tmp = s_tmp & Easp.Str.Format(Easp.Lang("db-pager-in-console"), Array(i_rsSize, i_minRow, i_maxRow, i_recordCount, i_pageSize, i_pageIndex, i_pageCount))
-      's_tmp = s_tmp & "， 记录数：" & i_rsSize & "[" & i_minRow & "-" & i_maxRow & "/" & i_recordCount & "]"
-      's_tmp = s_tmp & "， 每页" & i_pageSize & "条， 第" & i_pageIndex & "/" & i_pageCount
-      's_tmp = s_tmp & "页)"
       Easp.Console s_tmp
     End If
     Easp.Console.ShowSql = b_insideSql
