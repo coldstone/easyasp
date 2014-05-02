@@ -1,4 +1,5 @@
 ##EasyASP v3.0
+
 >×÷Õß : coldstone (coldstone[at]qq.com)   
 ¹ÙÍø : <http://www.easyasp.cn>   
 APIÎÄµµ : <http://www.easyasp.cn/api>   
@@ -39,6 +40,7 @@ EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌĞòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊı»¯²éÑ
 * [¹¤¾ß] Ìá¹© Dreamweaver / EverEdit / EditPlus µÈ±à¼­Æ÷µÄ´úÂë¸ßÁÁ¼°´úÂëÖÇÄÜÌáÊ¾²å¼ş¡£
 * [¹¤¾ß] ÓµÓĞ¸ßÈËÆøµÄÎÄµµÉçÇø£¬²¢ÓĞ´óÁ¿ÓÅĞãµÄÎÄµµ±à¼­Ìá¹©·á¸»µÄ´øÊ¾ÀıµÄAPIÎÄµµÖ§³Ö¡£
 * ¡­¡­
+
 ###½»Á÷Óë·´À¡
 * Bug Ìá½»»ò¹¦ÄÜ½¨ÒéÇëµ½ [EasyASPÎÊÌâ·´À¡](http://www.easyasp.cn/issue)£¬Ê¹ÓÃ¼°ÎÄµµÎÊÌâÇëÔÚ [APIÎÄµµ](http://www.easyasp.cn/api) ÏàÓ¦Ò³ÃæÆÀÂÛÁôÑÔ¡£
 * EaspASP ¹Ù·½½»Á÷QQÈº£º`26435555`£¬ ¼ÓÈºÑéÖ¤ÇëÊäÈë `easyasp` 
