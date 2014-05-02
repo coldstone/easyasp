@@ -18,11 +18,11 @@ Class EasyASP_List
   Private s_separator
   
   Private Sub Class_Initialize
-    Easp.Error("error-list-indexnull") = "超级数组设置值出错|:下标不能为空|"
-    Easp.Error("error-list-indexwrong") = "超级数组设置值出错|:下标 {0} 不正确，只能是数字、字母、下划线(_)、点(.)和斜杠(/)组成|"
-    Easp.Error("error-list-outofrange") = "超级数组下标越界|:当前下标 {0} 超过了最大下标 {1}|"
-    Easp.Error("error-list-outofhash") = "超级数组下标越界|:当前下标 {0} 不在数组Hash列中|"
-    Easp.Error("error-list-notlist") = "超级数组处理出错|:参数不是有效的数组或者List对象|"
+    Easp.Error("error-list-indexnull") = Easp.Lang("error-list-indexnull")
+    Easp.Error("error-list-indexwrong") = Easp.Lang("error-list-indexwrong")
+    Easp.Error("error-list-outofrange") = Easp.Lang("error-list-outofrange")
+    Easp.Error("error-list-outofhash") = Easp.Lang("error-list-outofhash")
+    Easp.Error("error-list-notlist") = Easp.Lang("error-list-notlist")
     Set o_hash = Server.CreateObject("Scripting.Dictionary")
     Set o_map  = Server.CreateObject("Scripting.Dictionary")
     Size = 0
