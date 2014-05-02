@@ -1,11 +1,11 @@
 ##EasyASP v3.0
 
->作者 : coldstone (coldstone[at]qq.com)   
+作者 : coldstone (coldstone[at]qq.com)   
 官网 : <http://www.easyasp.cn>   
 API文档 : <http://www.easyasp.cn/api>   
 git(osChina) : <http://git.oschina.net/coldstone/easyasp>   
-Licenses : EasyASP 遵循 [Apache licenses v2](http://zh.wikipedia.org/zh-cn/Apache%E8%AE%B8%E5%8F%AF%E8%AF%81) 版权协议
-
+Licenses : EasyASP 遵循 [Apache licenses v2](http://zh.wikipedia.org/zh-cn/Apache%E8%AE%B8%E5%8F%AF%E8%AF%81) 版权协议   
+   
 EasyASP 是一个简单方便的用来快速开发ASP程序的类库。EasyASP 包含完善的全参数化查询多数据库操作、高效Json数据生成与解析、各种字符串及日期处理函数、功能强大动态数组处理、领先的文件系统处理、远程文件及XML文档处理、内存缓存和文件缓存处理、简单实用的模板引擎等等丰富的功能。而为了解决ASP调试不方便的问题，EasyASP 推出了独创的控制台调试功能以及丰富的异常信息显示，能让你开发 ASP 程序时最大程度的从错误调试的纷繁中解放出来。EasyASP 目前提供下载的是VBScript版本。
 
 
