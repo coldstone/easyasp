@@ -41,7 +41,7 @@ Class EasyASP_Db
     i_pageSize   = 25
     Set o_pager = Server.CreateObject("Scripting.Dictionary")
     o_pager.CompareMode = 1
-    SetPager "", "{first}{prev}{liststart}{list}{listend}{next}{last} {jump}", Array("jump:select", "jumplong:20")
+    SetPager "", "{first}{prev}{liststart}{list}{listend}{next}{last} {jump}", Array("jump:select", "jumplong:0")
     SetPager "bootstrap", "{first}{prev}{list}{next}{last}", Array("listtype:ul", "listclass:pagination pagination-sm", "currentclass:active")
     SetPager "bootstrap.pager", "{prev}{next}", Array("listtype:ul", "currentclass:active", "prev:Previous", "next:Next")
     SetPager "bootstrap.pagerside", "{prev}{next}", Array("listtype:ul", "currentclass:active", "prevclass:previous", "nextclass:next", "prev:&larr; Older", "next:Newer &rarr;")
@@ -598,40 +598,49 @@ Class EasyASP_Db
     i_queryTimes = i_queryTimes - 1
     i_recordCount = rsTmp(0)
     Close(rsTmp)
-    i_tmp = i_recordCount/i_pageSize
-    i_pageCount = Int(i_tmp) + Easp.IIF(Int(i_tmp)=i_tmp, 0, 1)
-    '取当前页码
-    i_pageIndex = GetPageIndex()
-    If i_pageIndex > i_pageCount Then i_pageIndex = i_pageCount
-    '计算记录行号
-    i_minRow = i_pageSize * (i_pageIndex-1) + 1
-    i_maxRow = i_pageSize * i_pageIndex
-    '本页记录数
-    i_rsSize = i_pageSize
-    If i_maxRow > i_recordCount Then
-    '最后一页的最大行号不超过记录总数
-      i_maxRow = i_recordCount
-      '最后一页的记录数
-      i_rsSize = i_maxRow - i_minRow + 1
-    End If
-    '取得数据库类型及版本
-    s_dbType = GetType(conn)
-    s_dbVer = GetVersion(conn)
-    '按不同类型的数据库来处理分页
-    If s_dbType = "MYSQL" Then
-    '如果是MySQL数据库，采用limit取分页记录
-      s_sql = sql & " limit " & i_minRow - 1 & ", " & i_pageSize
-    Else
-      If s_dbType = "MSSQL" And Easp.Str.GetName(s_dbVer,".") >= 9 Then
-      '如果是SQL Server 2005及以上版本数据库，利用ROW_NUMBER函数取分页记录
-        s_sql = "SELECT * FROM (SELECT *,ROW_NUMBER() OVER (" & s_order & ") AS EasyASP_Pager_RowRank FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Max_Table) AS EasyASP_Pager_Result_Table WHERE EasyASP_Pager_Result_Table.EasyASP_Pager_RowRank BETWEEN " & i_minRow & " AND " & i_maxRow
-      Else
-      '如果是Access或者SQL Server 2000及以下版本
-        sql = Replace(sql, "Select", "SELECT TOP " & i_maxRow, 1, 1, 1)
-        s_sql = "SELECT * From (" & sql & ") AS EasyASP_Pager_Result_Table WHERE " & s_pkey & " IN (SELECT TOP " & i_rsSize & " " & s_pkey & " FROM (" & sql & ") AS EasyASP_Pager_Max_Table " & ReverseOrderBy(s_order) & ") " & s_order & ""
+    If i_recordCount > 0 Then
+      i_tmp = i_recordCount/i_pageSize
+      i_pageCount = Int(i_tmp) + Easp.IIF(Int(i_tmp)=i_tmp, 0, 1)
+      '取当前页码
+      i_pageIndex = GetPageIndex()
+      If i_pageIndex > i_pageCount Then i_pageIndex = i_pageCount
+      '计算记录行号
+      i_minRow = i_pageSize * (i_pageIndex-1) + 1
+      i_maxRow = i_pageSize * i_pageIndex
+      '本页记录数
+      i_rsSize = i_pageSize
+      If i_maxRow > i_recordCount Then
+      '最后一页的最大行号不超过记录总数
+        i_maxRow = i_recordCount
+        '最后一页的记录数
+        i_rsSize = i_maxRow - i_minRow + 1
       End If
+      '取得数据库类型及版本
+      s_dbType = GetType(conn)
+      s_dbVer = GetVersion(conn)
+      '按不同类型的数据库来处理分页
+      If s_dbType = "MYSQL" Then
+      '如果是MySQL数据库，采用limit取分页记录
+        s_sql = sql & " limit " & i_minRow - 1 & ", " & i_pageSize
+      Else
+        If s_dbType = "MSSQL" And Easp.Str.GetName(s_dbVer,".") >= 9 Then
+        '如果是SQL Server 2005及以上版本数据库，利用ROW_NUMBER函数取分页记录
+          s_sql = "SELECT * FROM (SELECT *,ROW_NUMBER() OVER (" & s_order & ") AS EasyASP_Pager_RowRank FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Max_Table) AS EasyASP_Pager_Result_Table WHERE EasyASP_Pager_Result_Table.EasyASP_Pager_RowRank BETWEEN " & i_minRow & " AND " & i_maxRow
+        Else
+        '如果是Access或者SQL Server 2000及以下版本
+          sql = Replace(sql, "Select", "SELECT TOP " & i_maxRow, 1, 1, 1)
+          s_sql = "SELECT * From (" & sql & ") AS EasyASP_Pager_Result_Table WHERE " & s_pkey & " IN (SELECT TOP " & i_rsSize & " " & s_pkey & " FROM (" & sql & ") AS EasyASP_Pager_Max_Table " & ReverseOrderBy(s_order) & ") " & s_order & ""
+        End If
+      End If
+      Set GetRecordSet = ExecuteSql(conn, s_sql, 1)
+    Else
+      i_rsSize = 0
+      i_minRow = 0 
+      i_maxRow = 0
+      i_pageIndex = 0
+      i_pageCount = 0
+      Set GetRecordSet = ExecuteSql(conn, s_osql, 1)
     End If
-    Set GetRecordSet = ExecuteSql(conn, s_sql, 1)
     '输出执行时间及执行结果
     If b_insideSql And Easp.Console.ShowSqlTime Then
       s_tmp = "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(t_start) & "s"
