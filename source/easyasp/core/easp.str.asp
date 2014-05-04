@@ -174,7 +174,7 @@ Class EasyASP_String
         Case "lt", "<" Compare = (b_comp = -1)
         Case "gt", ">" Compare = (b_comp = 1)
         Case "eq", "=" Compare = (b_comp = 0)
-        Case "lte", "<=" Compare_ = (b_comp = -1 Or b_comp = 0)
+        Case "lte", "<=" Compare = (b_comp = -1 Or b_comp = 0)
         Case "gte", ">=" Compare = (b_comp = 1 Or b_comp = 0)
       End Select
     Else
