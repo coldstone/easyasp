@@ -184,8 +184,11 @@ Class EasyASP
   End Function
 
   '获取GET参数值
+  '参数 queryString - "URL参数名[:为空时默认值]"
   Public Function [Get](ByVal queryString)
-    Dim a_rwt, s_get, o_matches : s_get = ""
+    Dim a_rwt, s_get, o_matches, s_default
+    s_default = Str.GetColonValue(queryString)
+    queryString = Str.GetColonName(queryString)
     '检测是否是伪静态
     a_rwt = IsRewriteRule()
     If a_rwt(0) Then
@@ -195,19 +198,64 @@ Class EasyASP
         s_get = Str.Replace(a_rwt(3), a_rwt(1), o_matches(0).SubMatches(0))
       End If
       Set o_matches = Nothing
+      If IsN(s_get) And Has(s_default) Then s_get = s_default
     Else
       '如果不是伪静态则取普通URL参数
       s_get = Request.QueryString(queryString)
+      If Has(s_default) Then
+        Dim i
+        If Request.QueryString(queryString).Count > 1 Then
+          s_get = ""
+          For i = 1 To Request.QueryString(queryString).Count
+            If i > 1 Then s_get = s_get & ", "
+            s_get = s_get & IfHas(Request.QueryString(queryString)(i), s_default)
+          Next
+        Else
+          s_get = IfHas(s_get, s_default)
+        End If
+      End If
     End If
     [Get] = s_get
   End Function
   '获取POST参数值
+  '参数 formString - "表单项名[:为空时默认值]"
   Public Function Post(ByVal formString)
+    Dim s_post, s_default
+    '取出默认值
+    s_default = Str.GetColonValue(formString)
+    formString = Str.GetColonName(formString)
     If Upload.IsUploaded Then
-      Post = Upload.Post(formString)
+    '如果是上传表单
+      Dim a_post, i
+      If Upload.FormArray.Exists(formString) Then
+      '如果表单项确实存在
+        '取出表单项的值
+        Set a_post = Upload.FormArray(formString)
+        '如果是多项同名的表单，则分别取值并为空值赋默认值
+        For i = 0 To a_post.Length - 1
+          If i > 0 Then s_post = s_post & ", "
+          s_post = s_post & IfHas(a_post(i), s_default)
+        Next
+      Else
+      '如果表单项不存在直接退出
+        Exit Function
+      End If
     Else
-      Post = Request.Form(formString)
+    '如果是普通表单
+      s_post = Request.Form(formString)
+      If Has(s_default) Then
+        If Request.Form(formString).Count > 1 Then
+          s_post = ""
+          For i = 1 To Request.Form(formString).Count
+            If i > 1 Then s_post = s_post & ", "
+            s_post = s_post & IfHas(Request.Form(formString)(i), s_default)
+          Next
+        Else
+          s_post = IfHas(s_post, s_default)
+        End If
+      End If
     End If
+    Post = s_post
   End Function
 
   '取页面地址
