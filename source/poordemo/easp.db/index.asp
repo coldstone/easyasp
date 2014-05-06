@@ -122,19 +122,21 @@ End Function
                   <th>操作</th>
                 </thead><form action="?action=delete" method="post" id="formdel"><%
 Dim rs
+'这里演示下如何使用使用Like需要的参数，通过在超级变量中嵌入静态标签就组合成了新的参数
+Easp.Var("likeKey") = "%{=key}%"
 '获取内容记录集
-Set rs = Easp.Db.GetRS("Select a.ContentID, a.ContentClassID, b.ContentClassName, a.ContentTitle, a.AnnounceTime, b.SortLevel From EC_Content a Inner join EC_ContentClass b On a.ContentClassID = b.ContentClassID Where a.AnnounceTime<=NOW() And ({classid}='' Or a.ContentClassID = {classid}) And ({key}='' Or Instr(a.ContentTitle, {key})>0) Order By AnnounceTime Desc")
+Set rs = Easp.Db.GetRS("Select a.ContentID, a.ContentClassID, b.ContentClassName, a.ContentTitle, a.AnnounceTime, b.SortLevel From EC_Content a Inner join EC_ContentClass b On a.ContentClassID = b.ContentClassID Where a.AnnounceTime<=NOW() And ({classid}='' Or a.ContentClassID = {classid}) And ({key}='' Or a.ContentTitle Like {likeKey}) Order By AnnounceTime Desc")
 If Easp.Has(rs) Then
   'Easp.Console rs
   While Not rs.Eof
                 %>
                 <tr>
                   <td><input type="checkbox" name="id" value="<%=rs("ContentID")%>"></td>
-                  <td><%= Easp.Str.Format("<a href=""?classid={ContentClassID}"">[ {ContentClassName} ]</a>", rs)%></td>
-                  <td><%= rs("ContentTitle")%></td>
+                  <td><%= Easp.Str.Format("<a href=""?classid={ContentClassID}"">[ {ContentClassName:EHtmlEncode(%s)} ]</a>", rs)%></td>
+                  <td><%= Easp.Str.HtmlEncode(rs("ContentTitle"))%></td>
                   <td><%= Easp.Date.Format(rs("AnnounceTime"), "y-mm-dd")%></td>
                   <td>
-                    <button type="button" class="btn btn-primary btn-sm btn-edit-info" data-toggle="modal" data-target="#win-new-info" infoid="<%=rs("ContentID")%>"><span class="glyphicon glyphicon-plus"></span> 编辑</button>
+                    <button type="button" class="btn btn-primary btn-sm btn-edit-info" data-toggle="modal" data-target="#win-new-info" infoid="<%=rs("ContentID")%>"><span class="glyphicon glyphicon-edit"></span> 编辑</button>
                     <a href="?action=delete&id=<%=rs("ContentID")%>" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-minus-sign"></span> 删除</a>
                   </td>
                 </tr><%

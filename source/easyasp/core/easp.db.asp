@@ -304,8 +304,8 @@ Class EasyASP_Db
         End If
         '取数据类型，不设置默认为varchar类型
         paramType(i) = GetParameterType(Easp.Str.GetColonValue(sqlParam))
-        '取参数的原始值
-        paramValue(i) = Easp.Var(param(i))
+        '取参数的原始值，并处理静态标签嵌套
+        paramValue(i) = ReplaceStasicParameter(Easp.Var(param(i)))
         '替换输出SQL语句中的参数为值
         outSql = Replace(outSql, match(i), FormatValue(paramValue(i), paramType(i)))
       Next
@@ -1177,6 +1177,7 @@ Class EasyASP_Db
     Dim matches, match
     Set matches = Easp.Str.Match(sql, "\{=(.+?)\}")
     For Each match In matches
+      'Easp.Consoel match
       sql = Replace(sql, match, ReplaceStasicParameter(Easp.Var(match.SubMatches(0))), 1, -1, 1)
     Next
     ReplaceStasicParameter = sql
