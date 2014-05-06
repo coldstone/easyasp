@@ -19,7 +19,7 @@ Class EasyASP_Error
     i_errNum    = ""
     i_delay     = 5
     s_title     = Easp.Lang("error-title")
-    b_redirect  = True
+    b_redirect  = False
     b_console   = True
     b_continue  = False
     s_url       = "javascript:history.go(-1)"
