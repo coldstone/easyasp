@@ -4,7 +4,7 @@ Dim File,F
 Easp.Upload.AllowFileTypes = "*.*"
 Easp.Upload.AllowMaxFileSize = "1MB"
 Easp.Upload.AllowMaxSize = "20mb"
-Easp.Upload.CharSet = "GB2312"
+Easp.Upload.CharSet = "utf-8"
 if not Easp.Upload.GetData() then 
 	Easp.Println Easp.Upload.Description
 else
