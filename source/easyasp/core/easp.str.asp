@@ -123,7 +123,7 @@ Class EasyASP_String
           '日期
           Case "D"
             If isDate(v) Then
-              s = o_re.ReCase(s, ru, DateTime(v,Mid(kind,2)))
+              s = o_re.ReCase(s, ru, Easp.Date.Format(v,Mid(kind,2)))
             End If
           '转大写
           Case "U"
@@ -762,7 +762,7 @@ Class EasyASP_String
     End If
   End Function
   Private Function getArrayDimension(ByVal aReallydo)
-    On Error Resume Next
+    On Error Resume Next '##Do not delete or comment
     getArrayDimension = 0
     If IsArray(aReallydo) Then
       Dim i, iReallyDo
@@ -948,7 +948,26 @@ Class EasyASP_String
     Set StringBuilder = New EasyASP_Str_StringBuilder
   End Function
   '检查字符串
-  'Function Check(ByVal s, ByVal Rule, ByVal Require, ByVal ErrMsg)
+  Public Function Check(ByVal string, ByVal rule, ByVal isRequire)
+    Dim b_pass, i, a_rule
+    Check = False
+    If isRequire And Easp.IsN(string) Then
+      Exit Function
+    Else
+      If Left(rule, 1) = ":" Then
+        a_rule = Split(Mid(rule, 2), "||")
+        For i = 0 To Ubound(a_rule)
+          If Test(string, a_rule(i)) Then Check = True : Exit For
+        Next
+        Exit Function
+      Else
+        If Not Test(string, rule) Then Exit Function
+      End If
+    End If
+    Check = True
+  End Function
+  '检查字符串
+  'Public Function Check(ByVal s, ByVal Rule, ByVal Require, ByVal ErrMsg)
   '  Dim tmpMsg, s_msg, i
   '  tmpMsg = Replace(ErrMsg,"\:",chr(0))
   '  s_msg = Easp.IIF(Instr(tmpMsg,":")>0, Split(tmpMsg,":"), Array("有项目不能为空",tmpMsg))
