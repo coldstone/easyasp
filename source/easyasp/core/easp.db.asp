@@ -305,7 +305,7 @@ Class EasyASP_Db
         '取数据类型，不设置默认为varchar类型
         paramType(i) = GetParameterType(Easp.Str.GetColonValue(sqlParam))
         '取参数的原始值，并处理静态标签嵌套
-        paramValue(i) = ReplaceStasicParameter(Easp.Var(param(i)))
+        paramValue(i) = Easp.Var(param(i))
         '替换输出SQL语句中的参数为值
         outSql = Replace(outSql, match(i), FormatValue(paramValue(i), paramType(i)))
       Next
@@ -1174,14 +1174,16 @@ Class EasyASP_Db
 
   '替换SQL语句中的静态变量 {=Easp变量名}
   Private Function ReplaceStasicParameter(ByVal sql)
-    Dim matches, match
-    Set matches = Easp.Str.Match(sql, "\{=(.+?)\}")
-    For Each match In matches
-      'Easp.Consoel match
-      sql = Replace(sql, match, ReplaceStasicParameter(Easp.Var(match.SubMatches(0))), 1, -1, 1)
-    Next
+    Dim matches, Match
+    If Instr(sql, "{=") Then
+      Set matches = Easp.Str.Match(sql, "\{=(.+?)\}")
+      For Each match In matches
+        'Easp.Consoel match
+        sql = Replace(sql, match, Easp.Var(match.SubMatches(0)), 1, -1, 1)
+      Next
+      Set matches = Nothing
+    End If
     ReplaceStasicParameter = sql
-    Set matches = Nothing
   End Function
 
   '转换sql参数类型为数值

@@ -20,6 +20,10 @@ Class EasyASP_Var
     'Call getVars()
   End Sub
   Private Sub Class_Terminate()
+    Dim key
+    For Each key In o_var
+      If IsObject(o_var(key)) Then Set o_var(key) = Nothing
+    Next
     Set o_var = Nothing
   End Sub
   
@@ -32,22 +36,32 @@ Class EasyASP_Var
   '  5.Request.ServerVariables
   '  即如有同名的变量，在上一个集合中找到则立即返回值，不再在下一集合中查找
   Public Default Property Get Var(ByVal key)
+    Dim s_var
     If Not b_loaded Then Call getVars()
     If o_var.Exists(key) Then
-      Var = o_var(key)
+      s_var = o_var(key)
     ElseIf o_var.Exists("get." & key) Then
-      Var = o_var("get." & key)
+      s_var = o_var("get." & key)
     ElseIf o_var.Exists("post." & key) Then
-      Var = o_var("post." & key)
+      s_var = o_var("post." & key)
     ElseIf Easp.Str.IsSame(key,"easp.newid") Then
-      Var = Easp.NewID()
+      s_var = Easp.NewID()
     ElseIf o_var.Exists("easp." & key) Then
-      Var = o_var("easp." & key)
+      s_var = o_var("easp." & key)
     ElseIf Easp.Str.StartsWith(key, "server.") Then
-      Var = Request.ServerVariables(Mid(key,8))
+      s_var = Request.ServerVariables(Mid(key,8))
     Else
-      Var = ""
+      s_var = ""
     End If
+    If Instr(s_var, "{=") Then
+      Dim matches, match
+      Set matches = Easp.Str.Match(s_var, "\{=(.+?)\}")
+      For Each match In matches
+        s_var = Replace(s_var, match, Me.Var(match.SubMatches(0)), 1, -1, 1)
+      Next
+      Set matches = Nothing
+    End If
+    Var = s_var
   End Property
   Public Property Let Var(ByVal key, ByVal value)
     If Not b_loaded Then Call getVars()

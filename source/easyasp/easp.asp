@@ -724,6 +724,20 @@ Class EasyASP
     End If
   End Sub
 
+  '表单验证
+  Public Function GetVal(ByVal string)
+    Set GetVal = New EasyASP_Validation
+    GetVal.Source = Easp.Get(string)
+  End Function
+  Public Function PostVal(ByVal string)
+    Set PostVal = New EasyASP_Validation
+    PostVal.Source = Easp.Post(string)
+  End Function
+  Public Function VarVal(ByVal string)
+    Set VarVal = New EasyASP_Validation
+    VarVal.Source = Easp.Var(string)
+  End Function
+
   '将对象或者数组转换为Json字符串
   Public Function Encode(ByVal Object)
     Encode = Json.ToString(Object)
@@ -753,7 +767,9 @@ Class EasyASP
 End Class
 Class EasyASP_object : End Class
 %>
+<!--#include file="core/easp.stringbuilder.asp"-->
 <!--#include file="core/easp.error.asp"-->
+<!--#include file="core/easp.validation.asp"-->
 <!--#include file="core/easp.str.asp"-->
 <!--#include file="core/easp.var.asp"-->
 <!--#include file="core/easp.console.asp"-->

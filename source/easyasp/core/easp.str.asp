@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP String Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014/04/08 20:56:13
+'## Update Date :   2014-05-12 0:38:21
 '## Description :   EasyASP String Class
 '##
 '######################################################################
@@ -51,7 +51,8 @@ Class EasyASP_String
               s = FormatReplace(s,v.Fields.Item(i+t).Name,v(i))
             Next
           '字典
-          Case "Dictionary"
+          Case "Dictionary", "EasyASP_Json_Object"
+            If TypeName(v) = "EasyASP_Json_Object" Then Set v = v.GetDictionary
             For Each k In v
               s = FormatReplace(s,k,v(k))
             Next
@@ -65,6 +66,10 @@ Class EasyASP_String
           Case "ISubMatches", "SubMatches"
             For i = 0 To v.Count - 1
               s = FormatReplace(s,i+t,v(i))
+            Next
+          Case "EasyASP_Json_Array"
+            For i = 0 To v.Length - 1
+              s = FormatReplace(s, i+t, v(i))
             Next
         End Select
       '字符串
@@ -83,6 +88,14 @@ Class EasyASP_String
       Case Else
         s = FormatReplace(s,t,v)
     End Select
+    If Instr(s, "{=") Then
+      Dim matches, m
+      Set matches = Match(s, "\{=(.+?)\}")
+      For Each m In matches
+        s = o_re.ReCase(s, m, Easp.Var(m.SubMatches(0)))
+      Next
+      Set matches = Nothing
+    End If
     s = o_re.Re(s,Chr(1),"{")
     FormatString = o_re.Re(s,Chr(0),"\")
   End Function
@@ -479,11 +492,12 @@ Class EasyASP_String
   '仅格式化HTML文本中的空格和换行
   Public Function HtmlFormat(ByVal string)
     If Has(string) Then
-      Dim m,Match : Set m = Match(string, "<([^>]+)>")
-      For Each Match In m
-         string = o_re.Re(string, Match.SubMatches(0), Replace(Match.SubMatches(0), "\s+", Chr(0)))
+      Dim matches, m
+      Set matches = Match(string, "<([^>]+)>")
+      For Each m In matches
+         string = o_re.Re(string, m.SubMatches(0), Replace(m.SubMatches(0), "\s+", Chr(0)))
       Next
-      Set m = Nothing
+      Set matches = Nothing
       string = o_re.Re(string, Chr(32), "&nbsp;")
       string = o_re.Re(string, Chr(9), "&nbsp;&nbsp;&nbsp;&nbsp;")
       string = o_re.Re(string, Chr(0), " ")
@@ -493,8 +507,8 @@ Class EasyASP_String
     HtmlFormat = string
   End Function
 
-'attr: 1-32, 34, 39, 160, 8192-8203, 12288, 65279
   '过滤HTML文本为可输出显示的内容，防止XSS攻击
+  'attr: 1-32, 34, 39, 160, 8192-8203, 12288, 65279
   Public Function HtmlSafe(ByVal string)
     If Easp.Has(string) Then
       'string = Asc2Str(string)
@@ -531,9 +545,9 @@ Class EasyASP_String
  '   string = o_re.Re(string, "&#" & i & "", "")
   'End Function
   '去除script标签
-  Private Function DropTagScript(ByVal string)
+  'Private Function DropTagScript(ByVal string)
     'If Test(string, "<script[\s\S]+<")
-  End Function
+  'End Function
   '去除属性中的威胁script
   Private Function DropAttrScript(ByRef string)
     Dim o_matches, m, s
@@ -943,55 +957,16 @@ Class EasyASP_String
     Next
     Full2Half = string
   End Function
-
+  '新建一个字符串构建类
   Public Function StringBuilder()
     Set StringBuilder = New EasyASP_Str_StringBuilder
   End Function
-  '检查字符串
-  Public Function Check(ByVal string, ByVal rule, ByVal isRequire)
-    Dim b_pass, i, a_rule
-    Check = False
-    If isRequire And Easp.IsN(string) Then
-      Exit Function
-    Else
-      If Left(rule, 1) = ":" Then
-        a_rule = Split(Mid(rule, 2), "||")
-        For i = 0 To Ubound(a_rule)
-          If Test(string, a_rule(i)) Then Check = True : Exit For
-        Next
-        Exit Function
-      Else
-        If Not Test(string, rule) Then Exit Function
-      End If
-    End If
-    Check = True
+  '表单验证
+  Public Function Validate(ByVal string)
+    Set Validate = New EasyASP_Validation
+    Validate.Source = string
   End Function
-  '检查字符串
-  'Public Function Check(ByVal s, ByVal Rule, ByVal Require, ByVal ErrMsg)
-  '  Dim tmpMsg, s_msg, i
-  '  tmpMsg = Replace(ErrMsg,"\:",chr(0))
-  '  s_msg = Easp.IIF(Instr(tmpMsg,":")>0, Split(tmpMsg,":"), Array("有项目不能为空",tmpMsg))
-  '  If Require And IsN(s) Then
-  '    If Instr(tmpMsg,":")>0 Then
-  '      Alert Replace(s_msg(0),chr(0),":") : Exit Function
-  '    Else
-  '      Alert Replace(tmpMsg,chr(0),":") : Exit Function
-  '    End If
-  '  End If
-  '  If Not (Require = 0 And isN(s)) Then
-  '    If Left(Rule,1)=":" Then
-  '      pass = False
-  '      arrRule = Split(Mid(Rule,2),"||")
-  '      For i = 0 To Ubound(arrRule)
-  '        If Test(s,arrRule(i)) Then pass = True : Exit For
-  '      Next
-  '      If Not pass Then Alert(Replace(s_msg(1),chr(0),":")) : Exit Function
-  '    Else
-  '      If Not Test(s,Rule) Then Alert(Replace(s_msg(1),chr(0),":")) : Exit Function
-  '    End If
-  '  End If
-  '  Check = s
-  'End Function
+    
 End Class
 '重写Replace函数
 Class EasyASP_StringReplace
@@ -1003,125 +978,6 @@ Class EasyASP_StringReplace
   End Function
   Public Function ReFull(ByVal string, ByVal find, ByVal replaceWith, ByVal start, ByVal count, ByVal compare)
     ReFull = Replace(string, find, replaceWith, start, count, compare)
-  End Function
-End Class
-'字符串构造类
-Class EasyASP_Str_StringBuilder
-  Private a_sb(), i_index, a_sbi(), i_indexi
-  Private i_length, b_line, b_insert
-  Private Sub Class_Initialize()
-    i_index  = 0
-    i_indexi = 999
-    i_length = 999
-    ReDim a_sb(i_length)
-    ReDim a_sbi(i_length)
-    b_line = False
-    b_insert = False
-  End Sub
-  Private Sub Class_Terminate()
-  End Sub
-  '是否附加为新行
-  Public Property Let NewLine(ByVal bool)
-    b_line = bool
-  End Property
-  '设置容量
-  Public Property Let Capacity(ByVal number)
-    i_length = number - 1
-    ReDim a_sb(i_length)
-  End Property
-  '返回当前容量
-  Public Property Get Capacity
-    Capacity = i_length + 1
-  End Property
-  
-  '附加字符串
-  Public Sub Append(ByVal string)
-    AppendString string, False, ""
-  End Sub
-  '以新行方式附加字符串
-  Public Sub AppendLine(ByVal string)
-    AppendString string, True, ""
-  End Sub
-  '带格式化附加字符串
-  Public Sub AppendFormat(ByVal string, ByVal format)
-    AppendString string, False, format
-  End Sub
-  '附加字符串原型
-  Private Sub AppendString(ByVal string, ByVal newLine, ByVal format)
-    Dim s_tmp, b_format
-    If i_index >= i_length Then
-      s_tmp = Join(a_sb, "")
-      ReDim a_sb(i_length)
-      a_sb(0) = s_tmp
-      i_index = 1
-    End If
-    If IsArray(format) Or IsObject(format) Then
-      b_format = True
-    ElseIf format > "" Then
-      b_format = True
-    End If
-    If b_format Then
-      a_sb(i_index) = Easp.Str.Format(string, format)
-    Else
-      a_sb(i_index) = string
-    End If
-    i_index = i_index + 1
-    If newLine Or b_line Then
-      a_sb(i_index) = vbCrLf
-      i_index = i_index + 1
-    End If
-  End Sub
-
-  '从开始处插入字符串
-  Public Sub Insert(ByVal string)
-    InsertString string, False, ""
-  End Sub
-  '以新行方式从开始处插入字符串
-  Public Sub InsertLine(ByVal string)
-    InsertString string, True, ""
-  End Sub
-  '从开始处插入带格式化字符串
-  Public Sub InsertFormat(ByVal string, ByVal format)
-    InsertString string, True, format
-  End Sub
-  '从开始处插入字符串原型
-  Private Sub InsertString(ByVal string, ByVal newLine, ByVal format)
-    Dim s_tmp, b_format
-    If i_indexi <= 0 Then
-      s_tmp = Join(a_sbi, "")
-      ReDim a_sbi(i_length)
-      a_sbi(i_length) = s_tmp
-      i_indexi = i_length - 1
-    End If
-    If newLine Or b_line Then
-      a_sbi(i_indexi) = vbCrLf
-      i_indexi = i_indexi - 1
-    End If
-    If IsArray(format) Or IsObject(format) Then
-      b_format = True
-    ElseIf format > "" Then
-      b_format = True
-    End If
-    If b_format Then
-      a_sbi(i_indexi) = Easp.Str.Format(string, format)
-    Else
-      a_sbi(i_indexi) = string
-    End If
-    i_indexi = i_indexi - 1
-    If Not b_insert Then b_insert = True
-  End Sub
-  '清除所有字符
-  Public Sub Clear()
-    ReDim a_sb(i_length)
-    If b_insert Then ReDim a_sbi(i_length)
-  End Sub
-  '输出字符串
-  Public Default Function ToString()
-    If b_insert Then
-      ToString = Join(Array(Join(a_sbi, ""), Join(a_sb, "")), "")
-    Else
-      ToString = Join(a_sb, "")
-    End If
   End Function
 End Class
 %>

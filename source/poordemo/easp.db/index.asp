@@ -4,11 +4,15 @@ Dim result, act
 act = LCase(Easp.Get("action"))
 Select Case act
   Case "savenew", "saveedit"  '添加或编辑内容
-    '在这里编写你的服务端表单验证代码（此实例省略）
+    '在这里编写你的服务端表单验证代码
+    Call Easp.PostVal("title").Name("标题").Required.Alert
+    Call Easp.PostVal("classid").Name("所属类别").Required.Maxlength(10).Test("^\w+$").Msg("%n不是正确的ID序号").Alert
+    Easp.Var("post.announcetime") = Easp.VarVal("post.announcetime").Name("发布时间").Default(Now()).IsDate.Alert
+    Easp.PostVal("content").Name("内容").Required.Alert
     '此处仅作简单的空值判断
-    If Easp.IsN(Easp.Var("post.title")) Or Easp.IsN(Easp.Var("post.classid")) Or Easp.IsN(Easp.Var("post.announcetime")) Or Easp.IsN(Easp.Var("post.content")) Then
-      Easp.RR "?info=" & act & "error"
-    End If
+    'If Easp.IsN(Easp.Var("post.title")) Or Easp.IsN(Easp.Var("post.classid")) Or Easp.IsN(Easp.Var("post.announcetime")) Or Easp.IsN(Easp.Var("post.content")) Then
+    '  Easp.RR "?info=" & act & "error"
+    'End If
     If act = "savenew" Then
       '添加到数据库
       result = Easp.Db.Ins("EC_Content", "ContentID:{easp.newid}, ContentClassID:{post.classid}, ContentTitle:{title}, AnnounceTime:{announcetime},ContentText:{content}")
