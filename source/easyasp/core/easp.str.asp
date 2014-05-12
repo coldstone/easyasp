@@ -491,7 +491,7 @@ Class EasyASP_String
   
   '仅格式化HTML文本中的空格和换行
   Public Function HtmlFormat(ByVal string)
-    If Has(string) Then
+    If Easp.Has(string) Then
       Dim matches, m
       Set matches = Match(string, "<([^>]+)>")
       For Each m In matches
