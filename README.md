@@ -12,6 +12,7 @@ EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌÐòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊý»¯²éÑ
 ###EasyASP µÄ²¿·Ö¹¦ÄÜÌØµã
 * [EASP] ´óÁ¿·á¸»µÄ×Ö·û´®´¦Àí¡¢ÕýÔò´¦Àí¡¢ÈÕÆÚÊ±¼ä¡¢ÊýÖµ¸ñÊ½»¯¼°ÆäËüÍ¨ÓÃº¯Êý¡£
 * [EASP] ÊµÏÖ¸ßÐÔÄÜµÄ×Ö·û´®¹¹ÔìÀà StringBuilder ¡£
+* [EASP] Ç¿´óµÄ±íµ¥ÑéÖ¤¹¦ÄÜ£¬²ÉÓÃÁ´Ê½²Ù×÷£¬ÄÚÖÃ³¬¹ý30ÖÖÑéÖ¤¹æÔò£¬¿ÉÁé»îÑéÖ¤¸÷ÖÖÀàÐÍÊý¾Ý£¬Ö§³Ö¶àÖÖ·½Ê½×Ô¶¨Òå¡£
 * [EASP] ¼òµ¥¿ì½ÝµÄ Cookies ºÍ Application ¶ÁÐ´¡£
 * [EASP] Ö§³ÖÎ±¾²Ì¬£¨Î±Rewrite£©£¬ÇÒ¶ÔÒÑ¿ª·¢µÄ³ÌÐòÎÞÓ°Ïì¡£
 * [EASP] ÊµÏÖASPÎÄ¼þµÄ¶¯Ì¬ÔØÈë£¬²¢Ö§³ÖÎÞÏÞ¼¶µÄASPÔ­Éúinclude¡£
@@ -22,7 +23,7 @@ EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌÐòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊý»¯²éÑ
 * [Êý¾Ý¿â] ÄÜ·½±ãµÄÊµÏÖÒ»¸ö»ò¶à¸öÊý¾Ý¿âµÄ¶Á¡¢Ôö¡¢É¾¡¢¸ÄµÈ¿ØÖÆ²Ù×÷£¬¿ÉÇ¶Ì×±êÇ©Ê½µÄ²ÎÊý²Ù×÷Ò×ÓÃµ½ÁîÈË·¢Ö¸¡£
 * [Êý¾Ý¿â] Ìá¹©¸ßÐ§µÄÅúÁ¿²åÈë¡¢É¾³ý¡¢¸üÐÂ£¬²¢´øÓÐÊÂÎñ´¦ÀíÖ§³Ö¡£
 * [Êý¾Ý¿â] Êý¾Ý¿â²éÑ¯Ê¹ÓÃÈ«²ÎÊý»¯£¬EasyASP µÄÓÅÐãÉè¼ÆÈÃÄã´ó²¿·ÖÇé¿öÏÂ²»ÓÃ¿¼ÂÇÊý¾Ý×Ö¶ÎµÄÀàÐÍ£¬Ò²ÍêÈ«±ÜÃâÁËSQL×¢ÈëµÄ·çÏÕ¡£
-* [Êý¾Ý¿â] ×Ô´ø¼òµ¥¸ßÐ§µÄ·ÖÒ³¹¦ÄÜ£¬ÓµÓÐ¹¦ÄÜ·á¸»µÄ¿ÉÍêÈ«×Ô¶¨Òå·ç¸ñÅäÖÃ¼°µ÷ÓÃ£¬ÄÚÖÃ ''bootstrap'' ·ÖÒ³ÑùÊ½¡£
+* [Êý¾Ý¿â] ×Ô´ø¼òµ¥¸ßÐ§µÄ·ÖÒ³¹¦ÄÜ£¬ÓµÓÐ¹¦ÄÜ·á¸»µÄ¿ÉÍêÈ«×Ô¶¨Òå·ç¸ñÅäÖÃ¼°µ÷ÓÃ£¬ÄÚÖÃ `bootstrap` ·ÖÒ³ÑùÊ½¡£
 * [Êý¾Ý¿â] ×Ô¶¯ÅÐ¶ÏÊý¾Ý¿âÀàÐÍ¼°°æ±¾ºÅ£¬²¢ÄÜ¸ù¾ÝÊý¾Ý¿âµÄ²»Í¬ÀàÐÍ²»Í¬°æ±¾×Ô¶¯ÓÅ»¯SQL²éÑ¯Óï¾ä¡£
 * [Êý¾Ý¿â] ¼ÇÂ¼¼¯¿ÉÒÔºÜ·½±ãµÄ×ª»»ÎªJson¸ñÊ½Êý¾Ý¡£
 * [¿ØÖÆÌ¨] ¶À´´µÄ¿ØÖÆÌ¨Ö§³ÖÈÎÒâ ASP ±äÁ¿µÄµ÷ÊÔÓë¸ú×Ù¡£
@@ -35,7 +36,7 @@ EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌÐòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊý»¯²éÑ
 * [XML] Ö§³Ö±¾µØ¼°Ô¶³Ì XML ÎÄµµ½âÎö£¬ÊµÏÖ·Â jQuery Ñ¡ÔñÆ÷£¬½Úµã²Ù×÷ÎÞÑ¹Á¦¡£
 * [XML] Ìá¹©µ÷ÓÃ WebService µÄÊ¾Àý¡£
 * [»º´æ] Ö§³ÖÄÚ´æ»º´æºÍÎÄ¼þ»º´æ£¬Ö§³ÖÖ±½Ó»º´æ¼ÇÂ¼¼¯¡£
-* [ÉÏ´«] »ñÊÚÈ¨ÄÚ½¨°¬¶÷ÎÞ×é¼þÉÏ´«(MoLibUpload)¡ª¡ªASPÉÏ´«½çÖÕ½áÕß¡£
+* [ÉÏ´«] »ñÊÚÈ¨ÄÚ½¨°¬¶÷ÎÞ×é¼þÉÏ´«(`MoLibUpload`)¡ª¡ªASPÉÏ´«½çÖÕ½áÕß¡£
 * [¹¤¾ß] Ìá¹©×¨ÓÃÎ±¾²Ì¬¹æÔò²âÊÔ¹¤¾ß¡£
 * [¹¤¾ß] Ìá¹© Dreamweaver / EverEdit / EditPlus µÈ±à¼­Æ÷µÄ´úÂë¸ßÁÁ¼°´úÂëÖÇÄÜÌáÊ¾²å¼þ¡£
 * [¹¤¾ß] ÓµÓÐ¸ßÈËÆøµÄÎÄµµÉçÇø£¬²¢ÓÐ´óÁ¿ÓÅÐãµÄÎÄµµ±à¼­Ìá¹©·á¸»µÄ´øÊ¾ÀýµÄAPIÎÄµµÖ§³Ö¡£
