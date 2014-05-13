@@ -166,7 +166,7 @@ Class EasyASP_Json
           index = index + 1
             Char = Mid(str, index, 1)
             Select Case (Char)
-              Case """", "\\", "/", "'"
+              Case """", "\", "/", "'"
                 SB.Append Char
                 index = index + 1
               Case "b"
@@ -386,7 +386,7 @@ Class EasyASP_Json_Object
       End If
       If Err.Number<>0 Then
         If Easp.Debug Then
-          Easp.Error.Function = "JsonObject.Get"
+          Easp.Error.FunctionName = "JsonObject.Get"
           Easp.Error.Detail = key
           Easp.Error.Raise "error-json-wrong-key"
         End If
@@ -425,7 +425,7 @@ Class EasyASP_Json_Object
     End If
     If Err.Number<>0 Then
       If Easp.Debug Then
-        Easp.Error.Function = "JsonObject.Put"
+        Easp.Error.FunctionName = "JsonObject.Put"
         Easp.Error.Detail = Array(key, "(" & TypeName(value) & ") " & Easp.Str.ToString(value))
         Easp.Error.Raise "error-json-create-json"
       End If
