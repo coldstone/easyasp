@@ -2,7 +2,7 @@
 '#################################################################################
 '## easp.trace.asp
 '## ------------------------------------------------------------------------------
-'##  Feature      : EasyAsp Variable Tracing Plugin
+'##  Feature      : EasyASP Variable Tracing Plugin
 '##  Version      : v1.3
 '##  For EasyASP  :  3.0+
 '##  Author       : Coldstone(coldstone[at]qq.com)
@@ -25,7 +25,7 @@
 '##         Easp.Ext("Trace").TraceAll(variable)
 '##       特别感谢：Jorkin提供Trace函数原型。
 '#################################################################################
-Class EasyAsp_Trace
+Class EasyASP_Trace
 
 	Private s_author, s_version, tpl
 
@@ -48,7 +48,7 @@ Class EasyAsp_Trace
 		Version = s_version
 	End Property
 	Public Function [New]
-		Set [New] = New EasyAsp_Trace
+		Set [New] = New EasyASP_Trace
 	End Function
 	'测试变量
 	Public Default Sub Trace(ByVal o)
@@ -316,7 +316,7 @@ Class EasyAsp_Trace
 								j = j + 1
 							Next
 						End If
-					Case "EasyAsp_List"
+					Case "EasyASP_List"
 						tpl "type", "Easp数组对象(List)"
 						If o.Size = 0 Then
 							tpl.TagStr "table", GetTable(4)

@@ -833,7 +833,7 @@ Class EasyASP_List
   
   '将数组转换成用逗号隔开的字符串
   Public Function ToString()
-    ToString = J(",")
+    ToString = Join(",")
   End Function
   
   '取出为普通数组(无Hash标识的普通数组)
