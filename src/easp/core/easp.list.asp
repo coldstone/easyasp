@@ -706,7 +706,7 @@ Class EasyAsp_List
 	End Function
 	'For Sort & Search & SearchNot
 	Private Sub AddHash__(ByVal arr)
-		Dim tmp
+		Dim tmp, i
 		If o_hash.Count > 0 Then o_hash.RemoveAll
 		For i = 0 To Ubound(arr)
 			'如果结果中有Hash下标
