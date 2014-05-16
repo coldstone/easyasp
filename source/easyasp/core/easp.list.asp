@@ -175,7 +175,7 @@ Class EasyASP_List
       Next
       a_list.SetArray a
     Else
-			arr = Split(a, " ")
+			arr = Split(a)
 			a_list.SetArray arr
 			Size = a_list.Length
 			If t = 0 Then Exit Sub
@@ -184,12 +184,12 @@ Class EasyASP_List
 				For i = 0 To Ubound(arr)
 					'如果此元素是Hash下标
 					If Instr(arr(i),":")>0 Then
-						j = Easp.CLeft(arr(i),":")
+						j = Easp.Str.GetName(arr(i),":")
 						If Not o_map.Exists(j) Then
 							o_map.Add i, j
 							o_map.Add j, i
 						End If
-						arr(i) = Easp.CRight(arr(i),":")
+						arr(i) = Easp.Str.GetValue(arr(i),":")
 					End If
 				Next
 			  a_list.SetArray arr
