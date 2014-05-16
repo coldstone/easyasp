@@ -344,7 +344,7 @@ Class EasyASP_Validation
   '验证验证码输入
   Public Function SameSession(ByVal string)
     Set SameSession = NewValidation()
-    If Easp.Has(s_source) And Not Easp.Str.IsSame(s_source, Session(string)) Then
+    If Not Easp.Str.IsSame(s_source, Session(string)) Then
       If Easp.IsN(s_name) Then
         SameSession.NameString = Easp.Lang("val-verify")
       End If
