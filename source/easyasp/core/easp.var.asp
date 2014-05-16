@@ -53,13 +53,15 @@ Class EasyASP_Var
     Else
       s_var = ""
     End If
-    If Instr(s_var, "{=") Then
-      Dim matches, match
-      Set matches = Easp.Str.Match(s_var, "\{=(.+?)\}")
-      For Each match In matches
-        s_var = Replace(s_var, match, Me.Var(match.SubMatches(0)), 1, -1, 1)
-      Next
-      Set matches = Nothing
+    If Not IsArray(s_var) Then
+      If Instr(s_var, "{=") Then
+        Dim matches, match
+        Set matches = Easp.Str.Match(s_var, "\{=(.+?)\}")
+        For Each match In matches
+          s_var = Replace(s_var, match, Me.Var(match.SubMatches(0)), 1, -1, 1)
+        Next
+        Set matches = Nothing
+      End If
     End If
     Var = s_var
   End Property
