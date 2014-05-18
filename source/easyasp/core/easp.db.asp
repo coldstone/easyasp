@@ -272,14 +272,17 @@ Class EasyASP_Db
   '执行SQL原型
   Private Function ExecuteSql(ByRef conn, ByVal sql, ByVal executeType)
     Dim cmd, match, matchCount, i, affectedRows, currentCursor, sTimer
-    Dim queryType, sqlParam, outSql
+    Dim o_sql, queryType, sqlParam, outSql
     Dim param(), paramValue(), paramType(), inOrOut()
     sTimer = Timer()
     '判断是否是查询语句
     If Easp.Str.IsSame(Left(sql, 7),"select ") Then queryType = 1
+    '判断是否调用存储过程或函数
+    If Easp.Str.IsInList("call ,exec ", Left(sql, 5)) Then queryType = 4
     sql = ReplaceStasicParameter(sql)
     sql = ReplaceNewId(sql)
     outSql = sql
+    o_sql = sql
     '查找参数标签
     Set match = Easp.Str.Match(sql, "\{(.+?)\}")
     matchCount = match.Count-1
@@ -295,13 +298,19 @@ Class EasyASP_Db
         sqlParam = match(i).SubMatches(0)
         '取参数名
         param(i) = Easp.Str.GetColonName(sqlParam)
+        'Easp.Println "p & i::" & param(i) & "---" & inOrOut(i)
+        If Left(param(i),2)="@@" Then
+        '如果既是输入参数又是输出参数
+          param(i) = Mid(param(i), 3)
+          inOrOut(i) = 3
+        ElseIf Left(param(i),1)="@" Then
         '如果是输出参数
-        If Left(param(i),1)="@" Then
           param(i) = Mid(param(i), 2)
           inOrOut(i) = 2
         Else
           inOrOut(i) = 1
         End If
+        'Easp.Println "p & i::" & param(i) & "---" & inOrOut(i)
         '取数据类型，不设置默认为varchar类型
         paramType(i) = GetParameterType(Easp.Str.GetColonValue(sqlParam))
         '取参数的原始值，并处理静态标签嵌套
@@ -326,52 +335,141 @@ Class EasyASP_Db
       .CommandText = sql
       .CommandType = 1
       .Prepared = True
-      '如果有返回值
-      '.Parameters.append .CreateParameter("return",3,4)
-      '如果sql中包含参数
-      If matchCount>=0 Then
-        For i = 0 To matchCount
-          If inOrOut(i) = 1 Then
-          '输入参数
+      If queryType = 4 Then
+      '如果是存储过程
+        Dim spName, sp, spParams, spParam, spParamValue, spParamType
+        Dim spParamInorOut, j
+        spName = Split(o_sql)(1)
+        .CommandText = spName
+        .CommandType = 4
+        '添加返回值参数
+        .Parameters.append .CreateParameter("sp_return", 3, 4)
+        '解析参数
+        spParam = Trim(Easp.Str.GetValue(o_sql, spName))
+        If Easp.Has(spParam) Then
+        '如果存储过程有参数
+          spParams = Split(spParam, ",")
+          'Easp.PrintlnString spParams
+          For i = 0 To UBound(spParams)
+            '处理非{var}参数值
+            spParam = Trim(spParams(i))
+            If Left(spParam, 1) = "'" And Right(spParam, 1) = "'" Then
+              spParamValue = Mid(spParam, 2, Len(spParam) -2)
+            End If
+            spParamType = 200
+            spParamInorOut = 1
+            '处理{var}参数
+            If Left(spParam, 1) = "{" And Right(spParam, 1) = "}" Then
+              '取出参数名
+              spParam = Mid(spParam, 2, Len(spParam) -2)
+              spParam = Easp.Str.GetColonName(spParam)
+              'Easp.Println spParam
+              '取出参数的值和类型
+              If matchCount>=0 Then
+                For j = 0 To matchCount
+                  If Easp.Str.IsInList(param(j) & ",@" & param(j) & ",@@" & param(j), spParam) Then
+                  '匹配到参数
+                    spParamValue = paramValue(j)
+                    spParamType = paramType(j)
+                    spParamInorOut = inOrOut(j)
+                    Exit For
+                  End If
+                Next
+              End If
+            End If
+            If spParamInorOut = 1 Or spParamInorOut = 3 Then
+            '输入参数
+              '如果是数值型/日期型而且为空，则输入NULL值
+              If InStr(",20,11,6,5,7,135,3,131,4,2,16,128,205,204,", "," & spParamType & ",") > 0 And Easp.IsN(spParamValue) Then spParamValue = Null
+              If IsNumeric(spParamValue) And spParamType = 200 Then spParamType = 5
+              If IsDate(spParamValue) And spParamType = 200 Then spParamType = 135
+              .Parameters.Append .CreateParameter(spParam, spParamType, spParamInorOut, 8000, spParamValue)
+              'Easp.PrintlnString Array(spParam, spParamType, spParamInorOut, 8000, spParamValue)
+            Else
+            '输出参数
+              .Parameters.Append .CreateParameter(spParam, spParamType, 2, 8000)
+              'Easp.PrintlnString Array(spParam, spParamType, 2, 8000)
+            End If
+          Next
+        End If
+        Dim rsState, list, pKey, outParams, returnValue
+        conn.CursorLocation = 3
+        Set sp = .Execute(affectedRows, , 4)
+        rsState = sp.State
+        'Easp.Println "sp.State::" & sp.State
+        'Easp.Println "sp.RecordCount::" & sp.RecordCount
+        '关闭了记录集才能取输出参数
+        If rsState = 1 Then sp.Close
+        Set List = Easp.Json.NewObject
+        '取输出参数
+        Set outParams = Easp.Json.NewObject
+        For i = 0 To .Parameters.Count -1
+          If i = 0 Then returnValue = .Parameters(i).Value
+          'If Left(.Parameters(i).Name, 1) = "@" Then
+          outParams(.Parameters(i).Name) = .Parameters(i).Value
+        Next
+        '写入受影响的行数
+        List.Put "rows", affectedRows
+        '写入返回值
+        List.Put "return", returnValue
+        '写入输出参数
+        List.Put "out", outParams.GetDictionary
+        Set outParams = Nothing
+        '写入记录集
+        If rsState = 1 Then
+          sp.Open
+          List.Put "rs", sp.Clone
+        Else
+          List.Put "rs", Null
+        End If
+        Set ExecuteSql = List.GetDictionary
+        Set List = Nothing
+        Easp.Db.Close(sp)
+        .ActiveConnection = Nothing
+        i_queryTimes = i_queryTimes + 1
+        If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
+          Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.Lang("db-return") & "：" & returnValue & ")"
+        End If
+      Else
+        If matchCount>=0 Then
+        '如果sql中包含参数
+          For i = 0 To matchCount
             '如果是数值型/日期型而且为空，则输入NULL值
-            If InStr(",20,11,6,5,7,135,3,131,4,2,16,128,205,204,", ","&paramType(i)&",")>0 And Easp.IsN(paramValue(i)) Then paramValue(i) = Null
+            If InStr(",20,11,6,5,7,135,3,131,4,2,16,128,205,204,", ","&paramType(i)&",") > 0 And Easp.IsN(paramValue(i)) Then paramValue(i) = Null
             If IsNumeric(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 5
             If IsDate(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 135
-            .Parameters.Append .CreateParameter("param"&i, paramType(i), 1, 8000, paramValue(i))
-          Else
-          '输出参数
-            .Parameters.Append .CreateParameter("param"&i, paramType(i), 2, 8000)
+            .Parameters.Append .CreateParameter(param(i), paramType(i), 1, 8000, paramValue(i))
+          Next
+        End If
+        If queryType = 1 Or executeType = 1 Then
+        '如果要返回记录集
+          'currentCursor = conn.CursorLocation
+          conn.CursorLocation = 3 '游标服务位置为client时才能返回正确的RecordCount
+          Set ExecuteSql = .Execute
+          .ActiveConnection = Nothing
+          i_queryTimes = i_queryTimes + 1
+          If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
+            Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.Lang("db-record-count") & "：" & ExecuteSql.RecordCount & ")"
           End If
-        Next
-      End If
-      If queryType = 1 Or executeType = 1 Then
-      '如果要返回记录集
-        'currentCursor = conn.CursorLocation
-        conn.CursorLocation = 3 '游标服务位置为client时才能返回正确的RecordCount
-        Set ExecuteSql = .Execute
-        .ActiveConnection = Nothing
-        i_queryTimes = i_queryTimes + 1
-        If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
-          Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.Lang("db-record-count") & "：" & ExecuteSql.RecordCount & ")"
-        End If
-        'conn.CursorLocation = currentCursor
-      ElseIf executeType = 2 Then
-      '如果仅返回执行成功与否
-        .Execute affectedRows, , 129
-        .ActiveConnection = Nothing
-        ExecuteSql = (affectedRows>0)
-        i_queryTimes = i_queryTimes + 1
-        If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
-          Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.IIF(ExecuteSql, Easp.Lang("db-query-success"), Easp.Lang("db-query-fail")) & "， " & Easp.Lang("db-affected-rows") & "：" & affectedRows & ")"
-        End If
-      Else'If executeType = 0 Then
-      '返回受影响的行数
-        .Execute affectedRows, , 129
-        .ActiveConnection = Nothing
-        ExecuteSql = affectedRows
-        i_queryTimes = i_queryTimes + 1
-        If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
-          Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.Lang("db-affected-rows") & "：" & affectedRows & ")"
+          'conn.CursorLocation = currentCursor
+        ElseIf executeType = 2 Then
+        '如果仅返回执行成功与否
+          .Execute affectedRows, , 129
+          .ActiveConnection = Nothing
+          ExecuteSql = (affectedRows>0)
+          i_queryTimes = i_queryTimes + 1
+          If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
+            Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.IIF(ExecuteSql, Easp.Lang("db-query-success"), Easp.Lang("db-query-fail")) & "， " & Easp.Lang("db-affected-rows") & "：" & affectedRows & ")"
+          End If
+        Else'If executeType = 0 Then
+        '返回受影响的行数
+          .Execute affectedRows, , 129
+          .ActiveConnection = Nothing
+          ExecuteSql = affectedRows
+          i_queryTimes = i_queryTimes + 1
+          If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
+            Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.Lang("db-affected-rows") & "：" & affectedRows & ")"
+          End If
         End If
       End If
     End With
@@ -415,7 +513,7 @@ Class EasyASP_Db
   Public Function Execute(ByRef conn, ByVal sql)
     On Error Resume Next
     '判断是否是查询语句
-    If Easp.Str.IsSame(Left(sql, 7),"select ") Then
+    If Easp.Str.IsSame(Left(sql, 7),"select ") Or Easp.Str.IsInList("call ,exec ", Left(sql, 5)) Then
       Set Execute = ExecuteSql(conn, sql, 1)
     Else
       Execute = ExecuteSql(conn, sql, 0)
@@ -427,7 +525,7 @@ Class EasyASP_Db
   Public Function Exec(ByVal sql)
     On Error Resume Next
     OpenConn()
-    If Easp.Str.IsSame(Left(sql, 7),"select ") Then
+    If Easp.Str.IsSame(Left(sql, 7),"select ") Or Easp.Str.IsInList("call ,exec ", Left(sql, 5)) Then
       Set Exec = ExecuteSql(o_conn, sql, 1)
     Else
       Exec = ExecuteSql(o_conn, sql, 0)
@@ -436,9 +534,9 @@ Class EasyASP_Db
   End Function
   '用默认Connection执行SQL语句，返回记录集(R)或仅返回成功与否(CUD)
   Public Function Query(ByVal sql)
-    On Error Resume Next
+    'On Error Resume Next
     OpenConn()
-    If Easp.Str.IsSame(Left(sql, 7),"select ") Then
+    If Easp.Str.IsSame(Left(sql, 7),"select ") Or Easp.Str.IsInList("call ,exec ", Left(sql, 5)) Then
       Set Query = ExecuteSql(o_conn, sql, 1)
     Else
       Query = ExecuteSql(o_conn, sql, 2)
@@ -452,7 +550,7 @@ Class EasyASP_Db
     Err.Clear
     Dim a_sql, i, i_result
     i_result = 0
-    If Easp.Str.IsSame(Left(sql, 7),"select ") Then
+    If Easp.Str.IsSame(Left(sql, 7),"select ") Or Easp.Str.IsInList("call ,exec ", Left(sql, 5)) Then
       CheckError "batchselect", "", conn, "ExecuteBatch", sql
       Exit Function
     End If
