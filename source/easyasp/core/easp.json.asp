@@ -431,6 +431,27 @@ Class EasyASP_Json_Object
       End If
     End If
   End Sub
+  '检测键值是否存在
+  Public Function Exists(ByVal key)
+    Exists = o_dic.Exists(key)
+  End Function
+  '检测键值是否存在有效值
+  Public Function Has(ByVal key)
+    Has  = Easp.Has(o_dic(key))
+  End Function
+  '移除某一元素
+  Public Sub Remove(ByVal key)
+    If o_dic.Exists(key) Then
+      If IsObject(o_dic(key)) Then Set o_dic(key) = Nothing
+      o_dic.Remove key
+    End If
+  End Sub
+  '全部清空
+  Public Sub Clear()
+    o_dic.RemoveAll()
+    Set o_dic = Nothing
+    Set o_dic = Server.CreateObject("Scripting.Dictionary")
+  End Sub
   '把Json Object对象输出为字符串
   Public Function ToString()
     ToString = Easp.Json.ToString(o_dic)
