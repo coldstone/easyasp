@@ -272,8 +272,8 @@ Class EasyASP_Db
   '执行SQL原型
   Private Function ExecuteSql(ByRef conn, ByVal sql, ByVal executeType)
     Dim cmd, match, matchCount, i, affectedRows, currentCursor, sTimer
-    Dim o_sql, queryType, sqlParam, outSql
-    Dim param(), paramValue(), paramType(), inOrOut()
+    Dim o_sql, queryType, sqlParam, sqlParamType, sqlParamSize, outSql
+    Dim param(), paramValue(), paramType(), paramSize(), inOrOut()
     sTimer = Timer()
     '判断是否是查询语句
     If Easp.Str.IsSame(Left(sql, 7),"select ") Then queryType = 1
@@ -292,6 +292,7 @@ Class EasyASP_Db
       ReDim param(matchCount)
       ReDim paramValue(matchCount)
       ReDim paramType(matchCount)
+      ReDim paramSize(matchCount)
       ReDim inOrOut(matchCount)
       For i = 0 To matchCount
         '取出参数标签内容
@@ -311,8 +312,16 @@ Class EasyASP_Db
           inOrOut(i) = 1
         End If
         'Easp.Println "p & i::" & param(i) & "---" & inOrOut(i)
+        sqlParamType = Easp.Str.GetColonValue(sqlParam)
+        paramSize(i) = 8000
         '取数据类型，不设置默认为varchar类型
-        paramType(i) = GetParameterType(Easp.Str.GetColonValue(sqlParam))
+        If Instr(sqlParamType, "(") Then
+          paramType(i) = GetParameterType(Easp.Str.GetName(sqlParamType, "("))
+          sqlParamSize = Easp.Str.GetName(Easp.Str.GetValue(sqlParamType, "("), ")")
+          If IsNumeric(sqlParamSize) Then paramSize(i) = sqlParamSize
+        Else
+          paramType(i) = GetParameterType(sqlParamType)
+        End If
         '取参数的原始值，并处理静态标签嵌套
         paramValue(i) = Easp.Var(param(i))
         '替换输出SQL语句中的参数为值
@@ -337,8 +346,8 @@ Class EasyASP_Db
       .Prepared = True
       If queryType = 4 Then
       '如果是存储过程
-        Dim spName, sp, spParams, spParam, spParamValue, spParamType
-        Dim spParamInorOut, j
+        Dim spName, sp, spParams, spParam, spParamValue
+        Dim spParamType, spParamSize, spParamInorOut, j
         spName = Split(o_sql)(1)
         .CommandText = spName
         .CommandType = 4
@@ -371,6 +380,7 @@ Class EasyASP_Db
                   '匹配到参数
                     spParamValue = paramValue(j)
                     spParamType = paramType(j)
+                    spParamSize = paramSize(j)
                     spParamInorOut = inOrOut(j)
                     Exit For
                   End If
@@ -383,12 +393,12 @@ Class EasyASP_Db
               If InStr(",20,11,6,5,7,135,3,131,4,2,16,128,205,204,", "," & spParamType & ",") > 0 And Easp.IsN(spParamValue) Then spParamValue = Null
               If IsNumeric(spParamValue) And spParamType = 200 Then spParamType = 5
               If IsDate(spParamValue) And spParamType = 200 Then spParamType = 135
-              .Parameters.Append .CreateParameter(spParam, spParamType, spParamInorOut, 8000, spParamValue)
-              'Easp.PrintlnString Array(spParam, spParamType, spParamInorOut, 8000, spParamValue)
+              .Parameters.Append .CreateParameter(spParam, spParamType, spParamInorOut, spParamSize, spParamValue)
+              'Easp.PrintlnString Array(spParam, spParamType, spParamInorOut, spParamSize, spParamValue)
             Else
             '输出参数
-              .Parameters.Append .CreateParameter(spParam, spParamType, 2, 8000)
-              'Easp.PrintlnString Array(spParam, spParamType, 2, 8000)
+              .Parameters.Append .CreateParameter(spParam, spParamType, 2, spParamSize)
+              'Easp.PrintlnString Array(spParam, spParamType, 2, spParamSize)
             End If
           Next
         End If
@@ -438,7 +448,7 @@ Class EasyASP_Db
             If InStr(",20,11,6,5,7,135,3,131,4,2,16,128,205,204,", ","&paramType(i)&",") > 0 And Easp.IsN(paramValue(i)) Then paramValue(i) = Null
             If IsNumeric(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 5
             If IsDate(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 135
-            .Parameters.Append .CreateParameter(param(i), paramType(i), 1, 8000, paramValue(i))
+            .Parameters.Append .CreateParameter(param(i), paramType(i), 1, paramSize(i), paramValue(i))
           Next
         End If
         If queryType = 1 Or executeType = 1 Then
@@ -534,7 +544,7 @@ Class EasyASP_Db
   End Function
   '用默认Connection执行SQL语句，返回记录集(R)或仅返回成功与否(CUD)
   Public Function Query(ByVal sql)
-    'On Error Resume Next
+    On Error Resume Next
     OpenConn()
     If Easp.Str.IsSame(Left(sql, 7),"select ") Or Easp.Str.IsInList("call ,exec ", Left(sql, 5)) Then
       Set Query = ExecuteSql(o_conn, sql, 1)
@@ -576,7 +586,7 @@ Class EasyASP_Db
   End Function
 
   '根据数组参数返回多个sql语句数组
-  Public Function GetBatchArray(ByVal sql)
+  Private Function GetBatchArray(ByVal sql)
     Dim match, matchCount, a_tmp, a_tmplen
     Dim sqlParam, param(), paramType(), paramBatch()
     Dim i, j, k, sqlCount, s_sql, a_sql()
