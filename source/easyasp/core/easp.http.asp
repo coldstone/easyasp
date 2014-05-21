@@ -128,9 +128,8 @@ Class EasyASP_Http
   
   '获取远程页完整参数模式
   Public Function GetData(ByVal uri, ByVal m, ByVal async, ByVal data, ByVal u, ByVal p)
-    'On Error Resume Next
     Dim a_http, i, ht, chru, s_serData
-    a_http = Split("WinHttp.WinHttpRequest.5.1 MSXML2.serverXMLHTTP MSXML2.XMLHTTP Microsoft.XMLHTTP")
+    a_http = Split("MSXML2.serverXMLHTTP MSXML2.XMLHTTP Microsoft.XMLHTTP")
     i = 0
     '抓取地址
     If Easp.IsN(uri) Then Exit Function
@@ -176,6 +175,7 @@ Class EasyASP_Http
           ht.send
         End If
         If Err.Number = 0 Then
+          Easp.Console a_http(i)
           Exit Do
         End If
       End If
@@ -188,6 +188,7 @@ Class EasyASP_Http
         End If
         Exit Do
       End If
+      On Error Goto 0
     Loop
     '检测返回数据
     If ht.readyState <> 4 Then
