@@ -12,7 +12,7 @@
 Class EasyASP_Http
   Public Method, CharSet, Async, User, Password, Html, Headers, Body, Text, SaveRandom
   Public ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout
-  Private s_data, s_url, s_ohtml, o_rh', a_rh()
+  Private s_data, s_url, s_ohtml, o_rh
   
   Private Sub Class_Initialize
     Easp.Error("error-http-object") = Easp.Lang("error-http-object")
@@ -43,7 +43,7 @@ Class EasyASP_Http
     '接受数据超时（毫秒）
     ReceiveTimeout = 60000
     'Easp.Use "List"
-    Set o_rh = Easp.List.New
+    Set o_rh = Easp.Json.NewObject
 '    ReDim a_rh(-1)
   End Sub
   
@@ -66,26 +66,31 @@ Class EasyASP_Http
     Dim i,n,v
     If isArray(a) Then
       For i = 0 To Ubound(a)
-        n = Replace(Easp.Str.GetColonName(a(i)),"-","_")
-        v = Easp.Str.GetColonValue(a(i))
+        n = Trim(Easp.Str.GetColonName(a(i)))
+        v = Trim(Easp.Str.GetColonValue(a(i)))
         o_rh(n) = v
       Next
     Else
-      n = Replace(Easp.Str.GetColonName(a),"-","_")
-      v = Easp.Str.GetColonName(a)
+      n = Trim(Easp.Str.GetColonName(a))
+      v = Trim(Easp.Str.GetColonValue(a))
       o_rh(n) = v
     End If
   End Sub
   '设置或获取单项请求头信息
-  Public Property Let RequestHeader(ByVal n, ByVal v)
-    n = Replace(n,"-","_")
-    o_rh(n) = v
+  Public Property Let RequestHeader(ByVal name, ByVal value)
+    o_rh(name) = value
   End Property
-  Public Property Get RequestHeader(ByVal n)
-    If Easp.Has(n) Then
-      RequestHeader = o_rh(n)
+  Public Property Get RequestHeader(ByVal name)
+    If Easp.Has(name) Then
+      RequestHeader = o_rh(name)
     Else
-      RequestHeader = Join(o_rh.Hash,vbCrLf)
+      Dim dic, key, s
+      Set dic = o_rh.GetDictionary
+      For Each key In dic
+        s = s & key & ":" & dic(key) & vbCrLf
+      Next
+      Set dic = Nothing
+      RequestHeader = s
     End If
   End Property
 
@@ -94,17 +99,16 @@ Class EasyASP_Http
     s_url = string
   End Property
   
-'  '传入RequestHeader
-  Private Sub SetHeaderTo(ByRef o)
-    Dim maps,key
-    Set maps = o_rh.maps
-    Easp.Console o_rh.maps
-    For Each key In maps
-      If Not isNumeric(key) Then
-        o.setRequestHeader Replace(key,"_","-"), o_rh(key)
-      End If
+'  '设置http的RequestHeader
+  Private Sub SetHeaderTo(ByRef ht)
+    Dim dic, key
+    Set dic = o_rh.GetDictionary
+    'Easp.Console dic
+    For Each key In dic
+      ht.setRequestHeader key, dic(key)
+      'Easp.Console key & "/" & dic(key)
     Next
-    Set maps = Nothing
+    Set dic = Nothing
   End Sub
   
   '属性配置模式下打开连接远程
@@ -124,24 +128,10 @@ Class EasyASP_Http
   
   '获取远程页完整参数模式
   Public Function GetData(ByVal uri, ByVal m, ByVal async, ByVal data, ByVal u, ByVal p)
-    On Error Resume Next
-    Dim o,chru
-    '建立XMLHttp对象
-    If Easp.isInstall("MSXML2.serverXMLHTTP") Then
-      Set o = Server.CreateObject("MSXML2.serverXMLHTTP")
-    ElseIf Easp.isInstall("MSXML2.XMLHTTP") Then
-      Set o = Server.CreateObject("MSXML2.XMLHTTP")
-    ElseIf Easp.isInstall("Microsoft.XMLHTTP") Then
-      Set o = Server.CreateObject("Microsoft.XMLHTTP")
-    Else
-      If Easp.Debug Then
-        Easp.Error.FunctionName = "Http.GetData"
-        Easp.Error.Raise "error-http-object"
-      End If
-      Exit Function
-    End If
-    '设置超时时间
-    o.SetTimeOuts ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout
+    'On Error Resume Next
+    Dim a_http, i, ht, chru, s_serData
+    a_http = Split("WinHttp.WinHttpRequest.5.1 MSXML2.serverXMLHTTP MSXML2.XMLHTTP Microsoft.XMLHTTP")
+    i = 0
     '抓取地址
     If Easp.IsN(uri) Then Exit Function
     '通过URL临时指定编码
@@ -155,42 +145,65 @@ Class EasyASP_Http
     '异步
     If Easp.IsN(async) Then async = False
     '构造Get传数据的URL
-    If m = "GET" And Easp.Has(data) Then uri = uri & Easp.IIF(Instr(uri,"?")>0, "&", "?") & Serialize__(data)
-    '打开远程页
+    If Easp.Has(data) Then s_serData = Serialize__(data)
+    If m = "GET" And Easp.Has(data) Then uri = uri & Easp.IIF(Instr(uri,"?")>0, "&", "?") & s_serData
     'Easp.Console m & "/" & uri & "/" & async & "/" & u & "/" & p
-    If Easp.Has(u) Then
-      '如果有用户名和密码
-      o.open m, uri, async, u, p
-    Else
-      '匿名
-      o.open m, uri, async
-    End If
-    If m = "POST" Then
-      If Not o_rh.HasIndex("Content_Type") Then
-        o_rh("Content_Type") = "application/x-www-form-urlencoded"
+    Do While True
+      On Error Resume Next
+      If Easp.isInstall(a_http(i)) Then
+        Set ht = Server.CreateObject(a_http(i))
+        If Instr(a_http(i), "WinHttp") Or Instr(a_http(i), "server") Then
+        '设置超时时间
+          ht.SetTimeOuts ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout
+        End If
+        '打开远程页
+        If Easp.Has(u) Then
+          '如果有用户名和密码
+          ht.open m, uri, async, u, p
+        Else
+          '匿名
+          ht.open m, uri, async
+        End If
+        If m = "POST" Then
+          If Not o_rh.Has("Content-Type") Then
+            o_rh("Content-Type") = "application/x-www-form-urlencoded"
+          End If
+          SetHeaderTo ht
+          '有发送的数据
+          ht.send s_serData
+        Else
+          SetHeaderTo ht
+          ht.send
+        End If
+        If Err.Number = 0 Then
+          Exit Do
+        End If
       End If
-      SetHeaderTo o
-      '有发送的数据
-      o.send Serialize__(data)
-    Else
-      SetHeaderTo o
-      o.send
-    End If
+      If i < Ubound(a_http) Then
+        i = i + 1
+      Else
+        If Easp.Debug Then
+          Easp.Error.FunctionName = "Http.GetData"
+          Easp.Error.Raise "error-http-object"
+        End If
+        Exit Do
+      End If
+    Loop
     '检测返回数据
-    If o.readyState <> 4 Then
+    If ht.readyState <> 4 Then
       GetData = "error:server is down"
-      Set o = Nothing
+      Set ht = Nothing
       If Easp.Debug Then
         Easp.Error.FunctionName = "Http.GetData"
         Easp.Error.Detail = uri
         Easp.Error.Raise "error-http-serverdown"
       End If
       Exit Function
-    ElseIf o.Status = 200 Then
-      Headers = o.getAllResponseHeaders()
-      Body = o.responseBody
+    ElseIf ht.Status = 200 Then
+      Headers = ht.getAllResponseHeaders()
+      Body = ht.responseBody
       If Easp.IsN(CharSet) Then
-        Text = o.responseText
+        Text = ht.responseText
         '从Header中提取编码信息
         If Easp.Str.Test(Headers,"charset=([\w-]+)") Then
           CharSet = Easp.Str.Replace(Headers,"([\s\S]+)charset=([\w-]+)([\s\S]+)","$2")
@@ -201,16 +214,15 @@ Class EasyASP_Http
         ElseIf Easp.Str.Test(Text,"<meta\s+http-equiv\s*=\s*[""']?content-type[""']?\s+content\s*=\s*[""']?[^>]+charset\s*=\s*([\w-]+)[^>]*>") Then
           CharSet = Easp.Str.Replace(Text,"([\s\S]+)<meta\s+http-equiv\s*=\s*[""']?content-type[""']?\s+content\s*=\s*[""']?[^>]+charset\s*=\s*([\w-]+)[^>]*>([\s\S]+)","$2")
         End If
-        'Easp.WNH CharSet
         '如果无法获取远程页的编码则继承Easp的编码设置
         If Easp.IsN(CharSet) Then CharSet = "UTF-8"
       End If
       GetData = Bytes2Bstr__(Body, CharSet)
     Else
-      GetData = "error:" & o.Status & " " & o.StatusText
+      GetData = "error:" & ht.Status & " " & ht.StatusText
       If Easp.Debug Then
         Easp.Error.FunctionName = "Http.GetData"
-        Easp.Error.Detail = Array(uri, o.Status)
+        Easp.Error.Detail = Array(uri, ht.Status)
         Easp.Error.Raise "error-http-status"
       End If
     End If
@@ -221,7 +233,7 @@ Class EasyASP_Http
         Easp.Error.Raise "error-http-remote"
       End If
     End If
-    Set o = Nothing
+    Set ht = Nothing
     s_ohtml = GetData
     Html = s_ohtml
   End Function
@@ -238,15 +250,15 @@ Class EasyASP_Http
   '按正则查找返回HTML中符合的第一个字符串并选择编组
   '可按正则编组选择其中的一部分
   Public Function [Select](ByVal rule, ByVal part)
-    [Select] = Select_(s_ohtml, rule, part)
+    [Select] = SelectString(s_ohtml, rule, part)
   End Function
   '按正则查找字符串中符合的第一个子字符串并选择编组
-  Public Function Select_(ByVal s, ByVal rule, ByVal part)
+  Public Function SelectString(ByVal s, ByVal rule, ByVal part)
     If Easp.Str.Test(s,rule) Then
       '$0匹配字符串本身
       part = Replace(part,"$0",FindString(s,rule))
       '按正则编组分别替换
-      Select_ = Easp.Str.Replace(s,"(?:[\s\S]*)(?:"&rule&")(?:[\s\S]*)",part)
+      SelectString = Easp.Str.Replace(s,"(?:[\s\S]*)(?:"&rule&")(?:[\s\S]*)",part)
     End If
   End Function
   
@@ -458,7 +470,7 @@ Class EasyASP_Http
       For i = 0 To Ubound(a)
         n = Easp.Str.GetName(a(i),":")
         v = Easp.Str.GetValue(a(i),":")
-        tmp = tmp & "&" & n & "=" & Server.URLEncode(v)
+        tmp = tmp & "&" & n & "=" & v
       Next
       If Len(tmp)>1 Then tmp = Mid(tmp,2)
       Serialize__ = tmp
