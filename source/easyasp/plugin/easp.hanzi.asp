@@ -93,7 +93,7 @@ Class EasyASP_Hanzi
   Private Function ClearPinYin(ByVal string, ByVal toneToLetter,_
                                ByVal hasToneNumber, ByVal hasSpace,_
                                ByVal onlyFirstLetter, ByVal Title)
-    string = Easp.Str.Replace(string, "([,!,.。，、；：？！…—\·ˉˇ¨\/\\\?;'""\:\[\]\{\}\|\-_\+=~@#\$\%\^&\*\(\)])", " ")
+    string = Easp.Str.Replace(string, "([,!,.。，、；：？！…—\·ˉˇ¨\/\\\?;'""“”\:\[\]\{\}\|\-_\+=~@#\$\%\^&\*\(\)])", " ")
     string = Easp.Str.Replace(string, "ng(b|p|m|f|d|t|l|n|g|k|h|j|q|x|r|y|w|z|c|s|\s+|[,\/\\\}\{""'\:;+-_=.!@#$%\[\]&\*\(\)。，、；：？！…—·ˉˇ¨‘’“”‖《》〉〈＂＇｀｜〃〔〕「」『』．〖〗【】（）［］｛｝]|$)", "{**}$1")
     string = Easp.Str.Replace(string, "n(b|p|m|f|d|t|l|n|g|k|h|j|q|x|r|y|w|z|c|s|\s+|[,\/\\\}\{""'\:;+-_=.!@#$%\[\]&\*\(\)。，、；：？！…—·ˉˇ¨‘’“”‖《》〉〈＂＇｀｜〃〔〕「」『』．〖〗【】（）［］｛｝]|$)", "{*}$1")
     string = Easp.Str.Replace(string, "zh", "{*1}")
@@ -147,7 +147,7 @@ Class EasyASP_Hanzi
 
   '在线取得结果的方法原型，返回数组 [拼音, 翻译, 分词]
   Private Function GetResults(ByVal chinese)
-    Dim http, a_http, o_dic, a_word, i, j
+    Dim http, s_result, a_http, o_dic, a_word, i, j
     If Not Easp.Str.IsSame(s_cn, chinese) Then
       s_cn = chinese
       Set o_dic = Server.CreateObject("Scripting.Dictionary")
@@ -156,35 +156,40 @@ Class EasyASP_Hanzi
       a_result(2) = o_dic.Items
       If Easp.Has(s_cn) And Easp.Str.Test(s_cn, "[\u4e00-\u9fa5]") Then
         Set http = Easp.Http.New
+          http.SetHeader "Host:translate.google.cn"
+          http.SetHeader "Referer:http://translate.google.cn/"
+          http.SetHeader "User-Agent:Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
           s_result = http.Get("http://translate.google.cn/translate_a/t?client=t&sl=zh-CN&tl=en&hl=zh-CN&sc=2&ie=UTF-8&oe=UTF-8&oc=2&otf=1&srcrom=1&ssel=6&tsel=3&pc=1&q=" & Server.URLEncode(s_cn))
-          'http.Data = "text=" & s_cn
-          's_result = http.Get("http://xssreport.sinaapp.com/baiduapp/pinyin/g.php")
-          'Easp.Println s_result
-          a_http = Easp.Decode(s_result)
-          If IsArray(a_http) Then
-            a_result(0) = ""
-            a_result(1) = ""
-            For Each i In a_http(0)
-              a_result(0) = a_result(0) & i(3)
-              a_result(1) = a_result(1) & i(0)
+          Set http = Nothing
+          Set a_http = Easp.Decode(Trim(s_result))
+          Dim a_http_0, a_http_5
+          Set a_http_0 = a_http(0)
+          Set a_http_5 = a_http(5)
+          a_result(0) = ""
+          a_result(1) = ""
+          For i = 0 To a_http_0.Length - 1
+            a_result(0) = a_result(0) & a_http_0(i)(3)
+            a_result(1) = a_result(1) & a_http_0(i)(0)
+          Next
+          Set a_http_0 = Nothing
+          For i = 0 To a_http_5.Length - 1
+            a_word = Split(a_http_5(i)(0), " ")
+            For j = 0 To Ubound(a_word)
+              'Easp.Println a_word(j)
+              If Len(a_word(j))>1 And Easp.Str.Test(a_word(j), "[a-zA-Z\u4e00-\u9fa5]") Then
+                o_dic.Add "key" & o_dic.Count, a_word(j)
+                'Easp.Println "-----------------" & a_word(j)
+              End If
             Next
-            For Each i In a_http(5)
-              a_word = Split(i(0), " ")
-              For j = 0 To Ubound(a_word)
-                'Easp.Println a_word(j)
-                If Len(a_word(j))>1 And Easp.Str.Test(a_word(j), "[a-zA-Z\u4e00-\u9fa5]") Then
-                  o_dic.Add "key" & o_dic.Count, a_word(j)
-                  'Easp.Println "-----------------" & a_word(j)
-                End If
-              Next
-            Next
-            a_result(2) = o_dic.Items
-          End If
-        Set http = Nothing
+          Next
+          Set a_http_5 = Nothing
+          Set a_http = Nothing
+          a_result(2) = o_dic.Items
       End If
       Set o_dic = Nothing
     End If
     GetResults = a_result
+    'Easp.PrintlnString a_result
   End Function  
 End Class
 %>
