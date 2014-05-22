@@ -13,12 +13,14 @@
 
 Class EasyASP_Validation
 
-  Private b_validate, b_return, s_source, s_value
-  Private s_field, s_msg, s_msgDefault, s_default, s_name
+  Private b_validate, b_return, s_source, s_split, a_return, b_array
+  Private s_value, s_field, s_msg, s_msgDefault, s_default, s_name
   
   Private Sub Class_Initialize()
     b_validate   = True
     b_return     = True
+    b_array      = False
+    s_split      = Empty
     s_name       = Empty
     s_value      = Empty
     s_msgDefault = Empty
@@ -29,6 +31,7 @@ Class EasyASP_Validation
   '设置源验证文本
   Public Property Let Source(ByVal string)
     s_source = string
+    If Not IsArray(a_return) Then a_return = Array(s_source)
   End Property
   Public Property Get Source
     Source = s_source
@@ -61,6 +64,27 @@ Class EasyASP_Validation
   Public Property Let ReturnValue(ByVal bool)
     b_return = bool
   End Property
+  '设置和获取分隔符
+  Public Property Get Separator()
+    Separator = s_split
+  End Property
+  Public Property Let Separator(ByVal string)
+    s_split = string
+  End Property
+  '设置和获取是否返回数组
+  Public Property Get IsReturnArray()
+    IsReturnArray = b_array
+  End Property
+  Public Property Let IsReturnArray(ByVal bool)
+    b_array = bool
+  End Property
+  '设置和获取返回数组
+  Public Property Get ReturnArray()
+    ReturnArray = a_return
+  End Property
+  Public Property Let ReturnArray(ByVal arr)
+    a_return = arr
+  End Property
   '设置和获取名称
   Public Property Get NameString()
     NameString = s_name
@@ -85,20 +109,31 @@ Class EasyASP_Validation
   '获取返回值
   Public Default Property Get Value()
     If b_return Then
-      Value = Easp.IIF(b_validate, Easp.IfHas(s_source, s_default), Easp.IfHas(s_default, Easp.IfHas(s_msg, False)))
+      Dim i
+      For i = 0 To UBound(a_return)
+        a_return(i) = CStr(Easp.IIF(b_validate, Easp.IfHas(a_return(i), s_default), Easp.IfHas(a_return(i), Easp.IfHas(s_default, Easp.IfHas(s_msg, False)))))
+      Next
+      If b_array Then
+        Value = a_return
+      Else
+        Value = Join(a_return, s_split)
+      End If
     End If
   End Property
   '生成验证对象
   Private Function NewValidation()
     Set NewValidation = New EasyASP_Validation
-    NewValidation.Source = s_source
-    NewValidation.NameString = s_name
-    NewValidation.ReturnValue = b_return
-    NewValidation.PostField = s_field
-    NewValidation.Validate = b_validate
-    NewValidation.MsgInfo = s_msg
-    NewValidation.DefaultValue = s_default
-    NewValidation.MsgDefault = s_msgDefault
+    NewValidation.Source = s_source '继承源文本
+    NewValidation.NameString = s_name '继承名称
+    NewValidation.ReturnValue = b_return '继承返回值
+    NewValidation.PostField = s_field '继承表单项名称
+    NewValidation.Validate = b_validate '继承验证是否通过
+    NewValidation.MsgInfo = s_msg '继承提示信息
+    NewValidation.DefaultValue = s_default '继承默认值
+    NewValidation.MsgDefault = s_msgDefault '继承默认提示信息
+    NewValidation.Separator = s_split '继承分隔符
+    NewValidation.IsReturnArray = b_array '继承是否返回数组
+    NewValidation.ReturnArray = a_return '继承返回的数组
   End Function
   '设置默认值
   Public Function [Default](ByVal string)
@@ -109,6 +144,20 @@ Class EasyASP_Validation
   Public Function [Name](ByVal string)
     Set [Name] = NewValidation()
     [Name].NameString = string
+  End Function
+  '设置分隔符(设置后会按分隔符分隔后一项项验证)
+  Public Function Split(ByVal string)
+    Dim obj
+    Set obj = New EasyASP_Validation_Split
+    a_return = obj.Splt(s_source, string)
+    s_split = string
+    Set Split = NewValidation()
+    Set obj = Nothing
+  End Function
+  '设置返回数组
+  Public Function GetArray()
+    b_array = True
+    Set GetArray = NewValidation()
   End Function
   '设置不返回数据
   Public Function NoReturn()
@@ -142,6 +191,13 @@ Class EasyASP_Validation
     Set Alert = NewValidation()
     If Not b_validate Then
       Easp.Str.JsAlert Easp.IfHas(s_msg, s_msgDefault)
+    End If
+  End Function
+  '规则验证失败则打印出错误提示信息并终止程序运行
+  Public Function PrintEnd()
+    Set PrintEnd = NewValidation()
+    If Not b_validate Then
+      Easp.PrintEnd Easp.IfHas(s_msg, s_msgDefault)
     End If
   End Function
   '规则验证失败则打印出Json格式错误提示信息并终止程序运行
@@ -181,16 +237,31 @@ Class EasyASP_Validation
   End Sub
   '验证不能为空
   Public Function Required()
+    Dim i, b_val : b_val = True
+    If UBound(a_return) < 0 Then b_val = False
+    For i = 0 To UBound(a_return)
+      If Easp.IsN(a_return(i)) Then
+        a_return(i) = Empty
+        If b_val Then b_val = False
+      End If
+    Next
     Set Required = NewValidation()
-    If Easp.IsN(s_source) Then
+    If Not b_val Then
       Required.Validate = False
       CreateMsgDefault Required, "required", Null
     End If
   End Function
   '验证正则规则
   Public Function Test(ByVal regexpString)
+    Dim i, b_val : b_val = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Not Easp.Str.Test(a_return(i), regexpString) Then
+        a_return(i) = Empty
+        If b_val Then b_val = False
+      End If
+    Next
     Set Test = NewValidation()
-    If Easp.Has(s_source) And Not Easp.Str.Test(s_source, regexpString) Then
+    If Not b_val Then
       Test.Validate = False
       CreateMsgDefault Test, "test-" & regexpString, Null
     End If
@@ -201,47 +272,86 @@ Class EasyASP_Validation
   End Function
   '验证日期区间
   Public Function DateBetween(ByVal minDate, ByVal maxDate)
+    Dim i, b_val1, b_val2
+    b_val1 = True
+    b_val2 = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Not Easp.Str.Test(a_return(i), "date") Then
+        a_return(i) = Empty
+        If b_val1 Then b_val1 = False
+      End If
+      If Easp.Has(a_return(i)) Then
+        If CDate(a_return(i)) < CDate(minDate) Or CDate(a_return(i)) > CDate(maxDate) Then
+          a_return(i) = Empty
+          If b_val2 Then b_val2 = False
+        End If
+      End If
+    Next
     Set DateBetween = NewValidation()
-    If Easp.Has(s_source) And Not Easp.Str.Test(s_source, "date") Then
+    If Not b_val1 Then
       DateBetween.Validate = False
       CreateMsgDefault DateBetween, "isdate", Null
       Exit Function
     End If
-    If Easp.Has(s_source) Then
-      If CDate(s_source) < CDate(minDate) Or CDate(s_source) > CDate(maxDate) Then
-        DateBetween.Validate = False
-        CreateMsgDefault DateBetween, "datebetween", Array(minDate, maxDate)
-      End If
+    If Not b_val2 Then
+      DateBetween.Validate = False
+      CreateMsgDefault DateBetween, "datebetween", Array(minDate, maxDate)
     End If
   End Function
   '验证最小日期
   Public Function MinDate(ByVal dateTime)
+    Dim i, b_val1, b_val2
+    b_val1 = True
+    b_val2 = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Not Easp.Str.Test(a_return(i), "date") Then
+        a_return(i) = Empty
+        If b_val1 Then b_val1 = False
+      End If
+      If Easp.Has(a_return(i)) Then
+        If CDate(a_return(i)) < CDate(dateTime) Then
+          a_return(i) = Empty
+          If b_val2 Then b_val2 = False
+        End If
+      End If
+    Next
     Set MinDate = NewValidation()
-    If Easp.Has(s_source) And Not Easp.Str.Test(s_source, "date") Then
+    If Not b_val1 Then
       MinDate.Validate = False
       CreateMsgDefault MinDate, "isdate", Null
       Exit Function
     End If
-    If Easp.Has(s_source) Then
-      If CDate(s_source) < CDate(dateTime) Then
-        MinDate.Validate = False
-        CreateMsgDefault MinDate, "mindate", dateTime
-      End If
+    If Not b_val2 Then
+      MinDate.Validate = False
+      CreateMsgDefault MinDate, "mindate", dateTime
     End If
   End Function
   '验证最大日期
   Public Function MaxDate(ByVal dateTime)
+    Dim i, b_val1, b_val2
+    b_val1 = True
+    b_val2 = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Not Easp.Str.Test(a_return(i), "date") Then
+        a_return(i) = Empty
+        If b_val1 Then b_val1 = False
+      End If
+      If Easp.Has(a_return(i)) Then
+        If CDate(a_return(i)) > CDate(dateTime) Then
+          a_return(i) = Empty
+          If b_val2 Then b_val2 = False
+        End If
+      End If
+    Next
     Set MaxDate = NewValidation()
-    If Easp.Has(s_source) And Not Easp.Str.Test(s_source, "date") Then
+    If Not b_val1 Then
       MaxDate.Validate = False
       CreateMsgDefault MaxDate, "isdate", Null
       Exit Function
     End If
-    If Easp.Has(s_source) Then
-      If CDate(s_source) > CDate(dateTime) Then
-        MaxDate.Validate = False
-        CreateMsgDefault MaxDate, "maxdate", dateTime
-      End If
+    If Not b_val2 Then
+      MaxDate.Validate = False
+      CreateMsgDefault MaxDate, "maxdate", dateTime
     End If
   End Function
   '验证数值
@@ -250,85 +360,159 @@ Class EasyASP_Validation
   End Function
   '验证数值区间
   Public Function Between(ByVal min, ByVal max)
+    Dim i, b_val1, b_val2
+    b_val1 = True
+    b_val2 = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Not Easp.Str.Test(a_return(i), "number") Then
+        a_return(i) = Empty
+        If b_val1 Then b_val1 = False
+      End If
+      If Easp.Has(a_return(i)) Then
+        If CDbl(a_return(i)) < CDbl(Min) Or CDbl(a_return(i)) > CDbl(Max) Then
+          a_return(i) = Empty
+          If b_val2 Then b_val2 = False
+        End If
+      End If
+    Next
     Set Between = NewValidation()
-    If Easp.Has(s_source) And Not Easp.Str.Test(s_source, "number") Then
+    If Not b_val1 Then
       Between.Validate = False
       CreateMsgDefault Between, "isnumber", Null
       Exit Function
     End If
-    If Easp.Has(s_source) Then
-      If CDbl(s_source) < CDbl(Min) Or CDbl(s_source) > CDbl(Max) Then
-        Between.Validate = False
-        CreateMsgDefault Between, "between", Array(min, max)
-      End If
+    If Not b_val2 Then
+      Between.Validate = False
+      CreateMsgDefault Between, "between", Array(min, max)
     End If
   End Function
   '验证最小数值
   Public Function Min(ByVal number)
+    Dim i, b_val1, b_val2
+    b_val1 = True
+    b_val2 = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Not Easp.Str.Test(a_return(i), "number") Then
+        a_return(i) = Empty
+        If b_val1 Then b_val1 = False
+      End If
+      If Easp.Has(a_return(i)) Then
+        If CDbl(a_return(i)) < CDbl(number) Then
+          a_return(i) = Empty
+          If b_val2 Then b_val2 = False
+        End If
+      End If
+    Next
     Set Min = NewValidation()
-    If Easp.Has(s_source) And Not Easp.Str.Test(s_source, "number") Then
+    If Not b_val1 Then
       Min.Validate = False
       CreateMsgDefault Min, "isnumber", Null
       Exit Function
     End If
-    If Easp.Has(s_source) Then
-      If CDbl(s_source) < CDbl(number) Then
-        Min.Validate = False
-        CreateMsgDefault Min, "min", number
-      End If
+    If Not b_val2 Then
+      Min.Validate = False
+      CreateMsgDefault Min, "min", number
     End If
   End Function
   '验证最大数值
   Public Function Max(ByVal number)
+    Dim i, b_val1, b_val2
+    b_val1 = True
+    b_val2 = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Not Easp.Str.Test(a_return(i), "number") Then
+        a_return(i) = Empty
+        If b_val1 Then b_val1 = False
+      End If
+      If Easp.Has(a_return(i)) Then
+        If CDbl(a_return(i)) > CDbl(number) Then
+          a_return(i) = Empty
+          If b_val2 Then b_val2 = False
+        End If
+      End If
+    Next
     Set Max = NewValidation()
-    If Easp.Has(s_source) And Not Easp.Str.Test(s_source, "number") Then
+    If Not b_val1 Then
       Max.Validate = False
       CreateMsgDefault Max, "isnumber", Null
       Exit Function
     End If
-    If Easp.Has(s_source) Then
-      If CDbl(s_source) > CDbl(number) Then
-        Max.Validate = False
-        CreateMsgDefault Max, "max", number
-      End If
+    If Not b_val2 Then
+      Max.Validate = False
+      CreateMsgDefault Max, "max", number
     End If
   End Function
   '验证长度区间
   Public Function LengthBetween(ByVal minNumber, ByVal maxNumber)
+    Dim i, b_val : b_val = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Len(a_return(i)) < minNumber Or Len(a_return(i)) > maxNumber Then
+        a_return(i) = Empty
+        If b_val Then b_val = False
+      End If
+    Next
     Set LengthBetween = NewValidation()
-    If Easp.Has(s_source) And Len(s_source) < minNumber Or Len(s_source) > maxNumber Then
+    If Not b_val Then
       LengthBetween.Validate = False
       CreateMsgDefault LengthBetween, "lengthbetween", Array(minNumber, maxNumber)
     End If
   End Function
   '验证长度
   Public Function Length(ByVal number)
+    Dim i, b_val : b_val = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Len(a_return(i)) <> number Then
+        a_return(i) = Empty
+        If b_val Then b_val = False
+      End If
+    Next
     Set Length = NewValidation()
-    If Easp.Has(s_source) And Len(s_source) <> number Then
+    If Not b_val Then
       Length.Validate = False
       CreateMsgDefault Length, "length", number
     End If
   End Function
   '验证最小长度
   Public Function MinLength(ByVal number)
+    Dim i, b_val : b_val = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Len(a_return(i)) < number Then
+        a_return(i) = Empty
+        If b_val Then b_val = False
+      End If
+    Next
     Set MinLength = NewValidation()
-    If Easp.Has(s_source) And Len(s_source) < number Then
+    If Not b_val Then
       MinLength.Validate = False
       CreateMsgDefault MinLength, "minlength", number
     End If
   End Function
   '验证最大长度
   Public Function MaxLength(ByVal number)
+    Dim i, b_val : b_val = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Len(a_return(i)) > number Then
+        a_return(i) = Empty
+        If b_val Then b_val = False
+      End If
+    Next
     Set MaxLength = NewValidation()
-    If Easp.Has(s_source) And Len(s_source) > number Then
+    If Not b_val Then
       MaxLength.Validate = False
       CreateMsgDefault MaxLength, "maxlength", number
     End If
   End Function
   '验证相等
   Public Function Same(ByVal string)
+    Dim i, b_val : b_val = True
+    For i = 0 To UBound(a_return)
+      If Easp.Has(a_return(i)) And Not Easp.Str.IsSame(a_return(i), string) Then
+        a_return(i) = Empty
+        If b_val Then b_val = False
+      End If
+    Next
     Set Same = NewValidation()
-    If Easp.Has(s_source) And Not Easp.Str.IsSame(s_source, string) Then
+    If Not b_val Then
       Same.Validate = False
       CreateMsgDefault Same, "same", Null
     End If
@@ -353,5 +537,10 @@ Class EasyASP_Validation
     End If
   End Function
   
+End Class
+Class EasyASP_Validation_Split
+  Public Function Splt(ByVal string, ByVal separator)
+    Splt = Split(string, separator)
+  End Function
 End Class
 %>
