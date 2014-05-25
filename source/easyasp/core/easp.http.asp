@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP XMLHTTP Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2010/03/23 23:24:30
+'## Update Date :   2014-05-24 08:12:24
 '## Description :   Request XMLHttp Data in EasyASP
 '## 
 '######################################################################
@@ -151,7 +151,7 @@ Class EasyASP_Http
       On Error Resume Next
       If Easp.isInstall(a_http(i)) Then
         Set ht = Server.CreateObject(a_http(i))
-        If Instr(a_http(i), "WinHttp") Or Instr(a_http(i), "server") Then
+        If Instr(a_http(i), "server") Then
         '设置超时时间
           ht.SetTimeOuts ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout
         End If
