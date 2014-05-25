@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP String Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-05-12 0:38:21
+'## Update Date :   2014-05-25 17:19:17
 '## Description :   EasyASP String Class
 '##
 '######################################################################
@@ -261,7 +261,7 @@ Class EasyASP_String
       arr(0) = Left(string, n-1)
       arr(1) = Mid(string, n+Len(separator))      
     Else
-      arr(0) = String
+      arr(0) = string
       arr(1) = ""
     End If
     GetNameValue = arr
@@ -271,33 +271,41 @@ Class EasyASP_String
   '半角字符以半个字符计，返回的字符串最大长度为strlen
   Public Function Cut(ByVal s, ByVal strlen)
     If Easp.IsN(s) Then Cut = "" : Exit Function
-    If Easp.IsN(strlen) or strlen = "0" Or Len(s)<strlen Then Cut = s : Exit Function
-    Dim l,t,i,d,f,n
-    d = "..." : f = GetNameValue(strlen, ":")
-    If IsIn(strlen,":") Then d = Easp.IfHas(f(1),"")
-    strlen = Int(f(0))*2 : n = 0
-    n = Easp.IIF(d<>"..." And Len(d)>=0, Leng(d), 2)
     '去除html标签、换行和制表符
-    s = HtmlFilter(s) : s = o_re.Re(s, vbCrLf, "") : s = o_re.Re(s, vbTab, "")
-    l = Leng(s)
-    If l>strlen Then
-      strlen = strlen - n
-      t = 0
-      For i = 1 to Len(s)
-        t = Easp.IIF(Abs(Ascw(Mid(s,i,1)))>255, t+2, t+1)
-        If t >= strlen Then
-          f = Left(s,i) & d
-          Exit For
-        End If
-      Next
+    s = HtmlFilter(s)
+    s = o_re.Re(s, vbCrLf, "")
+    s = o_re.Re(s, vbTab, "")
+    If Easp.IsN(strlen) Then Cut = s : Exit Function
+    Dim i_len, i_leng, s_sep, i_sepleng, i_sleng, i, t
+    '取出省略符
+    If Instr(strlen,":") Then
+      i_len = CInt(GetColonName(strlen))
+      s_sep = GetColonValue(strlen)
+      i_sepleng = Len(s_sep)
     Else
-      f = s
+      i_len = strlen
+      s_sep = "..."
+      i_sepleng = 1
     End If
-    Cut = f
+    '如果字符串不够长或者strlen为0，则返回全部字符串
+    If i_len = 0 Or Len(s) <= i_len Then Cut = s : Exit Function
+    '解决中英文混排长度
+    i_sleng = Leng(s)
+    i_leng = i_len * 2
+    If i_sleng <= i_leng Then Cut = s : Exit Function
+    i_leng = i_leng - i_sepleng * 2
+    t = 0
+    For i = 1 To Len(s)
+      t = Easp.IIF(Abs(Ascw(Mid(s,i,1)))>255, t+2, t+1)
+      If t >= i_leng Then
+        Cut = Left(s, i) & s_sep
+        Exit For
+      End If
+    Next
   End Function
   '返回字符串的长度，中文算两个字符
   Private Function Leng(string)
-    Dim i,n
+    Dim i,n : n = 0
     For i = 1 To Len(string)
       n = Easp.IIF(Abs(Ascw(Mid(string,i,1)))>255, n+2, n+1)
     Next
