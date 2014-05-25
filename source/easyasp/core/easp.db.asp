@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-03-10
+'## Update Date :   2014-05-24 09:49:43
 '## Description :   Database controler
 '##
 '######################################################################
@@ -391,8 +391,8 @@ Class EasyASP_Db
             '输入参数
               '如果是数值型/日期型而且为空，则输入NULL值
               If InStr(",20,11,6,5,7,135,3,131,4,2,16,128,205,204,", "," & spParamType & ",") > 0 And Easp.IsN(spParamValue) Then spParamValue = Null
-              If IsNumeric(spParamValue) And spParamType = 200 Then spParamType = 5
-              If IsDate(spParamValue) And spParamType = 200 Then spParamType = 135
+              'If IsNumeric(spParamValue) And spParamType = 200 Then spParamType = 5
+              'If IsDate(spParamValue) And spParamType = 200 Then spParamType = 135
               .Parameters.Append .CreateParameter(spParam, spParamType, spParamInorOut, spParamSize, spParamValue)
               'Easp.PrintlnString Array(spParam, spParamType, spParamInorOut, spParamSize, spParamValue)
             Else
@@ -446,8 +446,8 @@ Class EasyASP_Db
           For i = 0 To matchCount
             '如果是数值型/日期型而且为空，则输入NULL值
             If InStr(",20,11,6,5,7,135,3,131,4,2,16,128,205,204,", ","&paramType(i)&",") > 0 And Easp.IsN(paramValue(i)) Then paramValue(i) = Null
-            If IsNumeric(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 5
-            If IsDate(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 135
+            'If IsNumeric(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 5
+            'If IsDate(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 135
             .Parameters.Append .CreateParameter(param(i), paramType(i), 1, paramSize(i), paramValue(i))
           Next
         End If
