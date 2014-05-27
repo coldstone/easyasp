@@ -695,7 +695,7 @@ Class EasyASP
     If Not o_ext.Exists(name) Then
       b_loaded = False
     Else
-      If LCase(TypeName(o_ext(name))) <> "EasyASP_" & name Then b_loaded = False
+      If LCase(TypeName(o_ext(name))) <> "easyasp_" & name Then b_loaded = False
     End If
     If Not b_loaded Then
       s_filePath = s_pluginPath & "easp." & name & ".asp"
