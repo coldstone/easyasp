@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-05-24 09:49:43
+'## Update Date :   2014-06-11 17:06:08
 '## Description :   Database controler
 '##
 '######################################################################
@@ -182,6 +182,16 @@ Class EasyASP_Db
     OpenConn()
     Set GetConn = o_conn
   End Function
+
+  '接管外部Connection对象为默认连接
+  Public Property Let DefaultConn(ByRef conn)
+    If TypeName(conn) = "Connection" Then
+      If conn.State = 1 Then
+        Set o_conn = conn
+        If Easp.Console.ShowSql Then Easp.Console "接管外部连接为默认数据库(" & GetTypeVersion(conn) & ")"
+      End If
+    End If
+  End Property
   
   '打开默认Connection连接
   Private Sub OpenConn()

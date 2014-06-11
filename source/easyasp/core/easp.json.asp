@@ -5,14 +5,14 @@
 '## Feature     :   EasyASP Json Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-04-26 12:38:25
+'## Update Date :   2014-06-03 15:25:46
 '## Description :   Create a json string or Parse a json object/array.
 '##                 Based on VBJSON by Michael Glaser (vbjson@ediy.co.nz).
 '#########################################################################
 
 Class EasyASP_Json
 
-  Private b_encode
+  Private b_encode, b_quickMode
 
   Private Sub Class_Initialize()
     Easp.Error("error-json-invalid-json") = Easp.Lang("error-json-invalid-json")
@@ -25,6 +25,7 @@ Class EasyASP_Json
     Easp.Error("error-json-invalid-key") = Easp.Lang("error-json-invalid-key")
     Easp.Error("error-json-create-json") = Easp.Lang("error-json-create-json")
     b_encode = True
+    b_quickMode = True
   End Sub
   
   '设置和读取生成Json字符串是是否编码 Unicode 字符
@@ -33,6 +34,14 @@ Class EasyASP_Json
   End Property
   Public Property Let EncodeUnicode(ByRef bool)
     b_encode = bool
+  End Property
+  '设置和读取操作Json时是否可以使用快速模式
+  '快速模式即使用 Json("aaa.bbb[2].ccc") 的方式
+  Public Property Get QuickMode
+    QuickMode = b_quickMode
+  End Property
+  Public Property Let QuickMode(ByRef bool)
+    b_quickMode = bool
   End Property
   '新建一个Object对象
   Public Function NewObject()
@@ -375,7 +384,7 @@ Class EasyASP_Json_Object
   End Sub
   '设置或读取key/value值
   Public Default Property Get [Get](ByVal key)
-    If Instr(key, ".") Or Instr(key, "[") Then
+    If Easp.Json.QuickMode And (Instr(key, ".") Or Instr(key, "[")) Then
       On Error Resume Next
       Dim evalKey
       evalKey = "Me.Get" & Easp.Json.ToEvalKey(key)
@@ -417,7 +426,7 @@ Class EasyASP_Json_Object
   Public Sub Put(ByVal key, ByRef value)
     On Error Resume Next
     '如果是字符串方式
-    If Instr(key, ".") Or Instr(key, "[") Then
+    If Easp.Json.QuickMode And (Instr(key, ".") Or Instr(key, "[")) Then
       Execute "Me.Get" & Easp.Json.ToEvalKey(key) & " = value"
       Exit Sub
     Else
