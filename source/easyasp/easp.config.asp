@@ -104,6 +104,8 @@ Easp.Debug = True
 
 '设置生成Json字符串是是否编码 Unicode 字符
 'Easp.Json.EncodeUnicode    = True
+'设置是否启用快速取值模式
+'Easp.Json.QuickMode        = True
 
 ''====================================
 ''  List 配置

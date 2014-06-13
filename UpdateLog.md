@@ -1,4 +1,9 @@
 ##EasyASP 更新日志
+- [2014/06/13] 新增：字符串处理新增链式操作，如 Easp.Str(string).HtmlFilter().Trim().GetName(".").UCase()
+- [2014/06/13] 新增：数据库操作类新增 Easp.Db.NextRS 方法，该方法可以获取多记录集对象的下一个有效记录集。
+- [2014/06/13] 新增：超级变量新增 easp.date / easp.time /easp.datetime 三个固定键值用于获取当前日期时间。
+- [2014/06/11] 新增：数据库操作类新增 Easp.Db.DefaultConn 属性，利用该属性可以接管外部 Connection 对象为默认连接对象。
+- [2014/06/03] 新增：Json 类新增 Easp.Json.QuickMode 属性，该属性为 False 时，不能使用 Json("obj.name.type[0]") 方式访问数据。
 - [2014/05/23] 新增：Validation验证类新增验证序列文本，新增序列文本验证后返回数组，新增验证失败后直接输出指定文本。
 - [2014/05/23] 新增：Base64插件，感谢 @黑小豆 提供。
 - [2014/05/22] 新增：Easp.Db数据库操作类新增sql语句中使用 {var} 参数时指定数据大小的功能。使用方法：{var:nvarchar(300)}
