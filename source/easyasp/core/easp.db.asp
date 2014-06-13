@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-11 17:06:08
+'## Update Date :   2014-06-13 17:06:08
 '## Description :   Database controler
 '##
 '######################################################################
@@ -469,7 +469,10 @@ Class EasyASP_Db
           .ActiveConnection = Nothing
           i_queryTimes = i_queryTimes + 1
           If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
-            Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.Lang("db-record-count") & "：" & ExecuteSql.RecordCount & ")"
+            Dim i_rcount
+            i_rcount = 0
+            If ExecuteSql.State = 1 Then i_rcount = ExecuteSql.RecordCount
+            Easp.Console "(" & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(sTimer) & "s， " & Easp.Lang("db-record-count") & "：" & i_rcount & ")"
           End If
           'conn.CursorLocation = currentCursor
         ElseIf executeType = 2 Then
@@ -552,7 +555,7 @@ Class EasyASP_Db
     End If
     CheckError "execute", Err, o_conn, "Exec", sql
   End Function
-  '用默认Connection执行SQL语句，返回记录集(R)或仅返回成功与否(CUD)
+  '用默认Connection执行SQL语句，返回记录集(R)或成功与否(CUD)
   Public Function Query(ByVal sql)
     On Error Resume Next
     OpenConn()
@@ -673,6 +676,17 @@ Class EasyASP_Db
     Set Sel = ExecuteSql(o_conn, sql, 1)
     CheckError "select", Err, o_conn, "Sel", sql
   End Function
+
+  Public Function NextRS(ByRef rs)
+    Do While True
+      Set NextRS = rs.NextRecordset
+      If NextRS Is Nothing Then
+        Exit Do
+      ElseIf TypeName(NextRS) = "Recordset" Then
+        If NextRS.State = 1 Then Exit Do
+      End If
+    Loop
+  End Function  
 
   '取得分页后记录集
   '说明：可以是单表、多表连接或者包含子查询的复杂SQL查询语句，但如果是Access数据
