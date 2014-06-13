@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Variables Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-02-02
+'## Update Date :   2014-06-13 08:46:55
 '## Description :   Get and set EasyASP super variables.
 '##
 '######################################################################
@@ -46,6 +46,12 @@ Class EasyASP_Var
       s_var = o_var("post." & key)
     ElseIf Easp.Str.IsSame(key,"easp.newid") Then
       s_var = Easp.NewID()
+    ElseIf Easp.Str.IsSame(key,"easp.datetime") Then
+      s_var = Now()
+    ElseIf Easp.Str.IsSame(key,"easp.date") Then
+      s_var = Date()
+    ElseIf Easp.Str.IsSame(key,"easp.time") Then
+      s_var = Time()
     ElseIf o_var.Exists("easp." & key) Then
       s_var = o_var("easp." & key)
     ElseIf Easp.Str.StartsWith(key, "server.") Then
@@ -92,7 +98,7 @@ Class EasyASP_Var
 
   '查找是否包含某一变量
   Public Function Has(ByVal key)
-    Has = (o_var.Exists(key) Or o_var.Exists("get." & key) Or o_var.Exists("post." & key) Or Easp.Str.IsSame(key,"easp.newid") Or o_var.Exists("easp." & key) Or o_var.Exists("server." & key))
+    Has = (o_var.Exists(key) Or o_var.Exists("get." & key) Or o_var.Exists("post." & key) Or Easp.Str.IsInList("easp.newid,easp.datetime,easp.date,easp.time", key) Or o_var.Exists("easp." & key))
   End Function
   
   '将页面参数获取值写入到Var集合
