@@ -762,6 +762,7 @@ Class EasyASP
     Set Http    = New EasyASP_Http
     Set Tpl     = New EasyASP_Tpl
     Set Cache   = New EasyASP_Cache
+    Set Xml     = New EasyASP_Xml
   End Sub
 
 End Class
@@ -782,5 +783,6 @@ Class EasyASP_object : End Class
 <!--#include file="core/easp.http.asp"-->
 <!--#include file="core/easp.tpl.asp"-->
 <!--#include file="core/easp.cache.asp"-->
+<!--#include file="core/easp.xml.asp"-->
 <%'页面加载完毕后销毁Easp实例%>
 <script language="vbscript" runat="server">If TypeName(Easp) = "EasyASP" Then Set Easp = Nothing</script>
