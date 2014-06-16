@@ -1,4 +1,7 @@
 ##EasyASP 更新日志
+- [2014/06/17] 新增：新增一个简单的加密解密类 Easp.Encrypt，可用于字符串的简单加解密。
+- [2014/06/16] 新增：后台验证类新增 .AlertUrl(url) 方法，可以在验证失败后跳转到指定页。
+- [2014/06/16] 修正：修复 Easp.GetUrl 的一处Bug，感谢 @Easp.苏家戏子 报告。
 - [2014/06/16] 新增：上传类增加 Easp.Upload.ErrorLang 属性，可设置错误提示语言（en 或 zh，默认为 en） via @Easp.苏家戏子
 - [2014/06/13] 新增：字符串处理新增链式操作，如 Easp.Str(string).HtmlFilter().Trim().GetName(".").UCase()
 - [2014/06/13] 新增：数据库操作类新增 Easp.Db.NextRS 方法，该方法可以获取多记录集对象的下一个有效记录集。

@@ -20,7 +20,7 @@ Dim Easp : Set Easp = New EasyASP '实例化Easp
 <%
 Class EasyASP
   '定义Easp公共类
-  Public Lang, [Error], Str, Var, Console, [Date], Db, Json, List, Fso, Http, Tpl, Upload, Cache, Xml
+  Public Lang, [Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml
   '定义Easp预留公共接口
   Public Mo, A, B, C, D, E, F, G, H, I, J, K, M, L, N
   '定义私有变量
@@ -42,7 +42,7 @@ Class EasyASP
     Set o_ext        = Server.CreateObject("Scripting.Dictionary")
     Set Lang         = Server.CreateObject("Scripting.Dictionary")
     Lang.CompareMode = 1
-    s_cores          = "[Error], Str, Var, Console, [Date], Db, Json, List, Fso, Http, Tpl, Upload, Cache, Xml"
+    s_cores          = "[Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml"
     Core_Do "on", s_cores
   End Sub
   '析构函数
@@ -266,7 +266,7 @@ Class EasyASP
     i_port = Request.ServerVariables("SERVER_PORT")
     s_rq = Request.QueryString()
     '取出当前页地址，如果是默认首页如index.asp则省略首页名
-    s_url = Mid(script_name, 1, IIF(Str.IsSame(Right(script_name, Len(s_defaultPageName)),s_defaultPageName), Len(script_name)-Len(s_defaultPageName), Len(script_name)))
+    s_url = Mid(script_name, 1, IIF(Str.IsSame(Right(script_name, Len("/" & s_defaultPageName)),"/" & s_defaultPageName), Len(script_name)-Len(s_defaultPageName), Len(script_name)))
     '取出所在站点目录路径
     s_dir  = Left(script_name,InstrRev(script_name,"/"))
     Select Case param
@@ -756,6 +756,7 @@ Class EasyASP
     Set Var     = New EasyASP_Var
     Set [Date]  = New EasyASP_Date
     Set Db      = New EasyASP_Db
+    Set Encrypt = New EasyASP_Encrypt
     Set Json    = New EasyASP_Json
     Set List    = New EasyASP_List
     Set Upload  = New EasyASP_MoLibUpload
@@ -772,10 +773,12 @@ Class EasyASP_object : End Class
 <!--#include file="core/easp.error.asp"-->
 <!--#include file="core/easp.validation.asp"-->
 <!--#include file="core/easp.str.asp"-->
+<!--#include file="core/easp.stringobject.asp"-->
 <!--#include file="core/easp.var.asp"-->
 <!--#include file="core/easp.console.asp"-->
 <!--#include file="core/easp.date.asp"-->
 <!--#include file="core/easp.db.asp"-->
+<!--#include file="core/easp.encrypt.asp"-->
 <!--#include file="core/easp.json.asp"-->
 <!--#include file="core/easp.list.asp"-->
 <!--#include file="core/easp.fso.asp"-->

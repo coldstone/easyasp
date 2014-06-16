@@ -39,14 +39,21 @@ Easp.Debug = True
 'Easp.Db.PageSize           = 25
 
 ''====================================
+''  Encrypt 加密解密配置
+''====================================
+
+'配置加密解密的密钥：
+'Easp.Encrypt.Key           = ""
+
+''====================================
 ''  Console 控制台配置
 ''====================================
 
 '在这里设置token的值，区分大小写，如果设置了Token值，
 '仅前端输入的token和这里设置一致时，才会输出控制台信息
-'Easp.Console.Token          = ""
+'Easp.Console.Token         = ""
 ''是否开启控制台
-'Easp.Console.Enable         = True
+'Easp.Console.Enable        = True
 ''是否在控制台中自动显示执行的SQL语句
 'Easp.Console.ShowSql       = True
 ''是否在控制台中自动显示执行的SQL语句的执行时间
@@ -59,6 +66,7 @@ Easp.Debug = True
 ''====================================
 ''  Error 异常信息配置
 ''====================================
+
 '抛出异常信息时的标题
 'Easp.Error.Title           = "发生错误啦"
 '是否自动跳转页面
