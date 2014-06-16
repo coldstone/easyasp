@@ -60,8 +60,8 @@ Class EasyASP_MoLibUpload
     LostTime = vLostTime
   End Property
   
-  Public Property Let ErrorLang(ByVal type)
-    s_errLang = type
+  Public Property Let ErrorLang(ByVal string)
+    s_errLang = string
   End Property
   Public Property Get ErrorLang()
     ErrorLang = s_errLang
