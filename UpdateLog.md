@@ -1,4 +1,5 @@
 ##EasyASP 更新日志
+- [2014/06/16] 新增：上传类增加 Easp.Upload.ErrorLang 属性，可设置错误提示语言（en 或 zh，默认为 en） via @Easp.苏家戏子
 - [2014/06/13] 新增：字符串处理新增链式操作，如 Easp.Str(string).HtmlFilter().Trim().GetName(".").UCase()
 - [2014/06/13] 新增：数据库操作类新增 Easp.Db.NextRS 方法，该方法可以获取多记录集对象的下一个有效记录集。
 - [2014/06/13] 新增：超级变量新增 easp.date / easp.time /easp.datetime 三个固定键值用于获取当前日期时间。

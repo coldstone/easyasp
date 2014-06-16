@@ -13,7 +13,7 @@ Class EasyASP_MoLibUpload
   Private Form, Fils,StreamT,mvarClsName, mvarClsDescription,mvarSavePath,mvarCheckImageFormat
   Private vCharSet, vMaxSize, vSingleSize, vErr, vVersion, vTotalSize, vExe, vErrExe,vboundary, vLostTime, vFileCount,StreamOpened
   private vMuti,vServerVersion,mvarDescription
-  Public IsUploaded, FormArray 'added by EasyASP
+  Public IsUploaded, FormArray, s_errLang 'added by EasyASP
   
   Public Property Let AllowMaxSize(ByVal value)
     vMaxSize = value
@@ -60,12 +60,20 @@ Class EasyASP_MoLibUpload
     LostTime = vLostTime
   End Property
   
+  Public Property Let ErrorLang(ByVal type)
+    s_errLang = type
+  End Property
+  Public Property Get ErrorLang()
+    ErrorLang = s_errLang
+  End Property
+  
   Private Sub Class_Initialize()
     Dim T__
     Set Form = Server.CreateObject("Scripting.Dictionary")
     Set FormArray = Server.CreateObject("Scripting.Dictionary") 'added by EasyASP
     Set Fils = Server.CreateObject("Scripting.Dictionary")
     Set StreamT = Server.CreateObject("Adodb.stream")
+    s_errLang = "en"
     vVersion = "MoLibUpload V1.1"
     vMaxSize = -1
     vSingleSize = -1
@@ -135,10 +143,10 @@ Class EasyASP_MoLibUpload
     TotalBytes = Request.TotalBytes
     IsUploaded = True 'added by EasyASP
     ef = false
-    If checkEntryType = false Then ef = true : mvarDescription = "ERROR_INVALID_ENCTYPEOR_METHOD"
+    If checkEntryType = false Then ef = true : mvarDescription = Easp.Lang("error-uplaod-enctypeor-" & s_errLang)
     If vServerVersion>=6 Then
       If Not ef Then
-        If vMaxSize > 0 And TotalBytes > vMaxSize Then ef = true : mvarDescription = "ERROR_FILE_EXCEEDS_MAXSIZE_LIMIT"
+        If vMaxSize > 0 And TotalBytes > vMaxSize Then ef = true : mvarDescription = Easp.Lang("error-uplaod-filemaxsize-" & s_errLang)
       End If
     End If
     If ef Then Exit function
@@ -194,7 +202,7 @@ Class EasyASP_MoLibUpload
           End If
           If vExe <> "" Then
             If checkExe(fileExe) = True Then
-              mvarDescription = "ERROR_INVALID_FILETYPE(." & ucase(fileExe) & ")"
+              mvarDescription = Easp.Lang("error-uplaod-filetype-" & s_errLang) & "(." & ucase(fileExe) & ")"
               vErrExe = fileExe
               tempdata = empty
               Exit function
@@ -203,12 +211,12 @@ Class EasyASP_MoLibUpload
           NewName = Getname()
           vTotalSize = vTotalSize + valueend - formend - 6
           If vSingleSize > 0 And (valueend - formend - 6) > vSingleSize Then
-            mvarDescription = "ERROR_FILE_EXCEEDS_SIZE_LIMIT"
+            mvarDescription = Easp.Lang("error-uplaod-filesize-" & s_errLang)
             tempdata = empty
             Exit function
           End If
           If vMaxSize > 0 And vTotalSize > vMaxSize Then
-            mvarDescription = "ERROR_FILE_EXCEEDS_MAXSIZE_LIMIT"
+            mvarDescription = Easp.Lang("error-uplaod-filemaxsize-" & s_errLang)
             tempdata = empty
             Exit function
           End If
@@ -385,7 +393,6 @@ Class EasyASP_MoLibUpload
     Set Search = FileCollection
   End Function
   
-  
   Public Function QuickSave(ByVal formname)
     Dim FC,SucceedCount,File
     SucceedCount = 0
@@ -534,7 +541,7 @@ Class EasyASP_MoLibUpload
       Set File = Files(Name)
       If Not File.IsFile Then
         File.Succeed = false
-        File.Exception="ERROR_FILE_NO_FOUND"
+        File.Exception = Easp.Lang("error-uplaod-fileno-" & s_errLang)
         Set Save = File
         Exit Function
       End If
@@ -543,7 +550,7 @@ Class EasyASP_MoLibUpload
     end if
     If Not File.IsFile Then
       File.Succeed = false
-      File.Exception="ERROR_FILE_NO_FOUND"
+      File.Exception = Easp.Lang("error-uplaod-fileno-" & s_errLang)
       Set Save = File
       Exit Function
     End If

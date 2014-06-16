@@ -1,4 +1,5 @@
 <%
+'=== Easp.Date ===
 Easp.Lang("date-ago")                   = "前"
 Easp.Lang("date-after")                 = "后"
 Easp.Lang("date-justnow")               = "刚刚"
@@ -26,6 +27,7 @@ Easp.Lang("date-last")                  = "去年"
 Easp.Lang("date-next")                  = "明年"
 Easp.Lang("date-months")                = "个月"
 Easp.Lang("date-years")                 = "年"
+'=== Easp.Fso ===
 Easp.Lang("fso-file")                   = "文件"
 Easp.Lang("fso-folder")                 = "文件夹"
 Easp.Lang("fso-copy")                   = "复制"
@@ -33,6 +35,7 @@ Easp.Lang("fso-move")                   = "移动"
 Easp.Lang("fso-delete")                 = "删除"
 Easp.Lang("fso-to")                     = "到 "
 Easp.Lang("fso-source")                 = "源"
+'=== Easp.Db ===
 Easp.Lang("db-connect-database")        = "连接到数据库"
 Easp.Lang("db-query-spend")             = "执行时间"
 Easp.Lang("db-return")                  = "返回值"
@@ -47,6 +50,7 @@ Easp.Lang("db-pager-select-text")       = "请选择要跳转到的页数"
 Easp.Lang("db-trans-start")             = "数据库事务（第{0}级）已开始："
 Easp.Lang("db-trans-rollback")          = "数据库事务已回滚。"
 Easp.Lang("db-trans-commit")            = "数据库事务已提交。"
+'=== Validation ===
 Easp.Lang("val-item")                   = "数据"
 Easp.Lang("val-required")               = "不能为空"
 Easp.Lang("val-isdate")                 = "不是合法的日期值"
@@ -83,13 +87,15 @@ Easp.Lang("val-test-mobile")            = "不是合法的手机号码"
 Easp.Lang("val-test-url")               = "不是合法的URL地址"
 Easp.Lang("val-test-domain")            = "不是合法的域名"
 Easp.Lang("val-test-ip")                = "不是合法的IPV4地址"
-'Error Code
+'=== Easp.Error (common) ===
 Easp.Lang("error-title")                = "发生错误啦"
 Easp.Lang("error-unkown")               = "未知错误"
 Easp.Lang("error-easp-pluginpath")      = "未找到插件|:插件文件 ""{0}"" 不存在|请检查插件文件是否存在或 Easp.BasePath / Easp.PluginPath 设置是否正确。"
+'=== Easp.Error (Easp.Cache) ===
 Easp.Lang("error-cache-notfound")       = "缓存处理出错|:缓存文件 ""{0}"" 不存在"
 Easp.Lang("error-cache-invalid-object") = "缓存处理出错|:当前对象 ""{0}"" 不允许缓存到内存缓存"
 Easp.Lang("error-cache-invalid-file")   = "缓存处理出错|:当前内容 ""{0}"" 不允许缓存到文件缓存"
+'=== Easp.Error (Easp.Db) ===
 Easp.Lang("error-db-conn")              = "无法连接到数据库|:数据库服务器端连接错误{0}|请检查数据库连接信息是否正确！"
 Easp.Lang("error-db-noconn")            = "数据库连接出错|:连接对象 {0} 不存在|请检查是否用 Easp.Db.SetConnection 方法设置了该连接"
 Easp.Lang("error-db-execute")           = "执行数据库查询错误|:(SQL) {0}"
@@ -104,6 +110,7 @@ Easp.Lang("error-db-delete")            = "数据库删除数据出错|:(SQL) {0
 Easp.Lang("error-db-deletebatch")       = "数据库批量删除数据出错|:(SQL) {0}|"
 Easp.Lang("error-db-update")            = "数据库更新数据出错|:(SQL) {0}|"
 Easp.Lang("error-db-updatebatch")       = "数据库批量更新数据出错|:(SQL) {0}|"
+'=== Easp.Error (Easp.Fso) ===
 Easp.Lang("error-fso-filenotfound")     = "读取文件错误|:文件 {0} 未找到|请检查输入文件名是否正确"
 Easp.Lang("error-fso-write")            = "写入文件错误|:保存文件 ""{0}"" 时出错|请检查文件夹是否有写权限"
 Easp.Lang("error-fso-md")               = "创建文件夹错误|:创建文件夹 ""{0}"" 时出错|请检查文件夹是否有写权限"
@@ -117,12 +124,14 @@ Easp.Lang("error-fso-renamefile")       = "重命名失败|:源文件不存在 "
 Easp.Lang("error-fso-rename")           = "重命名失败|:已存在同名文件 ""{0}""|"
 Easp.Lang("error-fso-control")          = "文件或文件夹操作错误|:{0}{1}失败（{2}{3}）|"
 Easp.Lang("error-fso-ctrlnotfound")     = "文件或文件夹操作错误|:{0}{1}失败，{2}{1}不存在（{3}）|"
+'=== Easp.Error (Easp.Http) ===
 Easp.Lang("error-http-object")          = "获取远程HTTP内容出错|:服务器不支持XMLHTTP组件|请重新安装服务器XMLHTTP组件"
 Easp.Lang("error-http-serverdown")      = "远程服务器没有响应|:远程地址 ""{0}"" 没有响应|"
 Easp.Lang("error-http-status")          = "获取远程Http内容出错|:远程地址 ""{0}"" 不可访问，错误代码 {1} |"
 Easp.Lang("error-http-remote")          = "获取远程Http内容出错|:远程地址： ""{0}"" ， 方法： {1} |"
 Easp.Lang("error-http-wrongstart")      = "截取远程Http内容出错|:目标源码中未找到定位开始字符串 ""{0}""|"
 Easp.Lang("error-http-wrongend")        = "截取远程Http内容出错|:目标源码中未找到定位结束字符串 ""{0}""|"
+'=== Easp.Error (Easp.Json) ===
 Easp.Lang("error-json-invalid-json")    = "Json解析出错|:Json格式不正确，只能以 ""{"" 或 ""["" 开头|"
 Easp.Lang("error-json-missing-brace")   = "Json解析出错|:缺少 ""}"" 号 &gt;&gt; {0}|"
 Easp.Lang("error-json-missing-bracket") = "Json解析出错|:缺少 ""]"" 号 &gt;&gt; {0}|"
@@ -132,11 +141,13 @@ Easp.Lang("error-json-invalid-boolean") = "Json解析出错|:无效的boolean值
 Easp.Lang("error-json-invalid-null")    = "Json解析出错|:无效的null值在第 {0} 个字符 &gt;&gt; {1}|"
 Easp.Lang("error-json-invalid-key")     = "Json解析出错|:无效的键值(key)在第 {0} 个字符 &gt;&gt; {1}|"
 Easp.Lang("error-json-create-json")     = "生成Json字符串出错|:键值(key)：{0}, 值(value)：{1}|"
+'=== Easp.Error (Easp.List) ===
 Easp.Lang("error-list-indexnull")       = "超级数组设置值出错|:下标不能为空|"
 Easp.Lang("error-list-indexwrong")      = "超级数组设置值出错|:下标 {0} 不正确，只能是数字、字母、下划线(_)、点(.)和斜杠(/)组成|"
 Easp.Lang("error-list-outofrange")      = "超级数组下标越界|:当前下标 {0} 超过了最大下标 {1}|"
 Easp.Lang("error-list-outofhash")       = "超级数组下标越界|:当前下标 {0} 不在数组Hash列中|"
 Easp.Lang("error-list-notlist")         = "超级数组处理出错|:参数不是有效的数组或者List对象|"
+'=== Easp.Error (Easp.Xml) ===
 Easp.Lang("error-xml-nocom")            = "XML文件操作出错|:服务器未安装XMLDOM组件|:请在服务器安装MSXML2.DOMDocument组件"
 Easp.Lang("error-xml-domopen")          = "打开XML文档出错|:打开XML文档 ""{0}"" 出错|"
 Easp.Lang("error-xml-domload")          = "加载XML文档出错|:加载XML文档 ""{0}"" 出错|"
@@ -147,4 +158,15 @@ Easp.Lang("error-xml-notnode")          = "载入XML节点出错|:节点不是�
 Easp.Lang("error-xml-prevel")           = "查找XML节点出错|:节点 {0} 没有上一个同级元素|"
 Easp.Lang("error-xml-nextel")           = "查找XML节点出错|:节点 {0} 没有下一个同级元素|"
 Easp.Lang("error-xml-findel")           = "查找XML节点出错|:节点 {0} 中未找到目标节点 {1}|"
+'=== Easp.Error (Easp.Upload) ===
+Easp.Lang("error-uplaod-enctypeor-en")     = "ERROR_INVALID_ENCTYPEOR_METHOD"
+Easp.Lang("error-uplaod-filesize-en")      = "ERROR_FILE_EXCEEDS_SIZE_LIMIT"
+Easp.Lang("error-uplaod-filemaxsize-en")   = "ERROR_FILE_EXCEEDS_MAXSIZE_LIMIT"
+Easp.Lang("error-uplaod-filetype-en")      = "ERROR_INVALID_FILETYPE"
+Easp.Lang("error-uplaod-fileno-en")        = "ERROR_FILE_NO_FOUND"
+Easp.Lang("error-uplaod-enctypeor-zh")     = "表单的 enctype 属性设置不正确"
+Easp.Lang("error-uplaod-filesize-zh")      = "超过了单个文件大小限制"
+Easp.Lang("error-uplaod-filemaxsize-zh")   = "超过了所有文件总大小限制"
+Easp.Lang("error-uplaod-filetype-zh")      = "无效的文件类型"
+Easp.Lang("error-uplaod-fileno-zh")        = "文件未找到"
 %>
