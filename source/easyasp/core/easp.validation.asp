@@ -193,6 +193,13 @@ Class EasyASP_Validation
       Easp.Str.JsAlert Easp.IfHas(s_msg, s_msgDefault)
     End If
   End Function
+  '规则验证失败则弹出javascript警告框并跳转到新页面
+  Public Function AlertUrl(ByVal url)
+    Set AlertUrl = NewValidation()
+    If Not b_validate Then
+      Easp.Str.JsAlertUrl Easp.IfHas(s_msg, s_msgDefault), url
+    End If
+  End Function
   '规则验证失败则打印出错误提示信息并终止程序运行
   Public Function PrintEnd()
     Set PrintEnd = NewValidation()
