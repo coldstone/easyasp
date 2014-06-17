@@ -624,7 +624,7 @@ Class EasyASP_Db
         paramType(i) = GetParameterType(Easp.Str.GetColonValue(sqlParam))
         '如果参数是数组
         a_tmp = Easp.Var(param(i)&"_array")
-        If IsArray(a_tmp) Then
+        If Ubound(a_tmp) > 0 Then
           '取第一个数组参数的数量
           a_tmplen = UBound(a_tmp)
           If sqlCount = 0 Then sqlCount = a_tmplen
