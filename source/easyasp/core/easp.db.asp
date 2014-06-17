@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-13 17:06:08
+'## Update Date :   2014-06-17 23:50:35
 '## Description :   Database controler
 '##
 '######################################################################
@@ -624,23 +624,25 @@ Class EasyASP_Db
         paramType(i) = GetParameterType(Easp.Str.GetColonValue(sqlParam))
         '如果参数是数组
         a_tmp = Easp.Var(param(i)&"_array")
-        If Ubound(a_tmp) > 0 Then
-          '取第一个数组参数的数量
-          a_tmplen = UBound(a_tmp)
-          If sqlCount = 0 Then sqlCount = a_tmplen
-          '判断所有为数组的参数所包含的数组数量是否一致
-          If sqlCount > 0 And sqlCount <> a_tmplen Then
-            Easp.Error.FunctionName = "Easp.Db.GetBatchArray"
-            Easp.Error.Detail = param(i)
-            Easp.Error.Raise "error-db-paramarray"
-            Exit Function
+        If IsArray(a_tmp) Then
+          If Ubound(a_tmp) > 0 Then
+            '取第一个数组参数的数量
+            a_tmplen = UBound(a_tmp)
+            If sqlCount = 0 Then sqlCount = a_tmplen
+            '判断所有为数组的参数所包含的数组数量是否一致
+            If sqlCount > 0 And sqlCount <> a_tmplen Then
+              Easp.Error.FunctionName = "Easp.Db.GetBatchArray"
+              Easp.Error.Detail = param(i)
+              Easp.Error.Raise "error-db-paramarray"
+              Exit Function
+            End If
+            '将所有是数组的参数用一个数组保存起来
+            ReDim Preserve paramBatch(2,j)
+            paramBatch(0,j) = match(i)
+            paramBatch(1,j) = param(i)
+            paramBatch(2,j) = paramType(i)
+            j = j + 1
           End If
-          '将所有是数组的参数用一个数组保存起来
-          ReDim Preserve paramBatch(2,j)
-          paramBatch(0,j) = match(i)
-          paramBatch(1,j) = param(i)
-          paramBatch(2,j) = paramType(i)
-          j = j + 1
         End If
       Next
       ReDim a_sql(sqlCount)
