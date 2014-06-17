@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Variables Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-13 08:46:55
+'## Update Date :   2014-06-17 16:57:46
 '## Description :   Get and set EasyASP super variables.
 '##
 '######################################################################
@@ -17,7 +17,6 @@ Class EasyASP_Var
     Set o_var = Server.CreateObject("Scripting.Dictionary")
     o_var.CompareMode = 1 '对key进行文本比较
     b_loaded = False
-    'Call getVars()
   End Sub
   Private Sub Class_Terminate()
     Dim key
@@ -136,18 +135,16 @@ Class EasyASP_Var
         key = requestType & "." & LCase(requestKey)
         value =  requestDic(requestKey)
         Easp.SetDictionaryKey o_var, key, value
-        '如果值为多个，则转为数组存入***_array变量
+        '同时存入数组***_array变量
         valueCount = requestDic(requestKey).Count - 1
-        If valueCount>0 Then
-          key = key & "_array"
-          Easp.SetDictionaryKey o_var, key & "_length", valueCount + 1
-          ReDim values(valueCount)
-          For i = 0 To (valueCount)
-            values(i) = requestDic(requestKey)(i+1)
-            Easp.SetDictionaryKey o_var, key & "_" & i, values(i)
-          Next
-          Easp.SetDictionaryKey o_var, key, values
-        End If
+        key = key & "_array"
+        Easp.SetDictionaryKey o_var, key & "_length", valueCount + 1
+        ReDim values(valueCount)
+        For i = 0 To (valueCount)
+          values(i) = requestDic(requestKey)(i+1)
+          Easp.SetDictionaryKey o_var, key & "_" & i, values(i)
+        Next
+        Easp.SetDictionaryKey o_var, key, values
       Next
     End If
   End Sub
