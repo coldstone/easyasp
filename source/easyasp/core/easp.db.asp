@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-17 23:50:35
+'## Update Date :   2014-06-19 1:57:42
 '## Description :   Database controler
 '##
 '######################################################################
@@ -1125,7 +1125,7 @@ Class EasyASP_Db
   End Function
 
   '取出参数中的每一对字段名称和值参数
-  Private Function GetFiledValues(ByVal fieldValues)
+  Private Function GetFiledValues(ByVal fieldValues, ByRef conn)
     Dim a_fieldValues, i_fieldValuesLength, i
     Dim hasFields, fields(), values()
     '按字段和值拆分
@@ -1138,7 +1138,7 @@ Class EasyASP_Db
     '取出字段名称和值参数
     For i = 0 To i_fieldValuesLength
       If hasFields Then
-        fields(i) = Trim(Easp.Str.GetColonName(a_fieldValues(i)))
+        fields(i) = FixName(Trim(Easp.Str.GetColonName(a_fieldValues(i))), conn)
         values(i) = Trim(Easp.Str.GetColonValue(a_fieldValues(i)))
       Else
         '如果没有字段名
@@ -1154,10 +1154,11 @@ Class EasyASP_Db
     Dim s_sqlstart, s_sqlvalues, s_sqlend, i_result, i_paramCount
     Dim i_sqllimit, i_paramlimit, i_limit
     Dim i_valuesCount, i1, i2, i3, i4, s_sqltmp
+    table = FixName(table, conn)
     '取数据库类型
     s_dbType = GetType(conn)
     '拆分字段和值
-    a_fieldValues = GetFiledValues(fieldValues)
+    a_fieldValues = GetFiledValues(fieldValues, conn)
     '组合为SQL插入语句
     If a_fieldValues(0) Then
       s_sqlstart = "Insert Into " & table & " (" & Join(a_fieldValues(1),", ") & ") Values "
@@ -1227,6 +1228,7 @@ Class EasyASP_Db
   Public Function Delete(ByRef conn, ByVal table, ByVal where)
     On Error Resume Next
     Dim sql
+    table = FixName(table, conn)
     sql = "Delete From " & table
     If Easp.Has(where) Then sql = sql & " Where " & where
     Delete = ExecuteSql(conn, sql, 0)
@@ -1243,6 +1245,7 @@ Class EasyASP_Db
   Public Function DeleteBatch(ByRef conn, ByVal table, ByVal where)
     On Error Resume Next
     Dim sql
+    table = FixName(table, conn)
     sql = "Delete From " & table
     If Easp.Has(where) Then
       sql = sql & " Where ("
@@ -1264,6 +1267,7 @@ Class EasyASP_Db
   Public Function Update(ByRef conn, ByVal table, ByVal fieldValues, ByVal where)
     On Error Resume Next
     Dim sql
+    table = FixName(table, conn)
     sql = "Update " & table & " Set " & fieldValues
     If Easp.Has(where) Then sql = sql & " Where " & where
     Update = ExecuteSql(conn, sql, 0)
@@ -1279,14 +1283,19 @@ Class EasyASP_Db
   '批量删除记录
   Public Function UpdateBatch(ByRef conn, ByVal table, ByVal fieldValues, ByVal where)
     On Error Resume Next
-    Dim sql
+    Dim sql, a_field
+    table = FixName(table, conn)
+    a_field = GetBatchArray(fieldValues)(0)
     sql = "Update " & table & " Set " & fieldValues
-    If Easp.Has(where) Then
-      sql = sql & " Where ("
-      sql = sql & Join(GetBatchArray(where)(0),") Or (")
-      sql = sql & ")"
+    If Ubound(a_field) > 0 Then
+      If Easp.Has(where) Then sql = sql & " Where " & where
+      UpdateBatch = ExecuteBatch(conn, sql)
+    Else
+      If Easp.Has(where) Then
+        sql = sql & " Where (" & Join(GetBatchArray(where)(0), ") Or (") & ")"
+      End If
+      UpdateBatch = ExecuteSql(conn, sql, 0)
     End If
-    UpdateBatch = ExecuteSql(conn, sql, 0)
     CheckError "updatebatch", Err, conn, "UpdateBatch", sql
   End Function
   '用默认Connection批量删除记录
@@ -1297,6 +1306,23 @@ Class EasyASP_Db
     CheckError "updatebatch", Err, o_conn, "UpdBatch", sql
   End Function
 
+  '表名关键字处理
+  Private Function FixName(ByVal string, ByRef conn)
+    string = Trim(string)
+    Select Case UCase(GetType(conn))
+      Case "ACCESS", "MSSQL"
+        If Not Easp.Str.Test(string, "^(\[.+\]|"".+"")$") Then
+          string = "[" & string & "]"
+        End If
+      Case "MYSQL"
+        If Not Easp.Str.Test(string, "^`.+`$") Then
+          string = "`" & string & "`"
+        End If
+      Case Else
+        string = """" & straing & """"
+    End Select
+    FixName = string
+  End Function
   '替换SQL语句中的{easp.newid}
   Private Function ReplaceNewId(ByVal sql)
     If InStr(1,sql, "{easp.newid}",1)>0 Then
