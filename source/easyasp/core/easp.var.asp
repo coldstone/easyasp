@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Variables Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-17 16:57:46
+'## Update Date :   2014-06-18 11:15:17
 '## Description :   Get and set EasyASP super variables.
 '##
 '######################################################################
@@ -92,11 +92,13 @@ Class EasyASP_Var
 
   '取得EasyASP变量集原始字典对象
   Public Function [GetObject]()
+    If Not b_loaded Then Call getVars()
     Set [GetObject] = o_var
   End Function
 
   '查找是否包含某一变量
   Public Function Has(ByVal key)
+    If Not b_loaded Then Call getVars()
     Has = (o_var.Exists(key) Or o_var.Exists("get." & key) Or o_var.Exists("post." & key) Or Easp.Str.IsInList("easp.newid,easp.datetime,easp.date,easp.time", key) Or o_var.Exists("easp." & key))
   End Function
   
