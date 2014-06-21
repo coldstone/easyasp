@@ -798,6 +798,11 @@ Class EasyASP_Db
       End If
       Set GetRecordSet = ExecuteSql(conn, s_sql, 1)
     Else
+      i_rsSize = 0
+      i_minRow = 0
+      i_maxRow = 0
+      i_pageIndex = 0
+      i_pageCount = 0
       Set GetRecordSet = ExecuteSql(conn, s_osql, 1)
     End If
     '输出执行时间及执行结果
