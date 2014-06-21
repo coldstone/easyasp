@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP String Validation Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-05-12 0:38:21
+'## Update Date :   2014-06-22 0:48:20
 '## Description :   With defined rules or custom rules to verify the 
 '##                 legitimacy of a string.
 '##
@@ -116,7 +116,9 @@ Class EasyASP_Validation
       If b_array Then
         Value = a_return
       Else
-        Value = Join(a_return, s_split)
+        Dim o : Set o = New EasyASP_ValidationTool
+        Value = o.Join_(a_return, s_split)
+        Set o = Nothing
       End If
     End If
   End Property
@@ -135,6 +137,13 @@ Class EasyASP_Validation
     NewValidation.IsReturnArray = b_array '继承是否返回数组
     NewValidation.ReturnArray = a_return '继承返回的数组
   End Function
+  '去除两头空白
+  Public Function Trim()
+    Dim o : Set o = New EasyASP_StringOriginal
+    s_source = o.Trim_(s_source)
+    Set o = Nothing
+    Set Trim = NewValidation()
+  End Function
   '设置默认值
   Public Function [Default](ByVal string)
     Set [Default] = NewValidation()
@@ -147,12 +156,16 @@ Class EasyASP_Validation
   End Function
   '设置分隔符(设置后会按分隔符分隔后一项项验证)
   Public Function Split(ByVal string)
-    Dim obj
-    Set obj = New EasyASP_Validation_Split
-    a_return = obj.Splt(s_source, string)
+    Dim o : Set o = New EasyASP_StringOriginal
+    a_return = o.Split_(s_source, string)
     s_split = string
+    Set o = Nothing
     Set Split = NewValidation()
-    Set obj = Nothing
+  End Function
+  '将分隔后的数组按另外的符号组合为字符串
+  Public Function Join(ByVal string)
+    s_split = string
+    Set Join = NewValidation()
   End Function
   '设置返回数组
   Public Function GetArray()
@@ -545,9 +558,9 @@ Class EasyASP_Validation
   End Function
   
 End Class
-Class EasyASP_Validation_Split
-  Public Function Splt(ByVal string, ByVal separator)
-    Splt = Split(string, separator)
+Class EasyASP_ValidationTool
+  Public Function Join_(ByRef arr, ByVal separator)
+    Join_ = Join(arr, separator)
   End Function
 End Class
 %>
