@@ -35,10 +35,16 @@ Class EasyASP_Db
     Easp.Error("error-db-updatebatch") = Easp.Lang("error-db-updatebatch")
     Set o_connections = Server.CreateObject("Scripting.Dictionary")
     '记录默认连接的事务层次
-    i_transLevel = 0
-    i_queryTimes = 0
-    s_pageParam  = "page"
-    i_pageSize   = 25
+    i_transLevel  = 0
+    i_queryTimes  = 0
+    s_pageParam   = "page"
+    i_pageSize    = 25
+    i_pageIndex   = 0
+    i_pageCount   = 0
+    i_recordCount = 0
+    i_rsSize      = 0
+    i_maxRow      = 0
+    i_minRow      = 0
     Set o_pager = Server.CreateObject("Scripting.Dictionary")
     o_pager.CompareMode = 1
     SetPager "", "{first}{prev}{liststart}{list}{listend}{next}{last} {jump}", Array("jump:select", "jumplong:0")
@@ -81,6 +87,30 @@ Class EasyASP_Db
   End Property
   Public Property Get PageSize()
     PageSize = i_pageSize
+  End Property
+  '读取分页记录集总记录数
+  Public Property Get PageRecordCount()
+    PageRecordCount = i_recordCount
+  End Property
+  '读取分页记录集总页数
+  Public Property Get PageCount()
+    PageCount = i_pageCount
+  End Property
+  '读取分页记录集当前页码
+  Public Property Get PageIndex()
+    PageIndex = i_pageIndex
+  End Property
+  '读取分页记录集当前页记录数
+  Public Property Get PageCurrentSize()
+    PageCurrentSize = i_rsSize
+  End Property
+  '读取分页记录集当前页最小记录行号
+  Public Property Get PageMinRow()
+    PageMinRow = i_minRow
+  End Property
+  '读取分页记录集当前页最大记录行号
+  Public Property Get PageMaxRow()
+    PageMaxRow = i_maxRow
   End Property
 
   '生成数据库连接字符串
@@ -768,11 +798,6 @@ Class EasyASP_Db
       End If
       Set GetRecordSet = ExecuteSql(conn, s_sql, 1)
     Else
-      i_rsSize = 0
-      i_minRow = 0 
-      i_maxRow = 0
-      i_pageIndex = 0
-      i_pageCount = 0
       Set GetRecordSet = ExecuteSql(conn, s_osql, 1)
     End If
     '输出执行时间及执行结果
