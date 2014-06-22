@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-19 1:57:42
+'## Update Date :   2014-06-23 0:23:51
 '## Description :   Database controler
 '##
 '######################################################################
@@ -13,7 +13,7 @@
 Class EasyASP_Db
 
   Private o_conn, o_connections, o_pager
-  Private s_pageParam
+  Private s_pageParam, s_insSeparator
   Private i_transLevel, i_queryTimes
   Private i_pageIndex, i_pageSize, i_pageCount, i_recordCount, i_rsSize, i_maxRow, i_minRow
 
@@ -34,10 +34,12 @@ Class EasyASP_Db
     Easp.Error("error-db-update") = Easp.Lang("error-db-update")
     Easp.Error("error-db-updatebatch") = Easp.Lang("error-db-updatebatch")
     Set o_connections = Server.CreateObject("Scripting.Dictionary")
+    o_connections.CompareMode = 1
     '记录默认连接的事务层次
     i_transLevel  = 0
     i_queryTimes  = 0
     s_pageParam   = "page"
+    s_insSeparator= ","
     i_pageSize    = 25
     i_pageIndex   = 0
     i_pageCount   = 0
@@ -45,7 +47,7 @@ Class EasyASP_Db
     i_rsSize      = 0
     i_maxRow      = 0
     i_minRow      = 0
-    Set o_pager = Server.CreateObject("Scripting.Dictionary")
+    Set o_pager   = Server.CreateObject("Scripting.Dictionary")
     o_pager.CompareMode = 1
     SetPager "", "{first}{prev}{liststart}{list}{listend}{next}{last} {jump}", Array("jump:select", "jumplong:0")
     SetPager "bootstrap", "{first}{prev}{list}{next}{last}", Array("listtype:ul", "listclass:pagination pagination-sm", "currentclass:active")
@@ -111,6 +113,10 @@ Class EasyASP_Db
   '读取分页记录集当前页最大记录行号
   Public Property Get PageMaxRow()
     PageMaxRow = i_maxRow
+  End Property
+  '设置Ins和Insert方法字段之间的分隔符，默认为 ,
+  Public Property Let InsertSeparator(ByVal string)
+    s_insSeparator = string
   End Property
 
   '生成数据库连接字符串
@@ -1159,7 +1165,7 @@ Class EasyASP_Db
     Dim a_fieldValues, i_fieldValuesLength, i
     Dim hasFields, fields(), values()
     '按字段和值拆分
-    a_fieldValues = Split(fieldValues,",")
+    a_fieldValues = Split(fieldValues, s_insSeparator)
     i_fieldValuesLength = UBound(a_fieldValues)
     '如果没有字段只有值
     hasFields = InStr(Easp.Str.Replace(fieldValues, "\{(.+?)\}", "?"), ":") > 0

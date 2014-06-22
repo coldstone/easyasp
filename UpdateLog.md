@@ -1,4 +1,5 @@
 ##EasyASP 更新日志
+- [2014/06/23] 新增：数据库类新增 Easp.Db.InsertSeparator 属性，用于设置 Insert/Ins 方法中字段间的分隔符，默认为逗号（,）。
 - [2014/06/22] 新增：数据库类新增了一系列用于读取分页后相关数据的属性 Easp.Db.PageRecordCount/PageIndex/PageCount/PageCurrentSize/PageMinRow/PageMaxRow。
 - [2014/06/22] 新增：后台验证类新增 .Trim() 方法用于去除两端空白；新增 .Join(string) 方法可以将用 .Spilit 方法分割验证后用其他分隔符组合为新的字符串。
 - [2014/06/19] 更改：数据库操作类修改了批量更新的逻辑，从批量更新至同一值修改为如果待更新的值包含多条记录则会分别更新每一条记录。
