@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-23 0:23:51
+'## Update Date :   2014-06-23 15:37:27
 '## Description :   Database controler
 '##
 '######################################################################
@@ -853,7 +853,7 @@ Class EasyASP_Db
   '返回：  Int
   Private Function GetPageIndex()
     Dim i_page
-    i_page = Easp.Get(s_pageParam)
+    i_page = Easp.Var(s_pageParam)
     i_page = Easp.IIF(isNumeric(i_page) And Easp.Has(i_page), i_page, 1)
     GetPageIndex = Int(i_page)
   End Function
