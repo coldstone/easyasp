@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP FileSystemObject Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2010/04/06
+'## Update Date :   2014-06-23 16:19:07
 '## Description :   EasyASP Files System Operator
 '##
 '######################################################################
@@ -18,8 +18,10 @@ Class EasyASP_Fso
   Private Sub Class_Initialize
     s_fsoName     = "Scripting.FileSystemObject"
     s_charset     = "UTF-8"
+    On Error Resume Next
     Set Fso       = Server.CreateObject(s_fsoName)
     Set oFso      = Fso
+    On Error Goto 0
     IsVirtualHost = True
     b_force       = True
     b_overwrite   = True
@@ -43,11 +45,14 @@ Class EasyASP_Fso
     Set Fso   = Nothing
     Set oFso   = Nothing
   End Sub
-  '设置FSO组件名称
+  '设置和读取FSO组件名称
   Public Property Let fsoName(Byval str)
     s_fsoName = str
     Set Fso = Server.CreateObject(s_fsoName)
     Set oFso = Fso
+  End Property
+  Public Property Get fsoName()
+    fsoName = s_fsoName
   End Property
   '设置待操作文件编码
   Public Property Let CharSet(Byval str)
