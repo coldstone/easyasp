@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-23 15:37:27
+'## Update Date :   2014-06-24 17:13:50
 '## Description :   Database controler
 '##
 '######################################################################
@@ -1268,14 +1268,12 @@ Class EasyASP_Db
     sql = "Delete From " & table
     If Easp.Has(where) Then sql = sql & " Where " & where
     Delete = ExecuteSql(conn, sql, 0)
-    CheckError "delete", Err, conn, "Delete", sql
+    CheckError "delete", Err, conn, "Delete/Del", sql
   End Function
   '用默认Connection删除记录
   Public Function Del(ByVal table, ByVal where)
-    On Error Resume Next
     OpenConn()
     Del = Delete(o_conn, table, where)
-    CheckError "delete", Err, o_conn, "Del", sql
   End Function
   '批量删除记录
   Public Function DeleteBatch(ByRef conn, ByVal table, ByVal where)
@@ -1289,14 +1287,12 @@ Class EasyASP_Db
       sql = sql & ")"
     End If
     DeleteBatch = ExecuteSql(conn, sql, 0)
-    CheckError "deletebatch", Err, conn, "DeleteBatch", sql
+    CheckError "deletebatch", Err, conn, "DeleteBatch/DelBatch", sql
   End Function
   '用默认Connection批量删除记录
   Public Function DelBatch(ByVal table, ByVal where)
-    On Error Resume Next
     OpenConn()
     DelBatch = DeleteBatch(o_conn, table, where)
-    CheckError "deletebatch", Err, o_conn, "DelBatch", sql
   End Function
 
   '更新记录
@@ -1307,14 +1303,12 @@ Class EasyASP_Db
     sql = "Update " & table & " Set " & fieldValues
     If Easp.Has(where) Then sql = sql & " Where " & where
     Update = ExecuteSql(conn, sql, 0)
-    CheckError "update", Err, conn, "Update", sql
+    CheckError "update", Err, conn, "Update/Upd", sql
   End Function
   '用默认Connection删除记录
   Public Function Upd(ByVal table, ByVal fieldValues, ByVal where)
-    On Error Resume Next
     OpenConn()
     Upd = Update(o_conn, table, fieldValues, where)
-    CheckError "update", Err, o_conn, "Upd", sql
   End Function
   '批量删除记录
   Public Function UpdateBatch(ByRef conn, ByVal table, ByVal fieldValues, ByVal where)
@@ -1332,14 +1326,12 @@ Class EasyASP_Db
       End If
       UpdateBatch = ExecuteSql(conn, sql, 0)
     End If
-    CheckError "updatebatch", Err, conn, "UpdateBatch", sql
+    CheckError "updatebatch", Err, conn, "UpdateBatch/UpdBatch", sql
   End Function
   '用默认Connection批量删除记录
   Public Function UpdBatch(ByVal table, ByVal fieldValues, ByVal where)
-    On Error Resume Next
     OpenConn()
     UpdBatch = UpdateBatch(o_conn, table, fieldValues, where)
-    CheckError "updatebatch", Err, o_conn, "UpdBatch", sql
   End Function
 
   '表名关键字处理
