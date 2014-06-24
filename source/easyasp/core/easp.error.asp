@@ -50,7 +50,7 @@ Class EasyASP_Error
       If i_tmp < 2 Then
         a_info = Split(s & String(2 - i_tmp, "|"), "|")
       End If
-      Easp.SetDictionaryKey o_err, n, a_info
+      o_err(n) = a_info
     End If
   End Property
   '取最后一次发生错误的代码

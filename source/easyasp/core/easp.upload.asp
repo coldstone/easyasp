@@ -132,6 +132,7 @@ Class EasyASP_MoLibUpload
   End Function
     
   Public function GetData()
+    If IsUploaded Then GetData = True : Exit Function 'added by EasyASP
     Dim oarr 'added by EasyASP
     GetData =false
     vMaxSize = ParseSizeLimit(vMaxSize)
@@ -141,7 +142,6 @@ Class EasyASP_MoLibUpload
     Dim value, str, bcrlf, fpos, sSplit, slen, istart,ef
     Dim TotalBytes,tempdata,BytesRead,ChunkReadSize,PartSize,DataPart,formend, formhead, startpos, endpos, formname, FileName, fileExe, valueend, NewName,localname,type_1,contentType
     TotalBytes = Request.TotalBytes
-    IsUploaded = True 'added by EasyASP
     ef = false
     If checkEntryType = false Then ef = true : mvarDescription = Easp.Lang("error-uplaod-enctypeor-" & s_errLang)
     If vServerVersion>=6 Then
@@ -267,6 +267,7 @@ Class EasyASP_MoLibUpload
     Loop Until (istart + 2) >= LenB(tempdata)
     tempdata = empty
     vLostTime = FormatNumber((timer-time1)*1000,2)
+    IsUploaded = True 'added by EasyASP
     GetData =true
   End Function
   
@@ -325,7 +326,7 @@ Class EasyASP_MoLibUpload
     Getname = y & m & d & h & mm & S & r
   End Function
   
-  Private Function checkEntryType()
+  Public Function checkEntryType()
     Dim ContentType, ctArray, bArray,RequestMethod
     RequestMethod=trim(LCase(Request.ServerVariables("REQUEST_METHOD")))
     if RequestMethod="" or RequestMethod<>"post" then

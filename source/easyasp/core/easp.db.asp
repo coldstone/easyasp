@@ -183,7 +183,7 @@ Class EasyASP_Db
   Public Sub SetConnection(ByVal connectionName, ByVal dbType, ByVal strDB, ByVal strServer)
     dbType = UCase(Cstr(dbType))
     If IsNumeric(dbType) Then dbType = Array("MSSQL","ACCESS","MYSQL")(dbType)
-    Easp.SetDictionaryKey o_connections, connectionName, Array(dbType, strDB, strServer)
+    o_connections(connectionName) = Array(dbType, strDB, strServer)
   End Sub
   
   '设置默认Connection对象
@@ -1111,8 +1111,8 @@ Class EasyASP_Db
   '     @config  - 分页导航配置
   Public Sub SetPager(ByVal pagerName, ByVal html, ByRef config)
     pagerName = Easp.IfHas(pagerName, "default")
-    If Easp.Has(html) Then Easp.SetDictionaryKey o_pager, pagerName & "_html", html
-    If Easp.Has(config) Then Easp.SetDictionaryKey o_pager, pagerName & "_config", config
+    If Easp.Has(html) Then o_pager(pagerName & "_html") = html
+    If Easp.Has(config) Then o_pager(pagerName & "_config") = config
   End Sub
 
   '调用分页样式

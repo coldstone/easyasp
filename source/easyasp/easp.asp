@@ -224,8 +224,9 @@ Class EasyASP
     '取出默认值
     s_default = Str.GetColonValue(formString)
     formString = Str.GetColonName(formString)
-    If Upload.IsUploaded Then
+    If Upload.checkEntryType Then
     '如果是上传表单
+      If Not Upload.IsUploaded Then Upload.GetData()
       Dim a_post, i
       If Upload.FormArray.Exists(formString) Then
       '如果表单项确实存在
@@ -346,7 +347,7 @@ Class EasyASP
   '伪静态规则设置（传统方法）
   Public Sub RewriteRule(ByVal rule, ByVal url)
     If (Left(rule,2)<>"^/" And Left(rule,1)<>"/") Or Instr(url,"?") = 0 Then Exit Sub
-    SetDictionaryKey o_rwt, NewID(), Array(rule, url)
+    o_rwt(NewID()) = Array(rule, url)
     '设置伪静态页面的Easp.Var("get.***")值
     Dim a_rwt, a_params, i, key
     a_rwt = IsRewriteRule()

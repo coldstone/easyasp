@@ -76,17 +76,17 @@ Class EasyASP_Var
     If IsArray(value) Then
       leng = UBound(value)
       '如果是数组则：1、将数组转为字符串存入 key
-      Easp.SetDictionaryKey o_var, key, Join(value, ", ")
+      o_var(key) = Join(value, ", ")
       '2、将原始数组存入 key_array
-      Easp.SetDictionaryKey o_var, key & "_array", value
+      o_var(key & "_array") = value
       '3、将数组长度存入 key_array_length
-      Easp.SetDictionaryKey o_var, key & "_array_length", leng + 1
+      o_var(key & "_array_length") = leng + 1
       '4、将数组元素存入 key_array_0、key_array_1...
       For i = 0 To leng
-        Easp.SetDictionaryKey o_var, key & "_array_" & i, value(i)
+        o_var(key & "_array_" & i) = value(i)
       Next
     Else
-      Easp.SetDictionaryKey o_var, key, value
+      o_var(key) = value
     End If
   End Property
 
@@ -105,16 +105,17 @@ Class EasyASP_Var
   '将页面参数获取值写入到Var集合
   Private Sub getVars()
     ''取表单值
-    If Not Easp.Upload.IsUploaded Then
+    If Not Easp.Upload.checkEntryType Then
       Call GetRequest("post")
     Else
+      If Not Easp.Upload.IsUploaded Then Easp.Upload.GetData()
       Dim o_dic, s_post, key, value
       Set o_dic = Easp.Upload.Post("-1")
       If o_dic.Count > 0 Then
         For Each s_post In o_dic
           key = "post." & s_post
           value = o_dic(s_post)
-          Easp.SetDictionaryKey o_var, key, value
+          o_var(key) = value
         Next
       End If
       'Easp.Console o_var
@@ -136,17 +137,17 @@ Class EasyASP_Var
       For Each requestKey In requestDic
         key = requestType & "." & LCase(requestKey)
         value =  requestDic(requestKey)
-        Easp.SetDictionaryKey o_var, key, value
+        o_var(key) = value
         '同时存入数组***_array变量
         valueCount = requestDic(requestKey).Count - 1
         key = key & "_array"
-        Easp.SetDictionaryKey o_var, key & "_length", valueCount + 1
+        o_var(key & "_length") = valueCount + 1
         ReDim values(valueCount)
         For i = 0 To (valueCount)
           values(i) = requestDic(requestKey)(i+1)
-          Easp.SetDictionaryKey o_var, key & "_" & i, values(i)
+          o_var(key & "_" & i) = values(i)
         Next
-        Easp.SetDictionaryKey o_var, key, values
+        o_var(key) = values
       Next
     End If
   End Sub
