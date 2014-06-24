@@ -430,7 +430,7 @@ Class EasyASP_Json_Object
       Execute "Me.Get" & Easp.Json.ToEvalKey(key) & " = value"
       Exit Sub
     Else
-      o_dic(key) = value
+      Easp.SetDictionaryKey o_dic, key, value
     End If
     If Err.Number<>0 Then
       If Easp.Debug Then
@@ -490,7 +490,7 @@ Class EasyASP_Json_Array
         If Not o_dic.Exists(i) Then o_dic.Add i, Null
       Next
     End If
-    o_dic(Index) = value
+    Easp.SetDictionaryKey o_dic, index, value
   End Property
   '取数组的长度
   Public Property Get Length
@@ -525,7 +525,7 @@ Class EasyASP_Json_Array
     If (index = (o_dic.Count-1)) Then
       o_dic.Remove(index)
     ElseIf o_dic.Exists(index) Then
-      o_dic(Index) = Null
+      Easp.SetDictionaryKey o_dic, index, Null
     End If
   End Sub
   
