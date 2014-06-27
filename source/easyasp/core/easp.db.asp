@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-24 17:13:50
+'## Update Date :   2014-06-28 1:47:35
 '## Description :   Database controler
 '##
 '######################################################################
@@ -1477,12 +1477,23 @@ Class EasyASP_Db
   Private Function FormatValue(ByVal value, ByVal ptype)
     Dim s_tmp
     Select Case ptype
-      Case 129,130,133,134,135,200,201,202,203,7
-        s_tmp = "'" & Replace(value, "'", "''") & "'"
+      Case 129,130,200,201,202,203
+        If Easp.IsN(value) Then
+          s_tmp = "''"
+        Else
+          s_tmp = "'" & Replace(value, "'", "''") & "'"
+        End If
+      Case 7,133,134,135
+        If Easp.IsN(value) Then
+          s_tmp = "NULL"
+        Else
+          s_tmp = "'" & Replace(value, "'", "''") & "'"
+        End If
       Case 13, 128, 204, 205
         s_tmp = Easp.IIF(Easp.Has(value),"(blob)","NULL")
       Case Else
         s_tmp = Easp.IfHas(value,"NULL")
+        s_tmp = Replace(s_tmp, "'", "''")
     End Select
     FormatValue = s_tmp
   End Function
