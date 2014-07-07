@@ -22,14 +22,14 @@ End If
 	<style>
   	div{text-align:center;}
   	.container{width:90%;margin:0 auto;}
-  	.container textarea {width:100%;height:300px;border:1px solid #222;}
+  	.container textarea {width:100%;height:320px;border:1px solid #222;word-break:break-all;}
   	.btns{padding:10px;}
 	</style>
 </head>
 <body>
 	<div class="container">
   	<div>
-    	<textarea name="source" id="source">EasyASP 加密解密类 Easp.Encrypt 采用了一种非常简单和低强度的对称加密算法，用于普通的加解密场景应该是足够了，优点是速度非常快，缺点是强度低。
+    	<textarea name="source" id="source">EasyASP 加密解密类 Easp.Encrypt 采用了一种高效率的对称加密算法，用于普通的加解密场景应该是足够了，密钥设置得越长安全性越高，优点是速度非常快。
 使用方法
 &lt;%
 '设置密钥
@@ -38,7 +38,16 @@ Easp.Encrypt.Key = "encrypt_key"
 Easp.Encrypt(string)
 '解密
 Easp.Encrypt.Decrypt(string)
-%&gt;</textarea>
+'用指定密钥加密
+Easp.Encrypt.EncryptBy(string, "encrypt_key")
+'用指定密钥解密
+Easp.Encrypt.DecryptBy(string, "encrypt_key")
+%&gt;
+Unicode字符示例：
+ワールドカップ ブラジル大会 : ブラジル監督 ネイマール帯同を望む
+메탈리카, 글래스톤베리 달궈 : 생생 팝 단신 '지구촌 팝뉴스'
+قصة بالصور: يوم من أيام رمضان في أسرة من شينجيانغ
+</textarea>
     </div>
   	<div class="btns">密钥：<input type="text" name="key" id="key" value="encrypt_key"> <input id="btn_en" type="button" value="加密(Encrypt) ↓"> <input id="btn_de" type="button" value="解密(Decrypt) ↑"></div>
   	<div><textarea name="target" id="target"></textarea></div>
@@ -48,19 +57,20 @@ Easp.Encrypt.Decrypt(string)
 <script type="text/javascript">
 <!--
   $(function(){
-    $("#btn_en").on("click",function(){encrypt(true)});
-    $("#btn_de").on("click",function(){encrypt(false)});
+    $('#btn_en').on('click',function(){encrypt(true)});
+    $('#btn_de').on('click',function(){encrypt(false)});
   });
   function encrypt(type){
     type = type ? 0 : 1;
+    $('#' + ['target','source'][type]).val('loading...');
     $.post(
-      "index.asp?action=en",
-      {type:type, key:$("#key").val(), source:$("#source").val(), target:$("#target").val()},
+      'index.asp?action=en',
+      {type:type, key:$('#key').val(), source:$('#source').val(), target:$('#target').val()},
       function(data){
         if(type==0){
-          $("#target").val(data);
+          $('#target').val(data);
         } else if(type==1) {
-          $("#source").val(data);
+          $('#source').val(data);
         }
       }
     );
