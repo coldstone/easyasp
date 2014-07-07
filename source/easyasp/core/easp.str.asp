@@ -625,7 +625,7 @@ Class EasyASP_String
               o.Close : Set o = Nothing
               SB.Append "]}"
             End If
-          Case "Dictionary", "IRequestDictionary", "IReadCookie", "EasyASP_Json_Object", "Errors"
+          Case "Dictionary", "IRequestDictionary", "IReadCookie", "EasyASP_Json_Object", "Errors", "IMatch2"
           '字典对象
             Dim isString
             If TypeName(o) = "IReadCookie" Then
@@ -667,7 +667,7 @@ Class EasyASP_String
             For Each i In o
               If j > 0 Then SB.Append ", "
               SB.Append "{""match"":"
-              SB.Append QuoteString(i)
+              SB.Append QuoteString(i.Value)
               If i.SubMatches.Count > 0 Then
                 For k = 0 To i.SubMatches.Count - 1
                   SB.Append ",""$"
@@ -680,6 +680,12 @@ Class EasyASP_String
               j = j + 1
             Next
             SB.Append "]"
+            '正则搜索集合
+            'Case "IMatch2", "Match"
+            '  s = FormatReplace(s,t,v.Value)
+            '  For i = 0 To v.SubMatches.Count - 1
+            '    s = FormatReplace(s,i+t+1,v.SubMatches(i))
+            '  Next
           Case "IApplicationObject", "ISessionObject"
           'Application对象和Session对象
             SB.Append "{"
