@@ -1,4 +1,14 @@
 ##EasyASP 更新日志
+- [2014/08/24] 修正：修复数据库操作类中分页时 page 如果设置为 0 或者负值时会出现错误的Bug，感谢 @Easp.快乐杀 报告。
+- [2014/07/07] 更改：修改了 Easp.Encrypt 的 demo 示例。
+- [2014/07/07] 更改：Easp.Encrypt 修改密文内容去除所有不可打印字符，增加了2次迭代加密，安全性更高。增加 Easp.Encrypt.EncryptBy 和 Easp.Encrypt.DecryptBy 方法。
+- [2014/07/07] 新增：Easp.Str.ToString方法新增对 Match 对象的支持。
+- [2014/06/28] 修正：修复数据库类 Easp.Db.Ins 方法中插入Null值可能出现的一处Bug。感谢 @Easp.Totoro 报告。
+- [2014/06/24] 修正：Json类的一处Bug。
+- [2014/06/24] 修正：强制变量定义后，数据库操作类中使用 Del/DelBatch/Upd/UpdBatch 方法可能出现的变量未定义错误。
+- [2014/06/24] 更改：优化 Easp.Post 和 Easp.Var 在获取上传表单数据时的逻辑。其它类的一些性能优化。
+- [2014/06/23] 修正：修复FSO类中如果修改了系统FSO组件名可能会出现的一处Bug。
+- [2014/06/23] 更改：数据库操作类修改分页时可用如 Easp.Var("page") = 4 指定页码。
 - [2014/06/23] 新增：数据库类新增 Easp.Db.InsertSeparator 属性，用于设置 Insert/Ins 方法中字段间的分隔符，默认为逗号（,）。
 - [2014/06/22] 新增：数据库类新增了一系列用于读取分页后相关数据的属性 Easp.Db.PageRecordCount/PageIndex/PageCount/PageCurrentSize/PageMinRow/PageMaxRow。
 - [2014/06/22] 新增：后台验证类新增 .Trim() 方法用于去除两端空白；新增 .Join(string) 方法可以将用 .Spilit 方法分割验证后用其他分隔符组合为新的字符串。
