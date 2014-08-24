@@ -3,20 +3,22 @@
 ×÷Õß : coldstone (coldstone[at]qq.com)   
 ¹ÙÍø : <http://www.easyasp.cn>   
 APIÎÄµµ : <http://www.easyasp.cn/api>   
+ÂÛÌ³ : <http://bbs.easyasp.cn>   
 git(osChina) : <http://git.oschina.net/coldstone/easyasp>   
 Licenses : EasyASP ×ñÑ­ [Apache licenses v2](http://zh.wikipedia.org/zh-cn/Apache%E8%AE%B8%E5%8F%AF%E8%AF%81) °æÈ¨Ð­Òé   
    
-EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌÐòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊý»¯²éÑ¯¶àÊý¾Ý¿â²Ù×÷¡¢¸ßÐ§JsonÊý¾ÝÉú³ÉÓë½âÎö¡¢¸÷ÖÖ×Ö·û´®¼°ÈÕÆÚ´¦Àíº¯Êý¡¢¹¦ÄÜÇ¿´ó¶¯Ì¬Êý×é´¦Àí¡¢ÁìÏÈµÄÎÄ¼þÏµÍ³´¦Àí¡¢Ô¶³ÌÎÄ¼þ¼°XMLÎÄµµ´¦Àí¡¢ÄÚ´æ»º´æºÍÎÄ¼þ»º´æ´¦Àí¡¢¼òµ¥ÊµÓÃµÄÄ£°åÒýÇæµÈµÈ·á¸»µÄ¹¦ÄÜ¡£¶øÎªÁË½â¾öASPµ÷ÊÔ²»·½±ãµÄÎÊÌâ£¬EasyASP ÍÆ³öÁË¶À´´µÄ¿ØÖÆÌ¨µ÷ÊÔ¹¦ÄÜÒÔ¼°·á¸»µÄÒì³£ÐÅÏ¢ÏÔÊ¾£¬ÄÜÈÃÄã¿ª·¢ ASP ³ÌÐòÊ±×î´ó³Ì¶ÈµÄ´Ó´íÎóµ÷ÊÔµÄ·×·±ÖÐ½â·Å³öÀ´¡£EasyASP Ä¿Ç°Ìá¹©ÏÂÔØµÄÊÇVBScript°æ±¾¡£
+EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌÐòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊý»¯²éÑ¯¶àÊý¾Ý¿â²Ù×÷¡¢JsonÊý¾ÝÉú³ÉÓë½âÎö¡¢¸÷ÖÖ×Ö·û´®¼°ÈÕÆÚ´¦Àíº¯Êý¡¢¶¯Ì¬Êý×é´¦Àí¡¢ÎÄ¼þÏµÍ³´¦Àí¡¢Ô¶³ÌÎÄ¼þ¼°XMLÎÄµµ´¦Àí¡¢ÄÚ´æ»º´æºÍÎÄ¼þ»º´æ´¦Àí¡¢Ä£°åÒýÇæµÈµÈ·á¸»µÄ¹¦ÄÜ¡£¶øÎªÁË½â¾öASPµ÷ÊÔ²»·½±ãµÄÎÊÌâ£¬EasyASP ÍÆ³öÁË¶À´´µÄ¿ØÖÆÌ¨µ÷ÊÔ¹¦ÄÜÒÔ¼°·á¸»µÄÒì³£ÐÅÏ¢ÏÔÊ¾£¬ÄÜÈÃÄã¿ª·¢ ASP ³ÌÐòÊ±×î´ó³Ì¶ÈµÄ´Ó´íÎóµ÷ÊÔµÄ·×·±ÖÐ½â·Å³öÀ´¡£EasyASP Ä¿Ç°Ìá¹©ÏÂÔØµÄÊÇVBScript°æ±¾¡£
 
 
 ###EasyASP µÄ²¿·Ö¹¦ÄÜÌØµã
-* [EASP] ´óÁ¿·á¸»µÄ×Ö·û´®´¦Àí¡¢ÕýÔò´¦Àí¡¢ÈÕÆÚÊ±¼ä¡¢ÊýÖµ¸ñÊ½»¯¼°ÆäËüÍ¨ÓÃº¯Êý¡£
-* [EASP] ÊµÏÖ¸ßÐÔÄÜµÄ×Ö·û´®¹¹ÔìÀà StringBuilder ¡£
-* [EASP] Ç¿´óµÄ±íµ¥ÑéÖ¤¹¦ÄÜ£¬²ÉÓÃÁ´Ê½²Ù×÷£¬ÄÚÖÃ³¬¹ý30ÖÖÑéÖ¤¹æÔò£¬¿ÉÁé»îÑéÖ¤¸÷ÖÖÀàÐÍÊý¾Ý£¬Ö§³Ö¶àÖÖ·½Ê½×Ô¶¨Òå¡£
-* [EASP] ¼òµ¥¿ì½ÝµÄ Cookies ºÍ Application ¶ÁÐ´¡£
-* [EASP] Ö§³ÖÎ±¾²Ì¬£¨Î±Rewrite£©£¬ÇÒ¶ÔÒÑ¿ª·¢µÄ³ÌÐòÎÞÓ°Ïì¡£
-* [EASP] ÊµÏÖASPÎÄ¼þµÄ¶¯Ì¬ÔØÈë£¬²¢Ö§³ÖÎÞÏÞ¼¶µÄASPÔ­Éúinclude¡£
-* [EASP] ¶À´´µÄ²å¼þÏµÍ³£¬ÄÚÖÃmd5¡¢ºº×Ö×ªÆ´Òô¡¢·­Òë¡¢·Ö´ÊµÈ²å¼þ£¬²¢ÓÐ·á¸»µÄµÚÈý·½²å¼þÌá¹©ÏÂÔØ¡£
+* [ASP] ´óÁ¿·á¸»µÄ×Ö·û´®´¦Àí¡¢ÕýÔò´¦Àí¡¢ÈÕÆÚÊ±¼ä¡¢ÊýÖµ¸ñÊ½»¯¼°ÆäËüÍ¨ÓÃº¯Êý¡£
+* [ASP] ÊµÏÖ¸ßÐÔÄÜµÄ×Ö·û´®¹¹ÔìÀà StringBuilder ¡£
+* [ASP] Ç¿´óµÄ±íµ¥ÑéÖ¤¹¦ÄÜ£¬²ÉÓÃÁ´Ê½²Ù×÷£¬ÄÚÖÃ³¬¹ý30ÖÖÑéÖ¤¹æÔò£¬¿ÉÁé»îÑéÖ¤¸÷ÖÖÀàÐÍÊý¾Ý£¬Ö§³Ö¶àÖÖ·½Ê½×Ô¶¨Òå¡£
+* [ASP] ¼òµ¥¿ì½ÝµÄ Cookies ºÍ Application ¶ÁÐ´¡£
+* [ASP] Ö§³ÖÎ±¾²Ì¬£¨Î±Rewrite£©£¬ÇÒ¶ÔÒÑ¿ª·¢µÄ³ÌÐòÎÞÓ°Ïì¡£
+* [ASP] ÊµÏÖASPÎÄ¼þµÄ¶¯Ì¬ÔØÈë£¬²¢Ö§³ÖÎÞÏÞ¼¶µÄASPÔ­Éúinclude¡£
+* [ASP] ÊµÏÖ¸ßÐ§µÄ¶Ô³Æ¼ÓÃÜ½âÃÜ£¬¿É×Ô¶¨ÒåÃÜÔ¿£¬ÇÒ¼ÓÃÜºó×Ö·û´®È«²¿Îª¿É´òÓ¡×Ö·û¡£
+* [ASP] ¶À´´µÄ²å¼þÏµÍ³£¬ÄÚÖÃmd5¡¢ºº×Ö×ªÆ´Òô¡¢·­Òë¡¢·Ö´ÊµÈ²å¼þ£¬²¢ÓÐ·á¸»µÄµÚÈý·½²å¼þÌá¹©ÏÂÔØ¡£
 * [JSON] Ô­Éú VBScript ÊµÏÖ¸ßÐ§ÂÊµÄ Json Êý¾Ý½âÎöÓëÉú³É¡£
 * [JSON] ¼ÇÂ¼¼¯¡¢¼¯ºÏ¡¢NÎ¬Êý×é¡¢Easp List ¶ÔÏóºÍ¼¸ºõËùÓÐASPÄÚÖÃ¶ÔÏó¶¼ÄÜÖ±½ÓÊä³öÎª Json ¸ñÊ½Êý¾Ý¡£
 * [Êý¾Ý¿â] Ä¬ÈÏÖ§³Ö Access / MS SQL Server / MySQL Server Êý¾Ý¿â£¬²¢¿ÉÒÔÀ©Õ¹ÖÁÖ§³ÖÆäËûÈÎºÎ·ûºÏ¹¤Òµ±ê×¼µÄÊý¾Ý¿â¡£
@@ -44,5 +46,5 @@ EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌÐòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊý»¯²éÑ
 * ¡­¡­
 
 ###½»Á÷Óë·´À¡
-* Bug Ìá½»»ò¹¦ÄÜ½¨ÒéÇëµ½ [EasyASPÎÊÌâ·´À¡](http://www.easyasp.cn/issue)£¬Ê¹ÓÃ¼°ÎÄµµÎÊÌâÇëÔÚ [APIÎÄµµ](http://www.easyasp.cn/api) ÏàÓ¦Ò³ÃæÆÀÂÛÁôÑÔ¡£
+* Bug Ìá½»»ò¹¦ÄÜ½¨ÒéÇëµ½¹ÙÍøÂÛÌ³ [EasyASPÎÊÌâ·´À¡](http://bbs.easyasp.cn/forum-issue-1.html) °å¿é»òÕß [OSC git Issues](http://git.oschina.net/coldstone/easyasp/issues)£¬API¼°ÎÄµµ´íÎóÎÊÌâÇëÔÚ [APIÎÄµµ](http://www.easyasp.cn/api) ÏàÓ¦Ò³ÃæÆÀÂÛÁôÑÔ¡£
 * EaspASP ¹Ù·½½»Á÷QQÈº£º`26435555`£¬ ¼ÓÈºÑéÖ¤ÇëÊäÈë `easyasp` 
