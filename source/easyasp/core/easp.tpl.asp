@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Templates Class
 '## Version     :   v3
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-04-20 12:27:50
+'## Update Date :   2014-07-25 10:08:34
 '## Description :   Use Templates with EasyASP
 '##
 '######################################################################
@@ -160,8 +160,8 @@ Class EasyASP_Tpl
       Case "Recordset"
         If Easp.Has(v) Then
           For i = 0 To v.Fields.Count - 1
-            Assign s & "." & v.Fields(i).Name, v.Fields(i).Value
-            Assign s & "." & i, v.Fields(i).Value
+            Assign s & "." & v.Fields(i).Name, Trim(v.Fields(i).Value)
+            Assign s & "." & i, Trim(v.Fields(i).Value)
           Next
         End If
       '替换Easp超级数组标签
