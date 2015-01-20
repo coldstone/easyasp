@@ -93,6 +93,9 @@ Class EasyASP_StringObject
   Public Function RegexpEncode()
     Set RegexpEncode = S(Easp.Str.RegexpEncode(s_source))
   End Function
+  Public Function TrimChar(ByVal char)
+    Set TrimChar = S(Easp.Str.TrimChar(s_source, char))
+  End Function
   Public Function HtmlEncode()
     Set HtmlEncode = S(Easp.Str.HtmlEncode(s_source))
   End Function
@@ -165,9 +168,9 @@ Class EasyASP_StringObject
     Set o_re = Nothing
   End Function
   'Replace 忽略大小写
-  Public Function RepCase(ByVal find, ByVal replaceWith)
+  Public Function iReplace(ByVal find, ByVal replaceWith)
     Dim o_re : Set o_re = New EasyASP_StringOriginal
-    Set RepCase = S(o_re.ReCase(s_source, find, replaceWith))
+    Set iReplace = S(o_re.ReCase(s_source, find, replaceWith))
     Set o_re = Nothing
   End Function
   'Replace 完整参数
@@ -264,6 +267,73 @@ Class EasyASP_StringObject
   Public Function UCase()
     Dim o_re : Set o_re = New EasyASP_StringOriginal
     Set UCase = S(o_re.UCase_(s_source))
+    Set o_re = Nothing
+  End Function
+
+  Public Function CDate()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    CDate = o_re.CDate_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function IsDate()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    IsDate = o_re.IsDate_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function Asc()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    Asc = o_re.Asc_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function CBool()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    CBool = o_re.CBool_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function CByte()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    CByte = o_re.CByte_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function CCur()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    CCur = o_re.CCur_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function CDbl()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    CDbl = o_re.CDbl_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function Chr()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    Chr = o_re.Chr_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function CInt()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    CInt = o_re.CInt_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function CLng()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    CLng = o_re.CLng_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function CSng()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    CSng = o_re.CSng_(s_source)
+    Set o_re = Nothing
+  End Function
+  Public Function CStr()
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    CStr = o_re.CStr_(s_source)
+    Set o_re = Nothing
+  End Function
+    
+  Public Function Round(ByVal numdecimalplaces)
+    Dim o_re : Set o_re = New EasyASP_StringOriginal
+    Round = o_re.Round_(s_source, numdecimalplaces)
     Set o_re = Nothing
   End Function
 End Class

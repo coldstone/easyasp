@@ -302,6 +302,16 @@ Class EasyASP_Db
           Case "8.00.534" s_ver = "2000 Service Pack 2"
           Case "8.00.384" s_ver = "2000 Service Pack 1"
           Case "8.00.194" s_ver = "2000 RTM"
+          Case "09.00.50" s_ver = "2005 Service Pack 4"
+          Case "09.00.40" s_ver = "2005 Service Pack 3"
+          Case "09.00.30" s_ver = "2005 Service Pack 2"
+          Case "09.00.20" s_ver = "2005 Service Pack 1"
+          Case "09.00.13" s_ver = "2005 RTM"
+          Case "08.00.20" s_ver = "2000 Service Pack 4"
+          Case "08.00.76" s_ver = "2000 Service Pack 3"
+          Case "08.00.53" s_ver = "2000 Service Pack 2"
+          Case "08.00.38" s_ver = "2000 Service Pack 1"
+          Case "08.00.19" s_ver = "2000 RTM"
         End Select
       Case "MYSQL"  s_type = "MySQL Server "
       Case Else

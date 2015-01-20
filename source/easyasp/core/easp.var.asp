@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Variables Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-18 11:15:17
+'## Update Date :   2014-11-25 15:55:00
 '## Description :   Get and set EasyASP super variables.
 '##
 '######################################################################
@@ -51,6 +51,10 @@ Class EasyASP_Var
       s_var = Date()
     ElseIf Easp.Str.IsSame(key,"easp.time") Then
       s_var = Time()
+    ElseIf Easp.Str.IsSame(key,"easp.timestamp") Then
+      s_var = Easp.Date.GetTimeStamp()
+    ElseIf Easp.Str.IsSame(key,"easp.ip") Then
+      s_var = Easp.GetIP()
     ElseIf o_var.Exists("easp." & key) Then
       s_var = o_var("easp." & key)
     ElseIf Easp.Str.StartsWith(key, "server.") Then

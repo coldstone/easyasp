@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP String Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-06-13 17:00:00
+'## Update Date :   2015-01-20 14:07:41
 '## Description :   EasyASP String Class
 '##
 '######################################################################
@@ -311,6 +311,10 @@ Class EasyASP_String
     Next
     Leng = n
   End Function
+  '不区分大小写替换
+  Public Function iReplace(ByVal string, ByVal find, ByVal replaceWith)
+    iReplace = o_re.ReCase(string, find, replaceWith)
+  End Function
 
   '正则替换
   Public Function Replace(ByVal string, ByVal rule, ByVal replaceWith)
@@ -379,7 +383,7 @@ Class EasyASP_String
       Case "english"  Pa = "^[A-Za-z]+$"
       Case "chinese"  Pa = "^[\u4e00-\u9fa5]+$"
       Case "username" Pa = "^[a-zA-Z]\w{2,19}$"
-      Case "email"    Pa = "^\w+([-+\.]\w+)*@(([\da-zA-Z][\da-zA-Z-]{0,61})?[\da-zA-Z]\.)+([a-zA-Z]{2,4}(?:\.[a-zA-Z]{2})?)$"
+      Case "email"    Pa = "^(\w+(?:[-+.]\w+)*)@((?:(?:[\da-zA-Z][\da-zA-Z-]{0,61})?[\da-zA-Z]\.)+(?:[a-zA-Z]{2,4}(?:\.[a-zA-Z]{2})?))$"
       Case "int"      Pa = "^[-\+]?\d+$"
       Case "double"   Pa = "^[-\+]?\d+(\.\d+)?$"
       Case "price"    Pa = "^\d+(\.\d+)?$"
@@ -448,11 +452,22 @@ Class EasyASP_String
   '正则表达式特殊字符转义
   Public Function RegexpEncode(ByVal string)
     Dim re,i
-    re = Split("\,$,(,),*,+,.,[,?,^,{,|",",")
-    For i = 0 To Ubound(re)
-      string = o_re.Re(string, re(i), "\" & re(i))
-    Next
+    If Easp_Test(string, "\\|\$|\(|\)|\*|\+|\.|\[|\?|\^|\{|\|") Then
+      re = Split("\,$,(,),*,+,.,[,?,^,{,|",",")
+      For i = 0 To Ubound(re)
+        string = o_re.Re(string, re(i), "\" & re(i))
+      Next
+    End If
     RegexpEncode = string
+  End Function
+
+  '去除字符串两端的指定字符串
+  Public Function TrimChar(ByVal string, ByVal char)
+    If Easp.Has(char) Then
+      string = Replace(string, "^(" & RegexpEncode(char) & ")+", "")
+      string = Replace(string, "(" & RegexpEncode(char) & ")+$", "")
+    End If
+    TrimChar = string
   End Function
 
   '将HTML代码转换为文本实体
@@ -612,10 +627,16 @@ Class EasyASP_String
                   SB.Append """"
                   SB.Append o.Fields(j).Name
                   SB.Append """:"
-                  If VarType(o.Fields(j).value) = 14 Then
-                    SB.Append QuoteString(Trim(o.Fields(j).value))
+                  If VarType(o.Fields(j).value) >=8192 Then
+                    If TypeName(o.Fields(j).value)="Byte()" Then
+                      SB.Append """(blob)"""
+                    Else
+                      SB.Append QuoteString(o.Fields(j).value)
+                    End If
+                  ElseIf IsInlist("1,9,10,11", VarType(o.Fields(j).value)) Then
+                    SB.Append QuoteString(o.Fields(j).value)
                   Else
-                    SB.Append QuoteString(Easp.IIF(TypeName(o.Fields(j).value)="Byte()", "(blob)", o.Fields(j).value))
+                    SB.Append QuoteString(Trim(o.Fields(j).value))
                   End If
                 Next
                 SB.Append "}"
@@ -701,8 +722,12 @@ Class EasyASP_String
             SB.Append "}"
           Case "String", "IStringList"
             '字符串
-            If IsNumeric(o) Then o = ToNumber(o, 0)
+            If IsNumeric(o) Then
+              If (Left(o,1) <> "0" Or Left(o,2) = "0." Or (Len(o) = 1 And o = "0")) And Len(o)<=15 Then o = ToNumber(o, 0)
+            End If
             SB.Append o
+          Case "EasyASP_StringObject", "Field"
+            SB.Append o.Value
           Case "Nothing"
           Case Else
             SB.Append "{""object"":""unkown"", ""typeName"":"""
@@ -749,8 +774,12 @@ Class EasyASP_String
         'Easp.Console TypeName(string)
         'Easp.Console string
         If IsNumeric(string) Then
-          b_quote = False
-        ElseIf IsInList("String,IStringList", TypeName(string)) Then
+          If (Left(string,1) <> "0" Or Left(string,2) = "0." Or (Len(string) = 1 And string = "0")) And Len(string)<=15 Then
+            b_quote = False
+          Else
+            b_quote = True
+          End If
+        ElseIf IsInList("String,IStringList,EasyASP_StringObject", TypeName(string)) Then
           b_quote = True
         ElseIf TypeName(string) = "IReadCookie" Then
           'Easp.Println string.Count
@@ -914,8 +943,8 @@ Class EasyASP_String
     Dim i, sb
     If Easp.IsN(allowStr) Then allowStr = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     Set sb = StringBuilder()
+    Randomize(Timer)
     For i = 1 To length
-      Randomize(Timer)
       sb.Append Mid(allowStr, Int(Len(allowStr) * Rnd + 1), 1)
     Next
     RandomString = sb
@@ -1051,5 +1080,46 @@ Class EasyASP_StringOriginal
   Public Function UCase_(ByVal string)
     UCase_ = UCase(string)
   End Function
+
+  Public Function CDate_(ByVal string)
+    CDate_ = CDate(string)
+  End Function
+  Public Function IsDate_(ByVal string)
+    IsDate_ = IsDate(string)
+  End Function
+  Public Function Asc_(ByVal string)
+    Asc_ = Asc(string)
+  End Function
+  Public Function CBool_(ByVal string)
+    CBool_ = CBool(string)
+  End Function
+  Public Function CByte_(ByVal string)
+    CByte_ = CByte(string)
+  End Function
+  Public Function CCur_(ByVal string)
+    CCur_ = CCur(string)
+  End Function
+  Public Function CDbl_(ByVal string)
+    CDbl_ = CDbl(string)
+  End Function
+  Public Function Chr_(ByVal string)
+    Chr_ = Chr(string)
+  End Function
+  Public Function CInt_(ByVal string)
+    CInt_ = CInt(string)
+  End Function
+  Public Function CLng_(ByVal string)
+    CLng_ = CLng(string)
+  End Function
+  Public Function CSng_(ByVal string)
+    CSng_ = CSng(string)
+  End Function
+  Public Function CStr_(ByVal string)
+    CStr_ = CStr(string)
+  End Function
+    
+  Public Function Round_(ByVal string, ByVal numdecimalplaces)
+    Round_ = Round(string, numdecimalplaces)
+  End Function  
 End Class
 %>

@@ -6,7 +6,7 @@ Option Explicit
 '## Feature     :   EasyASP Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-04-23 11:19:19
+'## Update Date :   2014-10-10 09:27:59
 '## Description :   EasyASP main class
 '##
 '######################################################################
@@ -22,7 +22,7 @@ Class EasyASP
   '定义Easp公共类
   Public Lang, [Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml
   '定义Easp预留公共接口
-  Public Mo, A, B, C, D, E, F, G, H, I, J, K, M, L, N
+  Public Mo, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, X, Y, Z
   '定义私有变量
   Private o_rwt, o_ext
   Private s_basePath, s_pluginPath, s_cores, s_defaultPageName, s_charset
@@ -121,21 +121,31 @@ Class EasyASP
 
   '输出字符串
   Public Sub Echo(ByVal s) : Response.Write s : End Sub
+  Public Sub W(ByVal s) : Response.Write s : End Sub
   '输出字符串和一个换行符
   Public Sub Print(ByVal s) : Response.Write s & VbCrLf : Response.Flush() : End Sub
+  Public Sub WC(ByVal s) : Print s : End Sub
   '输出字符串和一个html换行符
   Public Sub Println(ByVal s) : Response.Write s & "<br />" & VbCrLf : Response.Flush() : End Sub
+  Public Sub WN(ByVal s) : Println s : End Sub
   '输出字符串并将HTML标签转为普通字符
   Public Sub PrintHtml(ByVal s) : Response.Write Str.HtmlEncode(s) & VbCrLf : End Sub
+  Public Sub WH(ByVal s) : PrintHtml s : End Sub
   Public Sub PrintlnHtml(ByVal s) : Response.Write Str.HtmlEncode(s) & "<br />" & VbCrLf : End Sub
+  Public Sub WNH(ByVal s) : PrintlnHtml s : End Sub
   '将任意变量直接输出为字符串(Json格式)
   Public Sub PrintString(ByVal s) : Response.Write Str.ToString(s) & VbCrLf : End Sub
+  Public Sub WS(ByVal s) : PrintString s : End Sub
   Public Sub PrintlnString(ByVal s) : Response.Write Str.ToString(s) & "<br />" & VbCrLf : End Sub
+  Public Sub WNS(ByVal s) : PrintlnString s : End Sub
   '输出经过格式化的字符串
   Public Sub PrintFormat(ByVal s, ByVal f) : Response.Write Str.Format(s, f) & VbCrLf : End Sub
+  Public Sub WF(ByVal s) : PrintFormat s, f : End Sub
   Public Sub PrintlnFormat(ByVal s, ByVal f) : Response.Write Str.Format(s, f) & "<br />" & VbCrLf : End Sub
+  Public Sub WNF(ByVal s) : PrintlnFormat s, f : End Sub
   '输出字符串并终止程序运行
   Public Sub PrintEnd(ByVal s) : Response.Write s : [Exit]() : End Sub
+  Public Sub WE(ByVal s) : PrintEnd s : End Sub
   '终止程序运行
   Public Sub [Exit]():  Set Easp = Nothing : Response.End() : End Sub
 
@@ -193,7 +203,7 @@ Class EasyASP
     a_rwt = IsRewriteRule()
     If a_rwt(0) Then
       '如果是伪静态则取出符合的参数值
-      Set o_matches = Str.Match(a_rwt(2), queryString & "=(\$\d)")
+      Set o_matches = Str.Match(a_rwt(2), queryString & "=(\$\d+)")
       If o_matches.Count > 0 Then
         s_get = Str.Replace(a_rwt(3), a_rwt(1), o_matches(0).SubMatches(0))
       End If
@@ -421,7 +431,11 @@ Class EasyASP
   '为Dictionary设置键值
   Public Sub SetDictionaryKey(ByRef dict, ByVal key, ByVal value)
     If dict.Exists(key) Then
-      dict(key) = value
+      If IsObject(value) Then
+        Set dict(key) = value
+      Else
+        dict(key) = value
+      End If
     Else
       dict.Add key, value
     End If

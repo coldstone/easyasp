@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP XMLHTTP Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-05-24 08:12:24
+'## Update Date :   2014-10-08 01:12:24
 '## Description :   Request XMLHttp Data in EasyASP
 '## 
 '######################################################################
@@ -220,6 +220,10 @@ Class EasyASP_Http
         If Easp.IsN(CharSet) Then CharSet = "UTF-8"
       End If
       GetData = Bytes2Bstr__(Body, CharSet)
+      If Instr(GetData, vbLf) Then
+        GetData = Replace(GetData, vbLf, vbCrLf)
+        GetData = Replace(GetData, vbCr & vbCrLf, vbCrLf)
+      End If
     Else
       GetData = "error:" & ht.Status & " " & ht.StatusText
       If Easp.Debug Then

@@ -27,7 +27,7 @@ Class EasyASP_List
     Set o_map  = Server.CreateObject("Scripting.Dictionary")
     Size = 0
     i_comp = 1
-    s_separator = " "
+    s_separator = ""
     Set a_list = NewSimpleArray
   End Sub
   
@@ -175,7 +175,7 @@ Class EasyASP_List
       Next
       a_list.SetArray a
     Else
-			arr = Split(a)
+			arr = Easp.IIF(Easp.IsN(s_separator), Split(a), Split(a, s_separator))
 			a_list.SetArray arr
 			Size = a_list.Length
 			If t = 0 Then Exit Sub

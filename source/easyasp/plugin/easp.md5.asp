@@ -359,6 +359,8 @@ Class EasyASP_md5
 		Next
 		If bit = 16 Then
 			MD5 = LCase(WordToHex(b) & WordToHex(c))
+		ElseIf bit = 0 Then
+  		MD5 = LCase(WordToHex(c) & WordToHex(a) & WordToHex(d) & WordToHex(b))
 		Else
 			MD5 = LCase(WordToHex(a) & WordToHex(b) & WordToHex(c) & WordToHex(d))
 		End If
@@ -369,5 +371,8 @@ Class EasyASP_md5
 	Public Function To16(ByVal s)
 		To16 = MD5(s,16)
 	End Function
+  Public Function Strong(ByVal s)
+    Strong = MD5(s,0)
+  End Function
 End Class
 %>

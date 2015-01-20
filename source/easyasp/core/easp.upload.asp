@@ -14,32 +14,33 @@ Class EasyASP_MoLibUpload
   Private vCharSet, vMaxSize, vSingleSize, vErr, vVersion, vTotalSize, vExe, vErrExe,vboundary, vLostTime, vFileCount,StreamOpened
   private vMuti,vServerVersion,mvarDescription
   Public IsUploaded, FormArray, s_errLang 'added by EasyASP
-  
+  '设置允许上传的总大小
   Public Property Let AllowMaxSize(ByVal value)
     vMaxSize = value
   End Property
-  
+  '设置允许上传的单个文件大小
   Public Property Let AllowMaxFileSize(ByVal value)
     vSingleSize = value
   End Property
-  
+  '设置允许上传的文件类型
   Public Property Let AllowFileTypes(ByVal value)
     vExe = LCase(value)
     vExe = replace(vExe,"*.","")
     vExe = replace(vExe,";","|")
   End Property
-  
+  '检测图片文件格式
   Public Property Let CheckImageFormat(byval value)
     mvarCheckImageFormat = value
   End Property
+  '设置文件编码
   Public Property Let CharSet(ByVal value)
     vCharSet = value
   End Property
-  
+  '设置上传文件保存路径
   Public Property Let SavePath(ByVal value)
     mvarSavePath = value
   End Property
-  
+  '获取上传文件个数
   Public Property Get FileCount()
     FileCount = Fils.count
   End Property
@@ -51,15 +52,15 @@ Class EasyASP_MoLibUpload
   Public Property Get Version()
     Version = vVersion
   End Property
-  
+  '获取上传文件的总大小
   Public Property Get TotalSize()
     TotalSize = vTotalSize
   End Property
-  
+  '获取上传使用的时间，不包括保存文件的时间
   Public Property Get LostTime()
     LostTime = vLostTime
   End Property
-  
+  '读取和设置错误提示的语言类型
   Public Property Let ErrorLang(ByVal string)
     s_errLang = string
   End Property
@@ -130,8 +131,8 @@ Class EasyASP_MoLibUpload
     if limit<-1 then limit=-1
     ParseSizeLimit = limit
   End Function
-    
-  Public function GetData()
+  '开始上传动作
+  Public Function GetData()
     If IsUploaded Then GetData = True : Exit Function 'added by EasyASP
     Dim oarr 'added by EasyASP
     GetData =false
@@ -325,7 +326,7 @@ Class EasyASP_MoLibUpload
     r = right("0000" & r,4)
     Getname = y & m & d & h & mm & S & r
   End Function
-  
+  '检测提交表单类型
   Public Function checkEntryType()
     Dim ContentType, ctArray, bArray,RequestMethod
     RequestMethod=trim(LCase(Request.ServerVariables("REQUEST_METHOD")))
@@ -347,7 +348,7 @@ Class EasyASP_MoLibUpload
       checkEntryType = False
     end if
   End Function
-  
+  '获取表单数据
   Public Function Post(ByVal formname)
     If trim(formname) = "-1" Then
       Set Post = Form
@@ -359,7 +360,7 @@ Class EasyASP_MoLibUpload
       End If
     End If
   End Function
-  
+  '获取上传后的文件
   Public Default Function Files(ByVal formname)
     If trim(formname) = "-1" Then
       Set Files = Fils
@@ -375,7 +376,7 @@ Class EasyASP_MoLibUpload
       End If
     End If
   End Function
-  
+  '筛选上传后的文件
   Public Function Search(ByVal formname)
     if formname="*" or formname="-1" then
       Set Search = Fils
@@ -393,7 +394,7 @@ Class EasyASP_MoLibUpload
     Next
     Set Search = FileCollection
   End Function
-  
+  '快速保存指定文件域的文件
   Public Function QuickSave(ByVal formname)
     Dim FC,SucceedCount,File
     SucceedCount = 0
@@ -403,7 +404,7 @@ Class EasyASP_MoLibUpload
     Next
     QuickSave = SucceedCount
   End Function
-  
+  '判断是否是合法的图像文件
   Public Function IsImage(Name)
     Dim File
     if not isobject(Name) then
@@ -535,7 +536,7 @@ Class EasyASP_MoLibUpload
       File.Size=0
     end if
   End Function
-  
+  '保存文件
   Public Function Save(Byref Name,byval tOption, byval OverWrite)
     Dim File
     if not isobject(name) then
@@ -603,7 +604,7 @@ Class EasyASP_MoLibUpload
     End If
     Set Save = File
   End Function
-  
+  '获取已上传文件的二进制流
   Public Function GetBinary(byval Name)
     Dim File
     Set File = Files(Name)
