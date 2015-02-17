@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-08-24 10:40:15
+'## Update Date :   2015-02-18 1:25:37
 '## Description :   Database controler
 '##
 '######################################################################
@@ -150,7 +150,7 @@ Class EasyASP_Db
       Case "MYSQL"
         '服务器需要安装MySQL ODBC驱动，下载地址 http://dev.mysql.com/downloads/connector/odbc/3.51.html
         If port = "" Then port = "3306"
-        ConnStr = "Driver={MySQL ODBC 3.51 Driver};Server="&s&";Port="&port&";charset=UTF8;Database="&strDB&";User="&u&";Password="&p&";Option=3;"
+        ConnStr = "Driver={MySQL ODBC 3.51 Driver};Server="&s&";Port="&port&";charset=utf8;Database="&strDB&";User="&u&";Password="&p&";Option=3;Stmt=Set Names 'utf8'"
     End Select
     'Easp.Console ConnStr
     Set OpenConnection = CreateConnection(ConnStr)
@@ -504,6 +504,7 @@ Class EasyASP_Db
             If InStr(",20,11,6,5,7,135,3,131,4,2,16,128,205,204,", ","&paramType(i)&",") > 0 And Easp.IsN(paramValue(i)) Then paramValue(i) = Null
             'If IsNumeric(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 5
             'If IsDate(paramValue(i)) And paramType(i) = 200 Then paramType(i) = 135
+            If IsEmpty(paramValue(i)) Then paramValue(i) = Null
             .Parameters.Append .CreateParameter(param(i), paramType(i), 1, paramSize(i), paramValue(i))
           Next
         End If

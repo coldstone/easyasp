@@ -1,4 +1,5 @@
 ##EasyASP 更新日志
+- [2015/02/18] 修正:修正数据库操作类中 Access 数据库不能插入Empty值的Bug，感谢 @韦卿
 - [2015/01/20] 修正:修正Easp.List的演示demo(/source/poordemo/easp.list/)；
 - [2015/01/20] 修正:修正Easp.List不能自定义Easp.List.Data分隔符的问题，感谢jam反馈；
 - [2015/01/20] 修正:修正Easp.Str将MySQL数据库下Rs对象转为Json字符串时可能出现异常的问题，感谢"才子一生平安"反馈；
