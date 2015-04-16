@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP List(Array) Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-04-25 2:07:29
+'## Update Date :   2015-02-03 1:18:39
 '## Description :   A super Array class in EasyASP
 '##                 Support Array and Hashmap
 '##
@@ -875,11 +875,19 @@ Class EasyASP_List
       tmp = Value__(At(i))
       If t = 0 Then
         '返回值到数组
-        'Easp.WN f & "("& tmp &")"
-        At(i) = Eval(f & "("& tmp &")")
+        If Instr(f, "%i") > 0 Then
+          'Easp.WN Replace(f, "%i", tmp)
+          At(i) = Eval(Replace(f, "%i", tmp))
+        Else
+          At(i) = Eval(f & "("& tmp &")")
+        End If
       ElseIf t = 1 Then
         '直接执行
-        ExecuteGlobal f & "("& tmp &")"
+        If Instr(f, "%i") > 0 Then
+          ExecuteGlobal Replace(f, "%i", tmp)
+        Else
+          ExecuteGlobal f & "("& tmp &")"
+        End If
       End If
     Next
   End Sub

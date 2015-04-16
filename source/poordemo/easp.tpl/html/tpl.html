@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title> {title} </title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{#include:inc/header.html}
+{cssfile}
+{style}
+</head>
+<body>
+<h1>{title}</h1>
+<h3><font color="{color}">{subtitle}</font></h3>
+<p><%="现在时刻：" & Now()%></p>
+<ol>
+{#:A}<li>{A.title} - {A.addtime:Dy/mm/dd}</li>
+{/#:A}
+</ol>
+<div class="sample">
+	<!-- {#:B} -->
+    <p>{B.title}<font color="red">{id}</font> <!-- {#:page} --><span>{page.list}</span><!-- {/#:page} -->- {addtime:Dy-m-d h:i:s}</p>
+	<!-- {/#:B} -->
+</div>
+
+</body>
+</html>

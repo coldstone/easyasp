@@ -67,12 +67,12 @@ End Function
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Access数据库增删改查示例 - EasyASP测试用例中心</title>
     <!-- Bootstrap -->
-    <link href="http://cdn.bootcss.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.1.0/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="style.css">
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
   <body>
@@ -209,7 +209,7 @@ Easp.Db.Close(rs)
 
     </div><!--/.container-->
 
-    <script src="//lib.sinaapp.com/js/jquery/1.10.2/jquery-1.10.2.min.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <!--<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>-->
     <script type="text/javascript">

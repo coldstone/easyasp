@@ -6,7 +6,7 @@ Option Explicit
 '## Feature     :   EasyASP Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-10-10 09:27:59
+'## Update Date :   2015-02-24 16:59:53
 '## Description :   EasyASP main class
 '##
 '######################################################################
@@ -52,6 +52,7 @@ Class EasyASP
     Set o_ext = Nothing
     Core_Do "off", s_cores
     Set Lang = Nothing
+    'Easp.Println Easp.GetScriptTimeByTimer(Easp_Timer)
   End Sub
   
   '设置和读取Easp路径配置
@@ -151,8 +152,14 @@ Class EasyASP
 
   '判断是否为空值
   Public Function isN(ByVal s)
-    If IsEmpty(s) Or IsNull(s) Then IsN = True : Exit Function
     isN = False
+    If IsArray(s) Then
+      On Error Resume Next
+      If Ubound(s)=-1 Then isN = True : Exit Function
+      If Err.Number<>0 Then isN = True : Exit Function
+      On Error Goto 0
+    End If
+    If IsEmpty(s) Or IsNull(s) Then IsN = True : Exit Function
     Select Case VarType(s)
       Case vbString
         If s = "" Then isN = True : Exit Function
@@ -168,8 +175,6 @@ Class EasyASP
           Case "EasyASP_List"
             If s.Count = 0 Then isN = True : Exit Function
         End Select
-      Case vbArray,8194,8204,8209
-        If Ubound(s)=-1 Then isN = True : Exit Function
     End Select
   End Function
   '判断是否不为空值
@@ -802,5 +807,3 @@ Class EasyASP_object : End Class
 <!--#include file="core/easp.tpl.asp"-->
 <!--#include file="core/easp.cache.asp"-->
 <!--#include file="core/easp.xml.asp"-->
-<%'页面加载完毕后销毁Easp实例%>
-<script language="vbscript" runat="server">If TypeName(Easp) = "EasyASP" Then Set Easp = Nothing</script>

@@ -1,4 +1,7 @@
 ##EasyASP 更新日志
+- [2015/04/17] 修正：修复Easp.Db在SQL Server2000批量插入时出错的问题
+- [2015/04/17] 修正：修复Easp.IsN方法及Easp.List和Easp.Http的部分Bug
+- [2015/04/17] 新增：poordemo中添加了Easp.Http、Easp.Tpl、Easp.Xml的简单demo以及服务器端验证demo
 - [2015/02/18] 修正:修正数据库操作类中 Access 数据库不能插入Empty值的Bug，感谢 @韦卿
 - [2015/01/20] 修正:修正Easp.List的演示demo(/source/poordemo/easp.list/)；
 - [2015/01/20] 修正:修正Easp.List不能自定义Easp.List.Data分隔符的问题，感谢jam反馈；

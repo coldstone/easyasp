@@ -317,7 +317,7 @@ Class EasyASP_Http
       Exit Function
     End If
     Select Case tagSelf
-      Case 1
+      Case 1, -1
         first = posA
         between = posB+len(tagEnd)-first
       Case 2

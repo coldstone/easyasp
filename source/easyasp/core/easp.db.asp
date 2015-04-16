@@ -1150,7 +1150,7 @@ Class EasyASP_Db
 
   '用默认Connection插入记录
   Public Function Ins(ByVal table, ByVal fieldValues)
-    On Error Resume Next
+    'On Error Resume Next
     OpenConn()
     Ins = InsertRecord(o_conn, table, fieldValues, False)
     CheckError "insert", Err, o_conn, "Ins", Array(table, fieldValues)
@@ -1197,13 +1197,14 @@ Class EasyASP_Db
 
   '插入记录原型
   Private Function InsertRecord(ByRef conn, ByVal table, ByVal fieldValues, ByVal IsBatch)
-    Dim a_fieldValues, i, a_tmp, s_dbType, a_values
+    Dim a_fieldValues, i, a_tmp, s_dbType, s_dbVer, a_values
     Dim s_sqlstart, s_sqlvalues, s_sqlend, i_result, i_paramCount
     Dim i_sqllimit, i_paramlimit, i_limit
     Dim i_valuesCount, i1, i2, i3, i4, s_sqltmp
     table = FixName(table, conn)
     '取数据库类型
     s_dbType = GetType(conn)
+    s_dbVer = GetVersion(conn)
     '拆分字段和值
     a_fieldValues = GetFiledValues(fieldValues, conn)
     '组合为SQL插入语句
@@ -1225,7 +1226,7 @@ Class EasyASP_Db
       i_paramCount = a_tmp(1)
       i_valuesCount = UBound(a_values)+1
       'MSSQL数据库
-      If s_dbType = "MSSQL" Or s_dbType = "MYSQL" Then
+      If (s_dbType = "MSSQL" And Easp.Str.GetName(s_dbVer,".") >= 9) Or s_dbType = "MYSQL" Then
         Select Case s_dbType
           Case "MSSQL"
             'MSSQL参数不能超过2100个，同时插入不能超过1000条
@@ -1418,7 +1419,7 @@ Class EasyASP_Db
         Case "binary"             n = 128
         Case "char"               n = 129
         Case "wchar"              n = 130
-        Case "numeric"            n = 131
+        Case "numeric"            n = 5
         Case "userdefined"        n = 132
         Case "dbdate"             n = 133
         Case "dbtime"             n = 134
