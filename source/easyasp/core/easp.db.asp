@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2015-02-18 1:25:37
+'## Update Date :   2015-05-07 09:57:42
 '## Description :   Database controler
 '##
 '######################################################################
@@ -168,7 +168,7 @@ Class EasyASP_Db
     If Err.number <> 0 Then
       If Request.ServerVariables("LOCAL_ADDR") = Request.ServerVariables("REMOTE_ADDR") Then
         Easp.Error.Detail = ", (""" & ConnStr & """)"
-        Easp.Error.FunctionName = "Easp.Db.CreatConnection (easp.db.asp, line 130)"
+        Easp.Error.FunctionName = "Easp.Db.CreatConnection"
       End If
       Easp.Error.Raise "error-db-conn"
     End If
@@ -1253,7 +1253,7 @@ Class EasyASP_Db
           i_result = i_result + ExecuteSql(conn, s_sqlstart & s_sqltmp, 0)
         Next
       Else
-        'Access只能一条条插入
+        'Access和MSSQL 2000只能一条条插入
         For i = 0 To UBound(a_values)
           i_result = i_result + ExecuteSql(conn, s_sqlstart & a_values(i), 0)
         Next
@@ -1374,15 +1374,42 @@ Class EasyASP_Db
 
   '替换SQL语句中的静态变量 {=Easp变量名}
   Private Function ReplaceStasicParameter(ByVal sql)
-    Dim matches, Match
+    Dim matches, match, mparam, mvar, mtype, marr, i, tmp
     If Instr(sql, "{=") Then
       Set matches = Easp.Str.Match(sql, "\{=(.+?)\}")
       For Each match In matches
-        'Easp.Consoel match
+        'Easp.Console match
         sql = Replace(sql, match, Easp.Var(match.SubMatches(0)), 1, -1, 1)
       Next
       Set matches = Nothing
     End If
+    If Instr(sql, "{(") Then
+      Set matches = Easp.Str.Match(sql, "\{\((.+?)\)\}")
+      For Each match In matches
+        'Easp.Console Match.value
+        tmp = ""
+        mparam = match.SubMatches(0)
+        mvar = Easp.Str.GetColonName(mparam)
+        mtype = Easp.Str.GetColonValue(mparam)
+        If Easp.Has(mtype) Then mtype = ":" & mtype
+        marr = Easp.Var(mvar & "_array")
+        'Easp.Console marr
+        If IsArray(marr) Then
+          If UBound(marr)>=0 Then
+            For i = 0 To UBound(marr)
+              tmp = tmp & ", {" & mvar & "_array_" & i & mtype & "}"
+            Next
+            tmp = Mid(tmp, 3)
+            'Easp.Console tmp
+            sql = Replace(sql, match.value, tmp)
+          End If
+        Else
+          sql = Replace(sql, match.value, "{" & mvar & mtype & "}")
+        End If
+      Next
+      Set matches = Nothing
+    End If
+    'Easp.Console sql
     ReplaceStasicParameter = sql
   End Function
 
