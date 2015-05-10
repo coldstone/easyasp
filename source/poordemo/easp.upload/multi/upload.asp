@@ -1,12 +1,12 @@
 <!--#include file="../../../easyasp/easp.asp" -->
 <%
 Dim File,F
-Easp.Upload.AllowFileTypes = "*.*"
+Easp.Upload.AllowFileTypes = "jpg|png|gif"
 Easp.Upload.AllowMaxFileSize = "1MB"
 Easp.Upload.AllowMaxSize = "20mb"
 Easp.Upload.CharSet = "utf-8"
 if not Easp.Upload.GetData() then 
-	Easp.Println Easp.Upload.Description
+	Easp.PrintEnd Easp.Upload.Description
 else
 	Easp.Upload.SavePath = "/_upload"
 	Easp.Println "<b>保存所有文件： </b>"

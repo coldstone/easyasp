@@ -5,7 +5,7 @@
 '## Feature   :  EasyASP Upload Files Class
 '## Version   :  MoLibUpload V1.1
 '## Author   :  Anlige(zhanghuiguoanlige@126.com, http://dev.mo.cn)
-'## Update Date :  2014-01-06
+'## Update Date :  2015-05-10 10:16:49
 '## Description :  Upload files with a post form.
 '##
 '######################################################################
@@ -133,7 +133,6 @@ Class EasyASP_MoLibUpload
   End Function
   '开始上传动作
   Public Function GetData()
-    If IsUploaded Then GetData = True : Exit Function 'added by EasyASP
     Dim oarr 'added by EasyASP
     GetData =false
     vMaxSize = ParseSizeLimit(vMaxSize)

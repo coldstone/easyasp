@@ -1,4 +1,5 @@
 ##EasyASP 更新日志
+- [2015/05/10] 修正：修复上传时如果在上传代码之前使用Easp.Var会导致上传限制失效的Bug，感谢 @Easp.Object 反馈
 - [2015/05/07] 新增：数据库类新增在sql中可以使用in标签{(var_array)}将数组超级变量使用在 in (...) 语句中
 - [2015/04/17] 修正：修复Easp.Db在SQL Server2000批量插入时出错的问题
 - [2015/04/17] 修正：修复Easp.IsN方法及Easp.List和Easp.Http的部分Bug

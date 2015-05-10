@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Variables Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-11-25 15:55:00
+'## Update Date :   2015-05-10 09:06:14
 '## Description :   Get and set EasyASP super variables.
 '##
 '######################################################################
@@ -112,15 +112,16 @@ Class EasyASP_Var
     If Not Easp.Upload.checkEntryType Then
       Call GetRequest("post")
     Else
-      If Not Easp.Upload.IsUploaded Then Easp.Upload.GetData()
-      Dim o_dic, s_post, key, value
-      Set o_dic = Easp.Upload.Post("-1")
-      If o_dic.Count > 0 Then
-        For Each s_post In o_dic
-          key = "post." & s_post
-          value = o_dic(s_post)
-          o_var(key) = value
-        Next
+      If Easp.Upload.IsUploaded Then
+        Dim o_dic, s_post, key, value
+        Set o_dic = Easp.Upload.Post("-1")
+        If o_dic.Count > 0 Then
+          For Each s_post In o_dic
+            key = "post." & s_post
+            value = o_dic(s_post)
+            o_var(key) = value
+          Next
+        End If
       End If
       'Easp.Console o_var
     End If
