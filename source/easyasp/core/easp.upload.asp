@@ -267,7 +267,13 @@ Class EasyASP_MoLibUpload
     Loop Until (istart + 2) >= LenB(tempdata)
     tempdata = empty
     vLostTime = FormatNumber((timer-time1)*1000,2)
-    IsUploaded = True 'added by EasyASP
+    'added by EasyASP start
+    Dim postKey
+    For Each postKey In FormArray
+      Easp.Var("post." & postKey) = FormArray(postKey).GetArray()
+    Next
+    IsUploaded = True
+    'added by EasyASP end
     GetData =true
   End Function
   
