@@ -16,6 +16,8 @@ else
 	Easp.Upload.SavePath = "/_upload"
 	Easp.Println "Easp.Var(""test2"") => " & Easp.Var("test2")
 	Easp.Println "Easp.Post(""form1"") => " & Easp.Post("form1")
+	Easp.Println "Easp.Db.ToSql(""delete from T where Tname in ({(form1)})"") =>" & _
+	             Easp.Db.ToSql("delete from T where Tname in ({(form1)})")
 	Set File = Easp.Upload.Save("file1",0,true)
 	if File.Succeed then
 		Easp.Println "文件'" & File.LocalName & "'上传成功，保存位置'" & File.Path & File.FileName & "',文件大小" & File.Size & "字节"

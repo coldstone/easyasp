@@ -64,7 +64,7 @@ Class EasyASP_Var
     End If
     If Not IsArray(s_var) Then
       If Instr(s_var, "{=") Then
-        Dim matches, match
+        Dim matches, Match
         Set matches = Easp.Str.Match(s_var, "\{=(.+?)\}")
         For Each match In matches
           s_var = Replace(s_var, match, Me.Var(match.SubMatches(0)), 1, -1, 1)
@@ -111,19 +111,6 @@ Class EasyASP_Var
     ''取表单值
     If Not Easp.Upload.checkEntryType Then
       Call GetRequest("post")
-    Else
-      If Easp.Upload.IsUploaded Then
-        Dim o_dic, s_post, key, value
-        Set o_dic = Easp.Upload.Post("-1")
-        If o_dic.Count > 0 Then
-          For Each s_post In o_dic
-            key = "post." & s_post
-            value = o_dic(s_post)
-            o_var(key) = value
-          Next
-        End If
-      End If
-      'Easp.Console o_var
     End If
     ''取URL参数值
     Call GetRequest("get")
