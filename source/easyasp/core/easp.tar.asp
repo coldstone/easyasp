@@ -251,7 +251,7 @@ Class EasyASP_Tar
   End Function
   '解包tar到指定目录
   Public Function UnPackTo(ByVal s_tarFilePath, ByVal s_folderPath)
-    On Error Resume Next
+    'On Error Resume Next
     Dim o_tar, o_data, o_file
     Dim s_header, s_fileName, i_pos, s_type, i_fileSize, is_file
     If Easp.IsN(s_folderPath) Then s_folderPath = "."
@@ -259,7 +259,7 @@ Class EasyASP_Tar
     s_folderPath = Easp.Fso.MapPath(s_folderPath)
     If b_hasSelf Then
       s_folderPath = s_folderPath & "\" & Easp.Fso.NameOf(s_tarFilePath)
-      s_savePath = s_savePath & "\" & Easp.Fso.NameOf(s_tarFilePath)
+      s_savePath = s_savePath & Easp.IfThen(Right(s_savePath, 1) <> "/", "/") & Easp.Fso.NameOf(s_tarFilePath)
     End If
     Easp.Fso.MD s_folderPath
     Set o_data = Server.CreateObject("ADODB.Stream")
