@@ -20,7 +20,7 @@ Dim Easp : Set Easp = New EasyASP '实例化Easp
 <%
 Class EasyASP
   '定义Easp公共类
-  Public Lang, [Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml
+  Public Lang, [Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml, Tar
   '定义Easp预留公共接口
   Public Mo, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, X, Y, Z
   '定义私有变量
@@ -36,13 +36,14 @@ Class EasyASP
     s_defaultPageName  = "index.asp"
     s_charset        = "UTF-8"
     Response.Charset = s_charset
+    Session.CodePage = 65001
     i_timer          = Timer()
     i_newId          = 0
     Set o_rwt        = Server.CreateObject("Scripting.Dictionary")
     Set o_ext        = Server.CreateObject("Scripting.Dictionary")
     Set Lang         = Server.CreateObject("Scripting.Dictionary")
     Lang.CompareMode = 1
-    s_cores          = "[Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml"
+    s_cores          = "[Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml, Tar"
     Core_Do "on", s_cores
   End Sub
   '析构函数
@@ -201,6 +202,7 @@ Class EasyASP
   '获取GET参数值
   '参数 queryString - "URL参数名[:为空时默认值]"
   Public Function [Get](ByVal queryString)
+    If IsN(queryString) Then Set [Get] = Request.QueryString : Exit Function
     Dim a_rwt, s_get, o_matches, s_default
     s_default = Str.GetColonValue(queryString)
     queryString = Str.GetColonName(queryString)
@@ -235,6 +237,7 @@ Class EasyASP
   '获取POST参数值
   '参数 formString - "表单项名[:为空时默认值]"
   Public Function Post(ByVal formString)
+    If IsN(formString) Then Set Post = Request.Form : Exit Function
     Dim s_post, s_default
     '取出默认值
     s_default = Str.GetColonValue(formString)
@@ -784,6 +787,7 @@ Class EasyASP
     Set Tpl     = New EasyASP_Tpl
     Set Cache   = New EasyASP_Cache
     Set Xml     = New EasyASP_Xml
+    Set Tar     = New EasyASP_Tar
   End Sub
 
 End Class
@@ -807,3 +811,4 @@ Class EasyASP_object : End Class
 <!--#include file="core/easp.tpl.asp"-->
 <!--#include file="core/easp.cache.asp"-->
 <!--#include file="core/easp.xml.asp"-->
+<!--#include file="core/easp.tar.asp"-->

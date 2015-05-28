@@ -169,4 +169,7 @@ Easp.Lang("error-uplaod-filesize-zh")      = "超过了单个文件大小限制"
 Easp.Lang("error-uplaod-filemaxsize-zh")   = "超过了所有文件总大小限制"
 Easp.Lang("error-uplaod-filetype-zh")      = "无效的文件类型"
 Easp.Lang("error-uplaod-fileno-zh")        = "文件未找到"
+'=== Easp.Error (Easp.Tar) ===
+Easp.Lang("error-tar-packfaild")        = "打包文件失败|:保存到 {0} 时出错|:请检查是否输入正确的保存文件名以及是否有该目录的写入权限"
+Easp.Lang("error-tar-unpackfaild")        = "解包文件失败|:将文件 {0} 解包保存到 {1} 时出错|:请检查文件名是否正确以及是否有该目录的写入权限"
 %>

@@ -304,7 +304,7 @@ Class EasyASP_String
     Next
   End Function
   '返回字符串的长度，中文算两个字符
-  Private Function Leng(string)
+  Public Function Leng(string)
     Dim i,n : n = 0
     For i = 1 To Len(string)
       n = Easp.IIF(Abs(Ascw(Mid(string,i,1)))>255, n+2, n+1)

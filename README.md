@@ -7,7 +7,7 @@ APIÎÄµµ : <http://www.easyasp.cn/api>
 git(osChina) : <http://git.oschina.net/coldstone/easyasp>   
 Licenses : EasyASP ×ñÑ­ [Apache licenses v2](http://zh.wikipedia.org/zh-cn/Apache%E8%AE%B8%E5%8F%AF%E8%AF%81) °æÈ¨Ð­Òé   
    
-EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌÐòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊý»¯²éÑ¯¶àÊý¾Ý¿â²Ù×÷¡¢JsonÊý¾ÝÉú³ÉÓë½âÎö¡¢¸÷ÖÖ×Ö·û´®¼°ÈÕÆÚ´¦Àíº¯Êý¡¢¶¯Ì¬Êý×é´¦Àí¡¢ÎÄ¼þÏµÍ³´¦Àí¡¢Ô¶³ÌÎÄ¼þ¼°XMLÎÄµµ´¦Àí¡¢ÄÚ´æ»º´æºÍÎÄ¼þ»º´æ´¦Àí¡¢Ä£°åÒýÇæµÈµÈ·á¸»µÄ¹¦ÄÜ¡£¶øÎªÁË½â¾öASPµ÷ÊÔ²»·½±ãµÄÎÊÌâ£¬EasyASP ÍÆ³öÁË¶À´´µÄ¿ØÖÆÌ¨µ÷ÊÔ¹¦ÄÜÒÔ¼°·á¸»µÄÒì³£ÐÅÏ¢ÏÔÊ¾£¬ÄÜÈÃÄã¿ª·¢ ASP ³ÌÐòÊ±×î´ó³Ì¶ÈµÄ´Ó´íÎóµ÷ÊÔµÄ·×·±ÖÐ½â·Å³öÀ´¡£EasyASP Ä¿Ç°Ìá¹©ÏÂÔØµÄÊÇVBScript°æ±¾¡£
+EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌÐòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊý»¯²éÑ¯¶àÊý¾Ý¿â²Ù×÷¡¢JsonÊý¾ÝÉú³ÉÓë½âÎö¡¢ÎÞ×é¼þÑ¹Ëõ½âÑ¹¡¢¸÷ÖÖ×Ö·û´®¼°ÈÕÆÚ´¦Àíº¯Êý¡¢¶¯Ì¬Êý×é´¦Àí¡¢ÎÄ¼þÏµÍ³´¦Àí¡¢Ô¶³ÌÎÄ¼þ¼°XMLÎÄµµ´¦Àí¡¢ÄÚ´æ»º´æºÍÎÄ¼þ»º´æ´¦Àí¡¢Ä£°åÒýÇæµÈµÈ·á¸»µÄ¹¦ÄÜ¡£¶øÎªÁË½â¾öASPµ÷ÊÔ²»·½±ãµÄÎÊÌâ£¬EasyASP ÍÆ³öÁË¶À´´µÄ¿ØÖÆÌ¨µ÷ÊÔ¹¦ÄÜÒÔ¼°·á¸»µÄÒì³£ÐÅÏ¢ÏÔÊ¾£¬ÄÜÈÃÄã¿ª·¢ ASP ³ÌÐòÊ±×î´ó³Ì¶ÈµÄ´Ó´íÎóµ÷ÊÔµÄ·×·±ÖÐ½â·Å³öÀ´¡£EasyASP Ä¿Ç°Ìá¹©ÏÂÔØµÄÊÇVBScript°æ±¾¡£
 
 
 ###EasyASP µÄ²¿·Ö¹¦ÄÜÌØµã
@@ -32,6 +32,7 @@ EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌÐòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊý»¯²éÑ
 * [¿ØÖÆÌ¨] ¶À´´µÄ¿ØÖÆÌ¨Ö§³ÖÈÎÒâ ASP ±äÁ¿µÄµ÷ÊÔÓë¸ú×Ù¡£
 * [¿ØÖÆÌ¨] ¿ØÖÆÌ¨Ö§³Ö SQL Óï¾ä¼°Ö´ÐÐÊ±¼äÊµÊ±¼à¿Ø¡£
 * [¿ØÖÆÌ¨] ¿ØÖÆÌ¨Ö§³ÖÉèÖÃ token ×èÖ¹Î´ÊÚÈ¨µÄ·ÃÎÊ¡£
+* [Ñ¹Ëõ½âÑ¹] ´¿ASP(VBScript)ÊÀÃæÉÏÎ¨Ò»Ö§³ÖÖÐÎÄÎÄ¼þÃûµÄÎÞ×é¼þÑ¹Ëõ½âÑ¹¡£
 * [Ô¶³ÌÎÄ¼þ] Ö§³Ö×Ô¶¯Ê¶±ðÔ¶³ÌÎÄ¼þ±àÂë£¬Ö§³Ö°´±êÇ©»ò°´ÕýÔò±í´ïÊ½½ØÈ¡Æ¬¶Î£¬Ö§³ÖÅúÁ¿±£´æÔ¶³ÌÍ¼Æ¬ÖÁ±¾µØ·þÎñÆ÷¡£
 * [Ô¶³ÌÎÄ¼þ] ÄÜ·½±ãµÄÊµÏÖ Ajax ¿çÓò´úÀí¡£
 * [³¬¼¶Êý×é] Ö§³Ö¶¯Ì¬Êý×é¼°Hash±í£¬Ö§³ÖÊý×éÅÅÐò¡¢É¸Ñ¡¡¢Ñ­»·´¦Àí¼°Êý×é¼äÔËËã¡£
