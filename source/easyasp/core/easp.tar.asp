@@ -251,9 +251,9 @@ Class EasyASP_Tar
   End Function
   '解包tar到指定目录
   Public Function UnPackTo(ByVal s_tarFilePath, ByVal s_folderPath)
-    'On Error Resume Next
-    Dim o_tar, o_data, o_file
-    Dim s_header, s_fileName, i_pos, s_type, i_fileSize, is_file
+    On Error Resume Next
+    Dim o_tar, o_data
+    Dim s_header, s_fileName, s_type, i_fileSize, is_file
     If Easp.IsN(s_folderPath) Then s_folderPath = "."
     s_savePath = s_folderPath
     s_folderPath = Easp.Fso.MapPath(s_folderPath)
@@ -296,11 +296,11 @@ Class EasyASP_Tar
         If is_file Then
           '如果是文件，就将文件内容提取出来并保存
           If i_fileSize > 0 Then
-            o_file.SetEOS()
-            o_file.Write o_data.Read(i_fileSize)
+            Easp.Fso.SaveAs s_folderPath & "\" & s_fileName, o_data.Read(i_fileSize)
             .ReadText(i_fileSize)
+          Else
+            Easp.Fso.CreateFile s_folderPath & "\" & s_fileName, ""
           End If
-          o_file.SaveToFile s_folderPath & "\" & s_fileName, 2
         End If
         '跳过所有的填充块
         Do While (.ReadText(1)=Chr(0))
@@ -315,7 +315,6 @@ Class EasyASP_Tar
     End With
     If Not Response.IsClientConnected Then UnPackTo = False : Exit Function
     o_tar.Close : Set o_tar = Nothing
-    o_file.Close : Set o_file = Nothing
     o_data.Close : Set o_data = Nothing
     If Err.Number <> 0 Then
       UnPackTo = False
