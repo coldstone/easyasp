@@ -234,7 +234,7 @@ Class EasyASP_Tar
       .Position = pos
       For i = 1 To BLOCKSIZE
         txt = .ReadText(1)
-        checkNum = checkNum + (Asc(txt) And &HFF&)
+        checkNum = checkNum + (AscB(txt) And &HFF&)
       Next
       .Position = pos + 148
       .WriteText Right(String(6," ") & Oct(checkNum),6) & " "

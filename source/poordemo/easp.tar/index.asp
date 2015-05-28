@@ -128,7 +128,7 @@ function showFiles(sel, list, fo){
     if (list[i].type=='file'){
       opt += ' style="color:#666"';
     } else {
-      opt += ' style="background-color:#ddd"';
+      opt += ' style="background-color:#ff9"';
       opt += ' ondblclick="loadtree(this.value, '+sel+')"';
     }
     opt += '>'+list[i].name+'</option>';
