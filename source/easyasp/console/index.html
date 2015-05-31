@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <title>EasyASP Console</title>
+  <style>
+    body,html{margin:0;padding:0;} a{color:#06C;} .font{font-size:12px;font-family:consolas,"Microsoft YaHei";line-height:1.5em;} .hide{display:none;} .stoped{color:#C66} .running{color:#696} #btns{position:fixed;width:100%;background-color:#F3F3F3;padding:5px;} #console{padding:32px 10px;word-break:break-all;} #tokenspan{position: relative;} .tokena{position:absolute;top:-3px;left:0;padding:0px 3px;border:1px solid #F3F3F3;} .tokenactive{border:1px solid #CCC;border-bottom:none;background-color:#FAFAFA;} #tokenform{position:absolute;width:134px;left:-100px;top:15px;background-color:#FAFAFA;padding:5px;border:1px solid #CCC;} #token{width:126px;border:1px solid #BBB;height:20px;padding:0 2px;}.error{color:#F30;}
+  </style>
+</head>
+<body>
+  <div id="btns" class="font"> [ <strong>EasyASP Console <span id="status" class="stoped">(stoped) </span></strong>&nbsp;<a href="javascript:start(true)" id="start">Start</a><a href="javascript:start(false)" id="pause" class="hide">Pause</a> <a href="javascript:clear()" id="clear">Clear</a> <span id="tokenspan">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div id="tokenform" class="hide"><input type="text" id="token" class="font" value="" /></div><a href="javascript:void(0)" id="tokena" class="tokena">Token</a></span> ]: </div>
+  <div id="console" class="font"></div>
+</body>
+<script src="//libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+var timer;function start(flag){if(flag){$("#status").text("(running)").removeClass("stoped").addClass("running");getConsoleText();}else{$("#status").text("(stoped) ").removeClass("running").addClass("stoped");clearTimeout(timer);}$("#start").toggle();$("#pause").toggle();}function clear(){$("#console").html("");}function colorError(reText){reText = reText.replace(/%26gt%3B(%20%5BError%5D(.+?)($|%3Cbr%20\/%3E))/gi, '&gt;<span style="color:#F30">$1</span>');return unescape(reText);}function getConsoleText(){$.get("console.asp",{token:$("#token").val(),rand:Math.random()},function(data){if(data.length>2){var reText = data.trim();reText = (reText == "invalidToken" ? escape("&gt; [Error] Invalid token value.") : reText);$("#console").append(colorError(reText) + "<br />");window.scrollTo(0, $(document).height());}timer=setTimeout(getConsoleText, 3000);})}var tokenflag=false;function toogleToken(){tokenflag=!tokenflag;if(tokenflag){$("#tokena").addClass("tokenactive");$("#tokenform").show();$("#token").focus();}else{$("#tokena").removeClass("tokenactive");$("#tokenform").hide();}}$(document).ready(function(){$(this).on('click', function(){if(tokenflag){tokenflag=!tokenflag;$("#tokena").removeClass("tokenactive");$("#tokenform").hide();}});$("#tokena").on("click",function(event){event.stopPropagation();toogleToken();});$("#token,#tokenform").on("click",function(event){event.stopPropagation();})});
+</script>
+</html>
