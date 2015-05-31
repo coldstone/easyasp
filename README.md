@@ -48,5 +48,5 @@ EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌĞòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊı»¯²éÑ
 * ¡­¡­
 
 ###½»Á÷Óë·´À¡
-* Bug Ìá½»»ò¹¦ÄÜ½¨ÒéÇëµ½¹ÙÍøÂÛÌ³ [EasyASPÎÊÌâ·´À¡](http://bbs.easyasp.cn/forum-issue-1.html) °å¿é»òÕß [OSC git Issues](http://git.oschina.net/coldstone/easyasp/issues)£¬API¼°ÎÄµµ´íÎóÎÊÌâÇëÔÚ [APIÎÄµµ](http://www.easyasp.cn/api) ÏàÓ¦Ò³ÃæÆÀÂÛÁôÑÔ¡£
+* Bug Ìá½»»ò¹¦ÄÜ½¨ÒéÇëµ½ Issues »ò¹ÙÍøÂÛÌ³ [EasyASPÎÊÌâ·´À¡](http://bbs.easyasp.cn/forum-issue-1.html) °å¿é£¬API¼°ÎÄµµ´íÎóÎÊÌâÇëÔÚ [APIÎÄµµ](http://www.easyasp.cn/api) ÏàÓ¦Ò³ÃæÆÀÂÛÁôÑÔ¡£
 * EaspASP ¹Ù·½½»Á÷QQÈº£º`26435555`£¬ ¼ÓÈºÑéÖ¤ÇëÊäÈë `easyasp` 
