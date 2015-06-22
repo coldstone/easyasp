@@ -4,10 +4,10 @@ txt = "这篇文档是Easp的模板类的测试文档和示例文件"
 
 Set tpl = Easp.Tpl.New
 '允许在模板文件中使用ASP代码
-'tpl.AspEnable = True
+tpl.AspEnable = True
 
 '模板文件所在文件夹，支持绝对路径和相对路径
-tpl.FilePath = "../tpl/html/"
+tpl.FilePath = "html/"
 '模板文件中可以用{#include}标签包含无限层次的子模板，也都支持相对路径和绝对路径，请参考html文件夹内的模板文件
 
 '如何处理未替换的标签,"keep"-保留，"remove"-移除，"comment"-转成注释

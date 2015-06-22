@@ -400,7 +400,7 @@ Class EasyASP
   Public Function IsRewrite()
     IsRewrite = IsRewriteRule()(0)
   End Function
-  Private Function IsRewriteRule()
+  Public Function IsRewriteRule()
     Dim b_rwt, s_rule, a_url, s_url, i
     Dim s_rwtRule, s_rwtGroup, s_rwtParam
     b_rwt = False

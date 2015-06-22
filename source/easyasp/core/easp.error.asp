@@ -69,7 +69,7 @@ Class EasyASP_Error
     a_detail = arr
   End Property
   '设置和读取出错函数名
-  Public Property Get FunctionName()
+  Public Property Get FunctionName
     FunctionName = s_funName
   End Property
   Public Property Let FunctionName(ByVal string)

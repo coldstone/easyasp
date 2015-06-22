@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP File Archiver Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2015-05-28 09:44:33
+'## Update Date :   2015-06-01 1:24:16
 '## Description :   Pack multiple folders and files into one file or 
 '##                 unpack a zipped file to the server.
 '######################################################################
@@ -84,8 +84,8 @@ Class EasyASP_Tar
         dic_files(s_key) = Array(True, True, s_file, s_time)
       End If
       If Not Response.IsClientConnected Then
-				Exit For
-			End If
+        Exit For
+      End If
     Next
   End Sub
   '获取文件的最后修改时间
@@ -156,8 +156,8 @@ Class EasyASP_Tar
           AddToTar o_tar, key, Null, arr(2)
         End If
         If Not Response.IsClientConnected Then
-  				Exit For
-  			End If
+          Exit For
+        End If
       Next
       If Not Response.IsClientConnected Then PackTo = False : Exit Function
       .WriteText String(1024, Chr(0))
@@ -309,8 +309,8 @@ Class EasyASP_Tar
         .Position = .Position - 1
         o_data.Position = .Position
         If Not Response.IsClientConnected Then
-  				Exit Do
-  			End If
+          Exit Do
+        End If
       Loop
     End With
     If Not Response.IsClientConnected Then UnPackTo = False : Exit Function
@@ -382,28 +382,28 @@ Class EasyASP_Tar
   End Function
   '把流输出到浏览器
   Private Function OutPutFile(o_strm, s_fileName)
-  	Dim char, sent
-  	sent = 0
-  	OutPutFile = True
-  	o_strm.Position = 0
-  	o_strm.Type = 1
-  	Response.AddHeader "content-type", "application/octec-stream"
-  	Response.AddHeader "Content-Disposition","attachment;filename=" & s_fileName 
-  	Response.AddHeader "content-length", o_strm.Size
-  	Do While Not o_strm.EOS
-  		char = o_strm.Read(1)
-  		Response.BinaryWrite(char)
-  		sent = sent + 1
-  		If (sent MOD 16384) = 0 Then
-  			Response.Flush
-  			If Not Response.IsClientConnected Then
-  				OutPutFile = False
-  				Exit Do
-  			End If
-  		End If
-  	Loop
-  	Response.Flush
-  	if Not Response.IsClientConnected Then OutPutFile = False
+    Dim char, sent
+    sent = 0
+    OutPutFile = True
+    o_strm.Position = 0
+    o_strm.Type = 1
+    Response.AddHeader "content-type", "application/octec-stream"
+    Response.AddHeader "Content-Disposition","attachment;filename=" & s_fileName 
+    Response.AddHeader "content-length", o_strm.Size
+    Do While Not o_strm.EOS
+      char = o_strm.Read(1)
+      Response.BinaryWrite(char)
+      sent = sent + 1
+      If (sent MOD 16384) = 0 Then
+        Response.Flush
+        If Not Response.IsClientConnected Then
+          OutPutFile = False
+          Exit Do
+        End If
+      End If
+    Loop
+    Response.Flush
+    if Not Response.IsClientConnected Then OutPutFile = False
   End Function
 End Class
 %>
