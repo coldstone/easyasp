@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2015-05-07 09:57:42
+'## Update Date :   2015-06-23 0:36:31
 '## Description :   Database controler
 '##
 '######################################################################
@@ -13,9 +13,11 @@
 Class EasyASP_Db
 
   Private o_conn, o_connections, o_pager
-  Private s_pageParam, s_insSeparator
+  Private s_pageParam, s_offsetParam, s_limitParam, s_insSeparator
   Private i_transLevel, i_queryTimes
-  Private i_pageIndex, i_pageSize, i_pageCount, i_recordCount, i_rsSize, i_maxRow, i_minRow
+  Private i_pageIndex, i_pageSize, i_pageCount, i_recordCount
+  Private i_rsSize, i_maxRow, i_minRow
+  Private b_limitEnable
 
   '构造方法
   Private Sub Class_Initialize()
@@ -39,6 +41,8 @@ Class EasyASP_Db
     i_transLevel  = 0
     i_queryTimes  = 0
     s_pageParam   = "page"
+    s_offsetParam = "offset"
+    s_limitParam  = "limit"
     s_insSeparator= ","
     i_pageSize    = 25
     i_pageIndex   = 0
@@ -47,6 +51,7 @@ Class EasyASP_Db
     i_rsSize      = 0
     i_maxRow      = 0
     i_minRow      = 0
+    b_limitEnable = True
     Set o_pager   = Server.CreateObject("Scripting.Dictionary")
     o_pager.CompareMode = 1
     SetPager "", "{first}{prev}{liststart}{list}{listend}{next}{last} {jump}", Array("jump:select", "jumplong:0")
@@ -83,12 +88,26 @@ Class EasyASP_Db
   Public Property Let PageParam(ByVal string)
     s_pageParam = string
   End Property
+  Public Property Let OffsetParam(ByVal string)
+    s_offsetParam = string
+  End Property
+  Public Property Let LimitParam(ByVal string)
+    s_limitParam = string
+  End Property
+  
   '设置和读取分页每页数量
   Public Property Let PageSize(ByVal sizeNumber)
-    i_pageSize = sizeNumber
+    i_pageSize = CInt(sizeNumber)
+    b_limitEnable = False
   End Property
   Public Property Get PageSize()
     PageSize = i_pageSize
+  End Property
+  Public Property Get PageLimit()
+    PageLimit = i_pageSize
+  End Property
+  Public Property Get PageOffset()
+    PageOffset = Easp.IIF(i_minRow = 0 , 0, i_minRow - 1)
   End Property
   '读取分页记录集总记录数
   Public Property Get PageRecordCount()
@@ -148,9 +167,9 @@ Class EasyASP_Db
         Dim tDb : If Instr(strDB,":")>0 Then : tDb = strDB : Else : tDb = Server.MapPath(strDB) : End If
         ConnStr = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source="&tDb&";Jet OLEDB:Database Password="&p&";"
       Case "MYSQL"
-        '服务器需要安装MySQL ODBC驱动，下载地址 http://dev.mysql.com/downloads/connector/odbc/3.51.html
+        '服务器需要安装MySQL ODBC驱动，下载地址 http://dev.mysql.com/downloads/connector/odbc/5.1.html
         If port = "" Then port = "3306"
-        ConnStr = "Driver={MySQL ODBC 3.51 Driver};Server="&s&";Port="&port&";charset=utf8;Database="&strDB&";User="&u&";Password="&p&";Option=3;Stmt=Set Names 'utf8'"
+        ConnStr = "Driver={MySQL ODBC 5.1 Driver};Server="&s&";Port="&port&";Database="&strDB&";User="&u&";Password="&p&";Option=3;"
     End Select
     'Easp.Console ConnStr
     Set OpenConnection = CreateConnection(ConnStr)
@@ -739,7 +758,7 @@ Class EasyASP_Db
 
   '取得分页后记录集
   '说明：可以是单表、多表连接或者包含子查询的复杂SQL查询语句，但如果是Access数据
-  '     库或者SQL Server 2000及以下版本数据库，则必须满足以下三个条件：
+  '     库或者SQL Server 2008及以下版本数据库，则必须满足以下三个条件：
   '      1、sql中Select的第一个字段必须是主键
   '      2、所有参与排序的字段必须在Select出的字段中包含
   '      3、Order By语句中不能出现括号
@@ -747,46 +766,76 @@ Class EasyASP_Db
   Public Function GetRecordSet(ByRef conn, ByVal sql)
     On Error Resume Next
     Dim rsTmp, s_keySql, s_pkey, s_order, s_reOrder
-    Dim s_tmp, s_sqlNoOrder, s_sqlCount, i_tmp
-    Dim s_dbType, s_dbVer, s_sql, s_osql
+    Dim s_tmp, s_sqlNoOrder, s_sqlCount, i_tmp, i_offset
+    Dim s_dbType, s_dbVer, s_sql, s_osql, b_lowVersion
     Dim t_start : t_start = Timer : s_osql = sql
+    sql = ReplaceStasicParameter(sql)
     If Easp.Console.ShowSql Then
       'Easp.Console "(分页) " & ToSql(sql)
-      Easp.Console "(" & Easp.Lang("db-pager-start") & ")"
+      Easp.Console "(== " & Easp.Lang("db-pager-start") & " ==)"
     End If
-    '取主键名
-    s_keySql = Replace(sql, "Select", "SELECT TOP 1", 1, 1, 1)
-    s_keySql = "SELECT * FROM (" & s_keySql & ") AS EasyASP_Pager_Key_Table WHERE 1=0"
-    Set rsTmp = ExecuteSql(conn, s_keySql, 1)
-    i_queryTimes = i_queryTimes - 1
-    s_pkey = rsTmp.Fields(0).Name
-    Close(rsTmp)
-    'Easp.Console s_pkey
+    '取得数据库类型及版本
+    s_dbType = GetType(conn)
+    s_dbVer = GetVersion(conn)
+    b_lowVersion = s_dbType = "ACCESS" Or (s_dbType = "MSSQL" And Easp.Str.GetName(s_dbVer,".") < 11)
+    If b_lowVersion Then
+      '取主键名
+      s_keySql = Replace(sql, "Select", "SELECT TOP 1", 1, 1, 1)
+      s_keySql = "SELECT * FROM (" & s_keySql & ") AS EasyASP_Pager_Key_Table WHERE 1=0"
+      Set rsTmp = ExecuteSql(conn, s_keySql, 1)
+      'i_queryTimes = i_queryTimes - 1
+      s_pkey = rsTmp.Fields(0).Name
+      Close(rsTmp)
+      'Easp.Console s_pkey
+    End If
     '取排序字段
     s_tmp = Mid(sql,InStrRev(sql, ")")+1)
     If Easp.Str.IsIn(s_tmp, "order by") Then
       s_order = Mid(s_tmp, InStrRev(s_tmp, "Order by", -1, 1))
       s_sqlNoOrder = Trim(Left(sql, Len(sql)-Len(s_order)))
     Else
-      s_order = "ORDER BY " & s_pkey & " ASC"
       s_sqlNoOrder = sql
-      sql = sql & " " & s_order
+      If b_lowVersion Then
+        s_order = "ORDER BY " & s_pkey & " ASC"
+        sql = sql & " " & s_order
+      End If
     End If
     '取总记录数
     s_sqlCount = "SELECT COUNT(*) FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Count_Table"
     Set rsTmp = ExecuteSql(conn, s_sqlCount, 1)
-    i_queryTimes = i_queryTimes - 1
-    i_recordCount = rsTmp(0)
+    'i_queryTimes = i_queryTimes - 1
+    i_recordCount = CInt(rsTmp(0))
     Close(rsTmp)
     If i_recordCount > 0 Then
-      i_tmp = i_recordCount/i_pageSize
+      If Easp.Has(Easp.Var(s_offsetParam)) Then
+        i_offset = CInt(Easp.Var(s_offsetParam))
+      End If
+      If Easp.Has(Easp.Var(s_limitParam)) And b_limitEnable Then
+        i_pageSize = CInt(Easp.Var(s_limitParam))
+      End If
+      i_tmp = i_recordCount / i_pageSize
+      'Easp.Console i_tmp
       i_pageCount = Int(i_tmp) + Easp.IIF(Int(i_tmp)=i_tmp, 0, 1)
-      '取当前页码
-      i_pageIndex = GetPageIndex()
-      If i_pageIndex > i_pageCount Then i_pageIndex = i_pageCount
-      '计算记录行号
-      i_minRow = i_pageSize * (i_pageIndex-1) + 1
-      i_maxRow = i_pageSize * i_pageIndex
+      'Easp.Console i_pageCount
+      If Easp.Has(Easp.Var(s_offsetParam)) Then
+        i_minRow = i_offset + 1
+        i_maxRow = i_offset + i_pageSize
+        i_pageIndex = i_offset / i_pageSize + 1
+        If i_pageIndex > i_pageCount Then
+          i_pageIndex = i_pageCount
+          i_minRow = i_pageSize * (i_pageIndex-1) + 1
+          i_maxRow = i_pageSize * i_pageIndex
+          i_offset = i_minRow - 1
+        End If
+      Else
+        '取当前页码
+        i_pageIndex = GetPageIndex()
+        If i_pageIndex > i_pageCount Then i_pageIndex = i_pageCount
+        '计算记录行号
+        i_minRow = i_pageSize * (i_pageIndex-1) + 1
+        i_maxRow = i_pageSize * i_pageIndex
+        i_offset = i_minRow - 1
+      End If
       '本页记录数
       i_rsSize = i_pageSize
       If i_maxRow > i_recordCount Then
@@ -795,17 +844,19 @@ Class EasyASP_Db
         '最后一页的记录数
         i_rsSize = i_maxRow - i_minRow + 1
       End If
-      '取得数据库类型及版本
-      s_dbType = GetType(conn)
-      s_dbVer = GetVersion(conn)
       '按不同类型的数据库来处理分页
       If s_dbType = "MYSQL" Then
       '如果是MySQL数据库，采用limit取分页记录
-        s_sql = sql & " limit " & i_minRow - 1 & ", " & i_pageSize
+        s_sql = sql & " limit " & i_offset & ", " & i_pageSize
       Else
         If s_dbType = "MSSQL" And Easp.Str.GetName(s_dbVer,".") >= 9 Then
-        '如果是SQL Server 2005及以上版本数据库，利用ROW_NUMBER函数取分页记录
-          s_sql = "SELECT * FROM (SELECT *,ROW_NUMBER() OVER (" & s_order & ") AS EasyASP_Pager_RowRank FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Max_Table) AS EasyASP_Pager_Result_Table WHERE EasyASP_Pager_Result_Table.EasyASP_Pager_RowRank BETWEEN " & i_minRow & " AND " & i_maxRow
+          If Easp.Str.GetName(s_dbVer,".") >= 11 Then
+            '如果是SQL Server 2012及以上版本数据库
+            s_sql = sql & " offset " & i_offset & " row fetch next " & i_pageSize & " rows only"
+          Else
+            '如果是SQL Server 2005及2008版本数据库，利用ROW_NUMBER函数取分页记录
+            s_sql = "SELECT * FROM (SELECT *,ROW_NUMBER() OVER (" & s_order & ") AS EasyASP_Pager_RowRank FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Max_Table) AS EasyASP_Pager_Result_Table WHERE EasyASP_Pager_Result_Table.EasyASP_Pager_RowRank BETWEEN " & i_minRow & " AND " & i_maxRow
+          End If
         Else
         '如果是Access或者SQL Server 2000及以下版本
           sql = Replace(sql, "Select", "SELECT TOP " & i_maxRow, 1, 1, 1)
@@ -823,8 +874,9 @@ Class EasyASP_Db
     End If
     '输出执行时间及执行结果
     If Easp.Console.ShowSql And Easp.Console.ShowSqlTime Then
-      s_tmp = "(" & Easp.Lang("db-pager-finish") & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(t_start) & "s"
+      s_tmp = "(== " & Easp.Lang("db-pager-finish") & Easp.Lang("db-query-spend") & "：" & Easp.GetScriptTimeByTimer(t_start) & "s"
       s_tmp = s_tmp & Easp.Str.Format(Easp.Lang("db-pager-in-console"), Array(i_rsSize, i_minRow, i_maxRow, i_recordCount, i_pageSize, i_pageIndex, i_pageCount))
+      s_tmp = s_tmp & " ==)"
       Easp.Console s_tmp
     End If
     CheckError "getrecordset", Err, conn, "GetRecordSet", s_osql
@@ -895,7 +947,7 @@ Class EasyASP_Db
     o_cfg("pageclass")    = "" '每个页码的class样式
     o_cfg("currentclass") = "current" '当前页的class样式
     o_cfg("disabledclass")= "disabled" '不可用的链接的class样式
-    o_cfg("link")         = Easp.ReplaceUrl(s_pageParam, "*") '页码链接地址，其中*代表页码
+    o_cfg("link")         = ReplaceUrl(s_pageParam, "*") '页码链接地址，其中*代表页码
     o_cfg("first")        = "&laquo;" '首页链接文字
     o_cfg("firstclass")   = "" '首页链接class样式
     o_cfg("prev")         = "&#8249;" '上一页链接文字
@@ -1112,6 +1164,24 @@ Class EasyASP_Db
     Next
     If hasClass = 0 And Easp.Has(s_tmp) Then s_tmp = " class=""" & s_tmp & """"
     AddHtmlClass = s_tmp
+  End Function
+    
+  '替换Url参数
+  Private Function ReplaceUrl(ByVal param, ByVal value)
+    Dim a_rwt, o_matches
+    a_rwt = Easp.IsRewriteRule()
+    If a_rwt(0) Then
+      '如果是伪静态页面
+      Set o_matches = Easp.Str.Match(a_rwt(2), param & "=(\$\d)")
+      If o_matches.Count > 0 Then
+        ReplaceUrl = Easp.Str.ReplacePart(a_rwt(3), a_rwt(1), o_matches(0).SubMatches(0), value)
+      Else
+        ReplaceUrl = a_rwt(3)
+      End If
+      Set o_matches = Nothing
+    Else
+      ReplaceUrl = Easp.GetUrlWith("-" & s_offsetParam & ",-" & param, param & "=" & value)
+    End If
   End Function
 
   '配置分页样式
