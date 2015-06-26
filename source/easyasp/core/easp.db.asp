@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Database Control Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2015-06-23 0:36:31
+'## Update Date :   2015-06-26 09:48:38
 '## Description :   Database controler
 '##
 '######################################################################
@@ -801,21 +801,20 @@ Class EasyASP_Db
       End If
     End If
     '取总记录数
-    s_sqlCount = "SELECT COUNT(*) FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Count_Table"
+    s_sqlCount = "SELECT COUNT(*) AS EasyASP_Record_Count FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Count_Table"
     Set rsTmp = ExecuteSql(conn, s_sqlCount, 1)
-    'i_queryTimes = i_queryTimes - 1
-    i_recordCount = CInt(rsTmp(0))
+    i_recordCount = Clng(Trim(rsTmp(0).Value))
     Close(rsTmp)
     If i_recordCount > 0 Then
       If Easp.Has(Easp.Var(s_offsetParam)) Then
-        i_offset = CInt(Easp.Var(s_offsetParam))
+        i_offset = Clng(Easp.Var(s_offsetParam))
       End If
       If Easp.Has(Easp.Var(s_limitParam)) And b_limitEnable Then
-        i_pageSize = CInt(Easp.Var(s_limitParam))
+        i_pageSize = Clng(Easp.Var(s_limitParam))
       End If
       i_tmp = i_recordCount / i_pageSize
       'Easp.Console i_tmp
-      i_pageCount = Int(i_tmp) + Easp.IIF(Int(i_tmp)=i_tmp, 0, 1)
+      i_pageCount = Clng(i_tmp) + Easp.IIF(Clng(i_tmp)=i_tmp, 0, 1)
       'Easp.Console i_pageCount
       If Easp.Has(Easp.Var(s_offsetParam)) Then
         i_minRow = i_offset + 1
