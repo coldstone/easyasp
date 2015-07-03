@@ -129,6 +129,8 @@ Class EasyASP_Fso
         Easp.Error.Raise "error-fso-filenotfound"
       End If
     End If
+    tmpStr = Replace(tmpStr, vbLf, vbCrLf)
+    tmpStr = Replace(tmpStr, vbCr & vbCrLf, vbCrLf)
     Read = tmpStr
   End Function
   '将二进制数据保存为文件

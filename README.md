@@ -2,15 +2,16 @@
 
 ×÷Õß : coldstone (coldstone[at]qq.com)   
 ¹ÙÍø : <http://www.easyasp.cn>   
-APIÎÄµµ : <http://www.easyasp.cn/api>   
-ÂÛÌ³ : <http://bbs.easyasp.cn>   
-git(GitHub) : <https://github.com/coldstone/easyasp.git>   
-git(osChina) : <http://git.oschina.net/coldstone/easyasp>   
+GIT : <https://git.coding.net/coldstone/easyasp.git>   
+
+> git ¾µÏñ£º   
+> GitHub : <https://github.com/coldstone/easyasp.git>   
+> osChina : <http://git.oschina.net/coldstone/easyasp>   
+
 Licenses : EasyASP ×ñÑ­ [Apache licenses v2](http://zh.wikipedia.org/zh-cn/Apache%E8%AE%B8%E5%8F%AF%E8%AF%81) °æÈ¨Ğ­Òé   
    
 EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌĞòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊı»¯²éÑ¯¶àÊı¾İ¿â²Ù×÷¡¢JsonÊı¾İÉú³ÉÓë½âÎö¡¢ÎŞ×é¼şÑ¹Ëõ½âÑ¹¡¢¸÷ÖÖ×Ö·û´®¼°ÈÕÆÚ´¦Àíº¯Êı¡¢¶¯Ì¬Êı×é´¦Àí¡¢ÎÄ¼şÏµÍ³´¦Àí¡¢Ô¶³ÌÎÄ¼ş¼°XMLÎÄµµ´¦Àí¡¢ÄÚ´æ»º´æºÍÎÄ¼ş»º´æ´¦Àí¡¢Ä£°åÒıÇæµÈµÈ·á¸»µÄ¹¦ÄÜ¡£¶øÎªÁË½â¾öASPµ÷ÊÔ²»·½±ãµÄÎÊÌâ£¬EasyASP ÍÆ³öÁË¶À´´µÄ¿ØÖÆÌ¨µ÷ÊÔ¹¦ÄÜÒÔ¼°·á¸»µÄÒì³£ĞÅÏ¢ÏÔÊ¾£¬ÄÜÈÃÄã¿ª·¢ ASP ³ÌĞòÊ±×î´ó³Ì¶ÈµÄ´Ó´íÎóµ÷ÊÔµÄ·×·±ÖĞ½â·Å³öÀ´¡£EasyASP Ä¿Ç°Ìá¹©ÏÂÔØµÄÊÇVBScript°æ±¾¡£
-
-
+   
 ###EasyASP µÄ²¿·Ö¹¦ÄÜÌØµã
 * [ASP] ´óÁ¿·á¸»µÄ×Ö·û´®´¦Àí¡¢ÕıÔò´¦Àí¡¢ÈÕÆÚÊ±¼ä¡¢ÊıÖµ¸ñÊ½»¯¼°ÆäËüÍ¨ÓÃº¯Êı¡£
 * [ASP] ÊµÏÖ¸ßĞÔÄÜµÄ×Ö·û´®¹¹ÔìÀà StringBuilder ¡£
@@ -48,5 +49,5 @@ EasyASP ÊÇÒ»¸ö¼òµ¥·½±ãµÄÓÃÀ´¿ìËÙ¿ª·¢ASP³ÌĞòµÄÀà¿â¡£EasyASP °üº¬ÍêÉÆµÄÈ«²ÎÊı»¯²éÑ
 * ¡­¡­
 
 ###½»Á÷Óë·´À¡
-* Bug Ìá½»»ò¹¦ÄÜ½¨ÒéÇëµ½ Issues »ò¹ÙÍøÂÛÌ³ [EasyASPÎÊÌâ·´À¡](http://bbs.easyasp.cn/forum-issue-1.html) °å¿é£¬API¼°ÎÄµµ´íÎóÎÊÌâÇëÔÚ [APIÎÄµµ](http://www.easyasp.cn/api) ÏàÓ¦Ò³ÃæÆÀÂÛÁôÑÔ¡£
-* EaspASP ¹Ù·½½»Á÷QQÈº£º`26435555`£¬ ¼ÓÈºÑéÖ¤ÇëÊäÈë `easyasp` 
+* Bug Ìá½»»ò¹¦ÄÜ½¨ÒéÇëµ½ [Coding ÌÖÂÛÇø](https://coding.net/u/coldstone/p/easyasp/topic/all) »ò¹ÙÍøÂÛÌ³ [EasyASPÎÊÌâ·´À¡](http://bbs.easyasp.cn/forum-issue-1.html) °å¿é¡£
+* EaspASP ¹Ù·½½»Á÷QQÈº£º`26435555`£¬ ¼ÓÈºÑéÖ¤ÇëÊäÈë `easyasp`£¬ÎŞÑéÖ¤ĞÅÏ¢²»¼Ó¡£
