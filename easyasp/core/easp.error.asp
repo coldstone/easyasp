@@ -11,13 +11,15 @@
 '######################################################################
 Class EasyASP_Error
   Private b_redirect, b_continue, b_console
-  Private i_errNum, i_delay
+  Private i_errNum, i_delay, i_errLine, i_codeCache
   Private s_title, s_url, s_css, s_msg, s_funName
-  Private o_err, a_detail
+  Private o_err, a_detail, o_codeList
   Private e_err, e_conn, e_dom
   Private Sub Class_Initialize()
     i_errNum    = ""
     i_delay     = 5
+    i_errLine   = 0
+    i_codeCache = 5
     s_title     = Easp.Lang("error-title")
     b_redirect  = False
     b_console   = True
@@ -27,6 +29,7 @@ Class EasyASP_Error
     o_err.CompareMode = 1
   End Sub
   Private Sub Class_Terminate()
+    If IsObject(o_codeList) Then Set o_codeList = Nothing
     Set o_err = Nothing
     If IsObject(e_err) Then Set e_err = Nothing
     If IsObject(e_conn) Then Set e_conn = Nothing
@@ -119,6 +122,14 @@ Class EasyASP_Error
   Public Property Let ClassName(ByVal s)
     s_css = s
   End Property
+  '设置错误行号
+  Public Property Let LineNumber(ByVal i)
+    i_errLine = i
+  End Property
+  '设置要保存最后执行的语句的数量
+  Public Property Let LastCodeCache(ByVal i)
+    i_codeCache = i
+  End Property
 
   'Dom和Connection错误
   Public Sub SetErrors(ByRef e, ByRef ec, ByRef ed)
@@ -156,11 +167,27 @@ Class EasyASP_Error
       a_info = Split(msg, "|")
       i_tmp = UBound(a_info)
       If i_tmp < 2 Then
-        a_info = Split(msg & String("|", 2 - i_tmp), "|")
+        a_info = Split(msg & String(2 - i_tmp, "|"), "|")
       End If
       Easp.Print ShowErrorMsg(a_info)
     End If
   End Sub
+
+  Public Sub Inject(ByRef object_err, ByVal string_filePath, ByVal int_lineNumber, ByVal string_sourceCode)
+    If Easp.Debug Then
+      If Not IsObject(o_codeList) Then Set o_codeList = Easp.Json.NewArray
+      Easp.Error.SetErrors object_err, Null, Null
+      Easp.Error.LineNumber = int_lineNumber
+      o_codeList.Add Array(string_sourceCode, string_filePath, int_lineNumber)
+      If object_err.Number<>0 Then
+        Easp.Error.Throw "Microsoft VBScript 运行时错误"
+        object_err.Clear
+        i_errLine = 0
+        If Not b_continue Then Easp.Exit
+      End If
+    End If
+  End Sub
+  
   '在控制台中抛出错误信息
   Public Sub Console(ByVal n)
     If Easp.isN(n) Then Exit Sub
@@ -204,12 +231,12 @@ Class EasyASP_Error
   
   '显示错误信息框
   Private Function ShowErrorMsg(ByVal msg)
-    Dim SB, key, s_ref
+    Dim SB, key, s_ref, i, lines
     s_ref = Request.ServerVariables("HTTP_REFERER")
     Set SB = Easp.Str.StringBuilder()
     If Easp.IsN(s_css) Then
       s_css = "easp-error"
-      SB.Append "<style>.easp-error{width:70%;font-size:12px;font-family:""Microsoft Yahei"";margin:10px auto;padding:10px 20px;}.easp-error legend{margin:0 0 5px 0;padding:0 10px;font-size:14px;font-weight:bolder;}.easp-error p{margin:0 0 10px 0;padding:0;}.easp-error p.msg{font-size:14px;}.easp-error p a:link{color:#09F;}.easp-error p a:hover{color:#090;}.easp-error h3{font-size:12px;margin:0 0 10px 0;padding:0;font-weight:normal;}.easp-error h3 .title{font-weight:bolder;}.easp-error h3 a{color:#090;text-decoration:none;font-family:consolas;}.easp-error .info{margin-bottom:10px;margin-top:-6px;}.easp-error ul.list{margin:0;padding:0;}.easp-error ul.list li{list-style:none;margin:0 24px;color:#666;line-height:1.6em;word-break:break-all;}.easp-error ul.list li strong{color:#555;}</style>"
+      SB.Append "<style>.easp-error{width:70%;font-size:12px;font-family:""Microsoft Yahei"";margin:10px auto;padding:10px 20px;}.easp-error legend{margin:0 0 5px 0;padding:0 10px;font-size:14px;font-weight:bolder;}.easp-error p{margin:0 0 10px 0;padding:0;}.easp-error p.msg{font-size:14px;}.easp-error p a:link{color:#09F;}.easp-error p a:hover{color:#090;}.easp-error h3{font-size:12px;margin:0 0 10px 0;padding:0;font-weight:normal;}.easp-error h3 .title{font-weight:bolder;}.easp-error h3 a{color:#090;text-decoration:none;font-family:consolas;}.easp-error .info{margin-bottom:10px;margin-top:-6px;}.easp-error ul.list{margin:0;padding:0;}.easp-error ul.list li{list-style:none;margin:0 24px;color:#666;line-height:1.6em;word-break:break-all;}.easp-error ul.list li strong{color:#555;}.easp-error table{font-size:12px;width:95%;margin:0 10px;font-family:consolas;line-height:14px;}.easp-error table td{padding:0;margin:0;color:#666}.easp-error .code{background-color:#F7F7F7;padding:0 3px;}</style>"
     End If
     SB.Append "<fieldset id=""easpError"" class="""
     SB.Append s_css
@@ -297,7 +324,7 @@ Class EasyASP_Error
           End With
         End If
       End If
-      If Not IsObject(e_conn) And Not IsObject(e_dom) Then
+      If Not IsObject(e_conn) And Not IsObject(e_dom) And IsObject(e_err) Then
         If e_err.Number <> 0 Then
           SB.Append "<li><strong>错误代码 : </strong>"
           SB.Append e_err.Number
@@ -308,6 +335,30 @@ Class EasyASP_Error
           SB.Append "<li><strong>错误来源 : </strong>"
           SB.Append e_err.Source
           SB.Append "</li>"
+        End If
+        If i_errLine > 0 Then
+          If o_codeList.Length > 0 Then
+            SB.Append "<li><strong>错误行代码栈 : </strong>"
+            SB.Append "<table>"
+            lines = o_codeList.Length - i_codeCache
+            If lines < 0 Then lines = 0
+            For i = lines To o_codeList.Length - 1
+              If IsArray(o_codeList(i)) Then
+                SB.Append "<tr>"
+                SB.Append "<td>"
+                SB.Append o_codeList(i)(1)
+                SB.Append ", line "
+                SB.Append o_codeList(i)(2)
+                If i = (o_codeList.Length - 1) Then SB.Append " (错误行)"
+                SB.Append ": <span class=""code"">"
+                SB.Append Easp.Str.HtmlEncode(o_codeList(i)(0))
+                SB.Append "</span></td>"
+                SB.Append "<tr>"
+              End If
+            Next
+            SB.Append "</table>"
+            SB.Append "</li>"
+          End If
         End If
       End If
 
@@ -350,7 +401,7 @@ Class EasyASP_Error
         SB.Append "</div>"
       End If
       '显示HTTP报头
-      Dim i, keyName
+      Dim keyName
       SB.Append "<h3><a href=""javascript:toggle('easp_err_http')"" id=""easp_err_http_m"">[+]</a> <span class=""title"">HTTP 报头</span></h3>"
       SB.Append "<div class=""info"" id=""easp_err_http"" style=""display:none;"">"
       SB.Append "<ul class=""list"">"
