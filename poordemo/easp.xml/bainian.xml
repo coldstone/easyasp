@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="GBK"?>
+<TransData>
+	<BaseInfo>        
+	  <TransType>中间</TransType>         
+		<TransCode>00030003</TransCode>            
+		<SubTransCode>1</SubTransCode>                
+		<TransDate>2010-03-08</TransDate>  
+		<TransTime>13:29:42</TransTime>
+		<TransSeq>000100012007031100001</TransSeq>
+		<Operator>BJ001</Operator>     
+	</BaseInfo>
+	
+	<InputData>                     
+	  <ContSerialNumber>90003319</ContSerialNumber>   
+	  <ContPlanCode>123456</ContPlanCode>  
+	  <Prem>20.00</Prem>       
+	  <Amnt>500000.00</Amnt>               
+	  <AgentCom>20010101001</AgentCom>   
+	  <AirDate>2010-03-18</AirDate>   
+	  <AirTime>14:30</AirTime>  
+	  <FlightNumber>CA2000</FlightNumber>      
+	  <InsuredName>AIR001</InsuredName>         
+	  <InsuredSex>0</InsuredSex>          
+	  <InsuredBirthday>1980-01-01</InsuredBirthday>     
+	  <InsuredIdType>8</InsuredIdType>            
+	  <InsuredIdNo>123456</InsuredIdNo>      
+    <Phone>12312312312</Phone>          
+	</InputData>
+	
+	<OutputData>                    
+    <Result>	
+		  <SuccFlag>1</SuccFlag>		
+      <MSG></MSG>				 
+      <ContNo></ContNo>		
+	   </Result>
+	</OutputData>
+</TransData>

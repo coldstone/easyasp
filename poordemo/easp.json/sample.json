@@ -1,0 +1,181 @@
+{
+	"Name": "",
+	"Mac": "00_30_56_90_12_FFD7",
+	"orangeEnergyLevel": 0,
+	"redEnergyLevel": 0,
+	"Zone": [{
+		"Name": "dSK20 004",
+		"ID": 585,
+		"Groups": [{
+			"Name": "BROADCAST",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 0
+		}, {
+			"Name": "LIGHT",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 1
+		}, {
+			"Name": "SHADOW",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 2
+		}, {
+			"Name": "CLIMATE",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 3
+		}, {
+			"Name": "MUSIC",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 4
+		}, {
+			"Name": "VIDEO",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 5
+		}, {
+			"Name": "SECURITY",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 6
+		}, {
+			"Name": "ACCESS",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 7
+		}, {
+			"Name": "JOKER",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 8
+		}, {
+			"Name": "WHITE",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 9
+		}, {
+			"Name": "DISPLAY",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 10
+		}]
+	}, {
+		"Name": "dSK20",
+		"ID": 586,
+		"Groups": [{
+			"Name": "BROADCAST",
+			"type": 0,
+			"lastScene": -1,
+			"ID": 0
+		}, {
+			"Name": "LIGHT",
+			"type": 0,
+			"lastScene": 5,
+			"ID": 1
+		}, {
+			"Name": "SHADOW",
+			"type": 0,
+			"lastScene": 48,
+			"ID": 2
+		}, {
+			"Name": "CLIMATE",
+			"type": 0,
+			"lastScene": 48,
+			"ID": 3
+		}, {
+			"Name": "MUSIC",
+			"type": 0,
+			"lastScene": 48,
+			"ID": 4
+		}, {
+			"Name": "VIDEO",
+			"type": 0,
+			"lastScene": 48,
+			"ID": 5
+		}, {
+			"Name": "SECURITY",
+			"type": 0,
+			"lastScene": 48,
+			"ID": 6
+		}, {
+			"Name": "ACCESS",
+			"type": 0,
+			"lastScene": 48,
+			"ID": 7
+		}, {
+			"Name": "JOKER",
+			"type": 0,
+			"lastScene": 48,
+			"ID": 8
+		}, {
+			"Name": "WHITE",
+			"type": 0,
+			"lastScene": 48,
+			"ID": 9
+		}, {
+			"Name": "DISPLAY",
+			"type": 0,
+			"lastScene": 48,
+			"ID": 10
+		}]
+	}],
+	"Circuit": [{
+		"Name": "dsm10 (c)aizo.ag",
+		"dSID": "3504175fe000001000000249",
+		"dSAdr": 0,
+		"orangeEnergyLevel": 20,
+		"redEnergyLevel": 50,
+		"Devices": [{
+			"Name": "SD 2",
+			"dSID": "3504175fe000000000000a3c",
+			"dSAdr": 896,
+			"ZoneID": 586,
+			"FID": {
+				"Class": 1,
+				"SubClass": 0,
+				"Function": 40
+			},
+			"lastScene": -1,
+			"GroupMembership": [0, 1]
+		}, {
+			"Name": "Taster",
+			"dSID": "3504175fe000000000001ace",
+			"dSAdr": 899,
+			"ZoneID": 586,
+			"FID": {
+				"Class": 1,
+				"SubClass": 0,
+				"Function": 2
+			},
+			"lastScene": -1,
+			"GroupMembership": [0, 1]
+		}, {
+			"Name": "ESL",
+			"dSID": "3504175fe000000000001693",
+			"dSAdr": 900,
+			"ZoneID": 586,
+			"FID": {
+				"Class": 1,
+				"SubClass": 0,
+				"Function": 40
+			},
+			"lastScene": -1,
+			"GroupMembership": [0, 1]
+		}, {
+			"Name": "SD 1",
+			"dSID": "3504175fe000000000000a5c",
+			"dSAdr": 898,
+			"ZoneID": 586,
+			"FID": {
+				"Class": 1,
+				"SubClass": 0,
+				"Function": 40
+			},
+			"lastScene": -1,
+			"GroupMembership": [0, 1]
+		}]
+	}]
+}

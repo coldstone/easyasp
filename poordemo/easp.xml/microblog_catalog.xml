@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<microblog>
+	<site>
+		<name alias="Tencent">腾讯微博</name>
+		<url>http://t.qq.com</url>
+		<account nick="user" for="me"><name>@lengshi</name><nick>Ray</nick></account>
+		<last><![CDATA[今天我们这里下<em>大雨</em>啦！]]></last></site>
+	<site>
+		<name alias="Sina">新浪微博</name>
+		<url>http://t.sina.com.cn</url>
+		<account nick="email" for="me"><name>@tainray</name><nick>tainray@sina.com</nick></account>
+		<last><![CDATA[是不是<font color="red">这样</font>的噢，我也不知道哈。<img src="http://bbs.lengshi.com/max-assets/icon-emoticon/12.gif" />]]></last></site>
+	<site>
+		<name alias="Twitter">推特</name>
+		<url>http://twitter.com</url>
+		<account nick="user" for="notme"><name>@ccav</name><nick>CCAV</nick></account>
+		<last><![CDATA[I don't need this feature <strong>(>_<)</strong> any more.]]></last></site>
+</microblog>

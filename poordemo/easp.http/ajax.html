@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>EasyASP Ajax跨域演示</title>
+</head>
+
+<body><fieldset><legend>&nbsp;EasyASP Ajax跨域演示&nbsp;( <a href="javascript:test(0)">GET测试</a> &nbsp; <a href="javascript:test(1)">POST测试</a> &nbsp; <a href="javascript:test(2)">清空</a> )</legend>
+  <p>目标地址：
+    <input name="easpurl" type="text" id="easpurl" size="60" value="http://" />
+  </p>
+  <p>获取方法：
+    <select name="method" id="method">
+      <option value="GET">GET</option>
+      <option value="POST">POST</option>
+    </select>
+  </p>
+  <p id="form">同时要传递的数据（形式：a=1&amp;b=2&amp;c=3，Post则形如：表单名1=表单值1&amp;表单名2=表单值2）：<br /><br />
+  <span><input name="param" type="text" id="param" size="90" value="" /></span>
+  </p>
+  <p>
+    <input type="button" name="submit" id="submit" value="获取目标地址源码" /> <span id="loading">数据载入中...</span>
+  </p>
+  <p>当前请求地址：<span id="agent"></span></p>
+  <p>返回源码：<br />
+    <textarea name="return" cols="80" rows="20" id="return"></textarea>
+  </p></fieldset>
+</body>
+<script src="//lib.sinaapp.com/js/jquery/1.10.2/jquery-1.10.2.min.js"></script>
+<style>
+body { font:12px/18px Tahoma, Geneva, sans-serif;}
+fieldset { width:700px; padding:20px;}
+#loading {display:none;}
+</style>
+<script type="text/javascript">
+$(function(){
+	$('#submit').click(function(){
+		$.ajax({
+			 type: $('#method').val(),
+			 //这里的URL要填写easp的ajax代理文件的地址，并把目标地址以参数"easpurl"的形式代入，其它和平时的ajax一致。
+			 url: 'ajaxagent.asp?easpurl=' + $('#easpurl').val(),
+			 //要提交的数据
+			 data: $('#param').val(),
+			 //Ajax执行前
+			 beforeSend: function(){
+				 $('#loading').show();
+				 $('#agent').text(this.url);
+				 $('#return').val('');
+			 },
+			 //Ajax成功
+			 success: function(data){
+				 $('#return').val(data);
+				 $('#loading').hide();
+			 }
+		});	
+	});
+});
+//下面只是切换测试数据的函数
+function test(m){
+	var data = [{url:'http://www.baidu.com/s',method:'GET',param:'wd=easyasp'},{url:'http://www.thinkasp.cn/common/base64/charset/gbk',method:'POST',param:'src=这是一条测试数据'},{url:'',method:'GET',param:''}];
+	$('#easpurl').val(data[m].url);
+	$('#method').val(data[m].method);
+	$('#param').val(data[m].param);
+	$('#agent').text('');
+	$('#return').val('');
+}
+</script>
+</html>

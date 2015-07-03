@@ -1,0 +1,13 @@
+html,
+body {
+  overflow-x: hidden; /* Prevent scroll on narrow devices */
+}
+body {
+  padding-top: 70px;
+}
+a small{color:#999}
+.p-l-10{padding-left:10px;}
+.p-l-20{padding-left:20px;}
+.m-l-10{margin-left:10px;}
+.m-l-20{margin-left:20px;}
+.m-b-10{margin-bottom:10px;}

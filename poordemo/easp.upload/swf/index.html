@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>艾恩无组件上传</title>
+<link href="images/mo.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="scripts/swfupload.js"></script>
+<script type="text/javascript" src="scripts/swfupload.handler.js"></script>
+<script type="text/javascript">
+var swfu,Files=[];
+function UploadSucceedCallBack(file,File){
+	//文件上传成功后调用的函数
+	$_("trace").innerHTML+=file.name + " => " + file.newname + "," + File.name2 + "<br />";
+}
+function BeforeUploadCallBack(file){
+   this.SetPostParam("name","anlige");
+}
+window.onload=function(s){
+	return function(){swfu=HandlerInit(s);};
+}({
+	upload_url: "upload.asp",
+	file_post_name : "filedata",
+	button_append : "divAddFiles",
+	bind_id:"moswf",
+	file_types : "*.*",
+	file_types_description : "选择文件",
+	file_size_limit : "200mb",
+	file_upload_limit : 6,
+	
+	button_width: 24,
+	button_height: 24,
+	button_image_url:"images/btn16.png",
+	auto:false
+});
+</script>
+</head>
+<body>
+	<div id="upload">
+		<div id="btns">
+		<input onClick="swfu.stopUpload();" type="image" src="images/stop.png" style="float:right;" id="dostop" />
+		<input onClick="swfu.startUploadFiles();" type="image" src="images/up.png" style="float:right;" id="doupload" />
+		<span id="divAddFiles"></span><span id="message"> *选择文件后点击<img src="images/up.png" width="16" />上传</span></div>
+		<div id="moswf">
+			<div class="filelist h24"><div class="process_bar h24"></div><div class="info_bar h24"><ul><li class="w_name"><span class="s_name">文件名</span></li><li class="w_process">进度</li><li class="w_size">速度</li><li class="w_act">操作</li></ul></div></div>
+		</div>
+		<div id="trace"></div>
+	</div>
+</body>
+</html>
