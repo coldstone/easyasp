@@ -73,6 +73,7 @@ Class EasyASP_Fso
   '设置UTF-8文件的BOM信息如何处理
   Public Property Let FileBom(Byval string)
     s_bom = string
+    '注：此属性已废除，EasyASP 读取utf-8一律去掉BOM，写入一律加上。
   End Property
 
   '检测文件或文件夹是否存在
@@ -87,11 +88,12 @@ Class EasyASP_Fso
   End Function
   '读取文件文本内容
   Public Function Read(ByVal filePath)
-    Dim p, f, o_strm, tmpStr, s_char
+    Dim p, f, ch, o_strm, tmpStr, s_char
     s_char = s_charset
     If Instr(filePath,">")>0 Then
-      s_char = UCase(Trim(Easp.Str.GetValue(filePath,">")))
-      filePath = Trim(Easp.Str.GetName(filePath,">"))
+      ch = Easp.Str.GetNameValue(FilePath, ">")
+      filePath = Trim(ch(0))
+      s_char = UCase(Trim(ch(1)))
     End If
     p = absPath(filePath)
     If isFile(p) Then
@@ -101,26 +103,22 @@ Class EasyASP_Fso
         .Mode = 3
         .Open
         .LoadFromFile p
-        .Charset = s_char
+        .CharSet = "x-ansi"
         .Position = 2
+        '一律去掉BOM
+        If AscB(.ReadText(1)) = 239 And AscB(.ReadText(1)) = 187 And AscB(.ReadText(1)) = 191 Then
+          .Position = 0
+          .Charset = "utf-8"
+          .Position = 5
+        Else
+          .Position = 0
+          .Charset = s_char
+          .Position = 2
+        End If
         tmpStr = .ReadText
         .Close
       End With
       Set o_strm = Nothing
-      If s_char = "UTF-8" Then
-        Select Case s_bom
-          Case "remove"
-            If Easp.Str.Test(tmpStr, "^\uFEFF") Then
-              tmpStr = Easp.Str.Replace(tmpStr, "^\uFEFF", "")
-            End If
-          Case "add"
-            If Not Easp.Str.Test(tmpStr, "^\uFEFF") Then
-              tmpStr = Chrw(&hFEFF) & tmpStr
-            End If
-          Case Else
-            'Do Nothing
-        End Select
-      End If
     Else
       tmpStr = ""
       If Easp.Debug Then
@@ -163,11 +161,12 @@ Class EasyASP_Fso
   '创建文件并写入内容
   Public Function CreateFile(ByVal filePath, ByVal fileContent)
     On Error Resume Next
-    Dim f,p,t, s_char, o_strm
+    Dim f,p,t, ch, s_char, o_strm
     s_char = s_charset
     If Instr(filePath,">")>0 Then
-      s_char = UCase(Trim(Easp.Str.GetValue(filePath,">")))
-      filePath = Trim(Easp.Str.GetName(filePath,">"))
+      ch = Easp.Str.GetNameValue(filePath,">")
+      filePath = Trim(ch(0))
+      s_char = UCase(Trim(ch(1)))
     End If
     p = absPath(filePath)
     CreateFile = MD(Left(p,InstrRev(p,"\")-1))
@@ -175,10 +174,11 @@ Class EasyASP_Fso
       Set o_strm = Server.CreateObject("ADODB.Stream")
       With o_strm
         .Type = 2
+        .Mode = 3
         .Open
         .Charset = s_char
-        .Position = o_strm.Size
         .WriteText = fileContent
+        .Position = 0
         .SaveToFile p,Easp.IIF(b_overwrite,2,1)
         .Close
       End With
