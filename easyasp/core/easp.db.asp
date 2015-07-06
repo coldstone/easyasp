@@ -803,19 +803,17 @@ Class EasyASP_Db
     '取总记录数
     s_sqlCount = "SELECT COUNT(*) AS EasyASP_Record_Count FROM (" & s_sqlNoOrder & ") AS EasyASP_Pager_Count_Table"
     Set rsTmp = ExecuteSql(conn, s_sqlCount, 1)
-    i_recordCount = Clng(Trim(rsTmp(0).Value))
+    i_recordCount = Int(Trim(rsTmp(0).Value))
     Close(rsTmp)
     If i_recordCount > 0 Then
       If Easp.Has(Easp.Var(s_offsetParam)) Then
-        i_offset = Clng(Easp.Var(s_offsetParam))
+        i_offset = Int(Easp.Var(s_offsetParam))
       End If
       If Easp.Has(Easp.Var(s_limitParam)) And b_limitEnable Then
-        i_pageSize = Clng(Easp.Var(s_limitParam))
+        i_pageSize = Int(Easp.Var(s_limitParam))
       End If
       i_tmp = i_recordCount / i_pageSize
-      'Easp.Console i_tmp
-      i_pageCount = Clng(i_tmp) + Easp.IIF(Clng(i_tmp)=i_tmp, 0, 1)
-      'Easp.Console i_pageCount
+      i_pageCount = Int(i_tmp) + Easp.IIF(Int(i_tmp)=i_tmp, 0, 1)
       If Easp.Has(Easp.Var(s_offsetParam)) Then
         i_minRow = i_offset + 1
         i_maxRow = i_offset + i_pageSize
