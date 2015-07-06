@@ -795,27 +795,46 @@ Class EasyASP_String
       QuoteString = ToString(string)
     End If
   End Function
+  '文本编码转换
+  Public Function BytesToString(ByVal byt, ByVal char)
+    If LenB(byt) = 0 Then BytesToString = "" : Exit Function
+    dim oStrm
+    char = Easp.IfHas(char, Easp.CharSet)
+    set oStrm = Server.CreateObject("Adodb.Stream")
+    With oStrm
+      .Type = 2
+      .Mode = 3
+      .Open
+      .WriteText byt
+      .Position = 0
+      .Charset = char
+      .Position = 2
+      BytesToString = .ReadText      
+      .Close
+    End With
+    set oStrm = nothing
+  End Function
   '解析多维数组(based on Jorkin's)
   Private Function JMultiArray(ByRef aArray)
     Dim dimensions, i
     dimensions = getArrayDimension(aArray) '//获取数组维度
     If dimensions > 0 Then
-      Dim JMultiArrayExecute, b
+      Dim jexec, b
       b = "Dim SB " & vbCrLf & "Set SB = StringBuilder()" & vbCrLf
-      JMultiArrayExecute = "SB.Append QuoteString(aArray("
+      jexec = "SB.Append QuoteString(aArray("
       For i = 1 To dimensions
         b = b & "Dim b" & i & vbCrlf '//防止临时变量影响全局变量
-        If i > 1 Then JMultiArrayExecute = JMultiArrayExecute & ", "
-        JMultiArrayExecute = JMultiArrayExecute & "b" & i
+        If i > 1 Then jexec = jexec & ", "
+        jexec = jexec & "b" & i
       Next
-      JMultiArrayExecute = JMultiArrayExecute & "))" '//生成 aArray(b1, b2, b3, b4....)格式
+      jexec = jexec & "))" '//生成 aArray(b1, b2, b3, b4....)格式
       For i = 1 To dimensions
         '//一维一维的向外嵌套
-        JMultiArrayExecute = "SB.Append ""[""" & vbCrlf & "For b" & i & " = 0 To UBound(aArray, " & i & ")" & vbCrlf & "If b" & i & " > 0 Then SB.Append "", "" End If" & vbCrlf & JMultiArrayExecute & vbCrlf & "Next" & vbCrlf & "SB.Append ""]"""
+        jexec = "SB.Append ""[""" & vbCrlf & "For b" & i & " = 0 To UBound(aArray, " & i & ")" & vbCrlf & "If b" & i & " > 0 Then SB.Append "", "" End If" & vbCrlf & jexec & vbCrlf & "Next" & vbCrlf & "SB.Append ""]"""
       Next
-      JMultiArrayExecute = JMultiArrayExecute & vbCrLf & "JMultiArray = SB.ToString()" & vbCrLf & "Set SB = Nothing"
-      'Easp.Console "<" & "%" & vbCrlf & b & JMultiArrayExecute & vbCrlf & "%" & ">" '//调试生成的语句
-      Execute(b & JMultiArrayExecute)
+      jexec = jexec & vbCrLf & "JMultiArray = SB.ToString()" & vbCrLf & "Set SB = Nothing"
+      'Easp.Console "<" & "%" & vbCrlf & b & jexec & vbCrlf & "%" & ">" '//调试生成的语句
+      Execute(b & jexec)
     End If
   End Function
   Private Function getArrayDimension(ByVal aReallydo)

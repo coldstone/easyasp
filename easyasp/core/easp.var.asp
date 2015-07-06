@@ -41,6 +41,7 @@ Class EasyASP_Var
       s_var = o_var(key)
     ElseIf o_var.Exists("get." & key) Then
       s_var = o_var("get." & key)
+      If Instr(s_var, "%") > 0 Then s_var = Easp.UrlDecode(s_var)
     ElseIf o_var.Exists("post." & key) Then
       s_var = o_var("post." & key)
     ElseIf Easp.Str.IsSame(key,"easp.newid") Then

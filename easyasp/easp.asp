@@ -232,6 +232,7 @@ Class EasyASP
         End If
       End If
     End If
+    If Instr(s_get, "%") > 0 Then s_get = UrlDecode(s_get)
     [Get] = s_get
   End Function
   '获取POST参数值
@@ -276,14 +277,33 @@ Class EasyASP
     End If
     Post = s_post
   End Function
-
+  '将编码后的URL字符串还原
+  Public Function UrlDecode(ByVal val)
+    If IsN(val) Then UrlDecode = "" : Exit Function
+    If Instr(val, "%") <= 0 Then UrlDecode = val : Exit Function
+    Dim count, index, char, charvalue, result
+    count = len(val)
+    If count = 0 then Exit Function
+    For index = 1 To count
+      char = Mid(val, index, 1)
+      If char = "%" Then
+        charvalue = CInt("&H" & Mid(val, index+1, 2))
+        index = index + 2
+        result = result & ChrB(charvalue)
+      Else
+        result = result & ChrB(AscB(char))
+      End If
+    Next
+    UrlDecode = Str.BytesToString(result, s_charset)
+  End Function
   '取页面地址
   Public Function GetUrl(ByVal param)
     Dim script_name, s_url, s_dir, s_rq, i_port
     Dim s_item, s_tmp, i, b_tmp, s_protocol, s_port
     script_name = Request.ServerVariables("SCRIPT_NAME")
     i_port = Request.ServerVariables("SERVER_PORT")
-    s_rq = Request.QueryString()
+    s_rq = Request.QueryString() & ""
+    If Instr(s_rq, "%") > 0 Then s_rq = UrlDecode(s_rq)
     '取出当前页地址，如果是默认首页如index.asp则省略首页名
     s_url = Mid(script_name, 1, IIF(Str.IsSame(Right(script_name, Len("/" & s_defaultPageName)),"/" & s_defaultPageName), Len(script_name)-Len(s_defaultPageName), Len(script_name)))
     '取出所在站点目录路径
