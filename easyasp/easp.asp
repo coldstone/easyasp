@@ -6,7 +6,7 @@ Option Explicit
 '## Feature     :   EasyASP Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2015-02-24 16:59:53
+'## Update Date :   2015-07-09
 '## Description :   EasyASP main class
 '##
 '######################################################################
@@ -130,6 +130,12 @@ Class EasyASP
   '输出字符串和一个html换行符
   Public Sub Println(ByVal s) : Response.Write s & "<br />" & VbCrLf : Response.Flush() : End Sub
   Public Sub WN(ByVal s) : Println s : End Sub
+  '输出字符串和一个换行符，并且解析其中的超级变量标签
+  Public Sub Write(ByVal s) : Response.Write Str.Format(s, Null) & VbCrLf : Response.Flush() : End Sub
+  Public Sub WR(ByVal s) : Write s : End Sub
+  '输出字符串和一个html换行符，并且解析其中的超级变量标签
+  Public Sub Writeln(ByVal s) : Response.Write Str.Format(s, Null) & "<br />" & VbCrLf : Response.Flush() : End Sub
+  Public Sub WRN(ByVal s) : Writeln s : End Sub
   '输出字符串并将HTML标签转为普通字符
   Public Sub PrintHtml(ByVal s) : Response.Write Str.HtmlEncode(s) & VbCrLf : End Sub
   Public Sub WH(ByVal s) : PrintHtml s : End Sub
