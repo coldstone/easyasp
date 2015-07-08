@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP String Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2015-01-20 14:07:41
+'## Update Date :   2015-07-07 23:50:43
 '## Description :   EasyASP String Class
 '##
 '######################################################################
@@ -159,14 +159,12 @@ Class EasyASP_String
   
   '比较文本是否一致（忽略大小写）
   Public Function IsSame(ByVal string1, ByVal string2)
-    string1 = Easp.IfHas(string1, "")
-    string2 = Easp.IfHas(string2, "")
+    If Easp.IsN(string1) And Easp.IsN(string2) Then IsSame = True : Exit Function
     IsSame = (StrComp(string1, string2, 1) = 0)
   End Function
   '比较文本是否一致（区分大小写）
   Public Function IsEqual(ByVal string1, ByVal string2)
-    string1 = Easp.IfHas(string1, "")
-    string2 = Easp.IfHas(string2, "")
+    If Easp.IsN(string1) And Easp.IsN(string2) Then IsEqual = True : Exit Function
     IsEqual = (StrComp(string1, string2, 0) = 0)
   End Function
 
@@ -226,12 +224,10 @@ Class EasyASP_String
 
   '检查字符串的开头是否与另一个字符串匹配
   Public Function StartsWith(ByVal string1, ByVal string2)
-    'StartsWith = Test(string1, "^" & string2)
     StartsWith = IsSame(Left(string1, Len(string2)), string2)
   End Function
   '检查字符串的结尾是否与另一个字符串匹配
   Public Function EndsWith(ByVal string1, ByVal string2)
-    'EndsWith = Test(string1, string2 & "$")
     EndsWith = IsSame(Right(string1, Len(string2)), string2)
   End Function
 
