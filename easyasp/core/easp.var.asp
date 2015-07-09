@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP Variables Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2015-05-10 09:06:14
+'## Update Date :   2015-07-09
 '## Description :   Get and set EasyASP super variables.
 '##
 '######################################################################
@@ -41,7 +41,9 @@ Class EasyASP_Var
       s_var = o_var(key)
     ElseIf o_var.Exists("get." & key) Then
       s_var = o_var("get." & key)
-      If Instr(s_var, "%") > 0 Then s_var = Easp.UrlDecode(s_var)
+      If Not isArray(s_var) Then
+         If Instr(s_var, "%") > 0 Then s_var = Easp.UrlDecode(s_var)
+      end if
     ElseIf o_var.Exists("post." & key) Then
       s_var = o_var("post." & key)
     ElseIf Easp.Str.IsSame(key,"easp.newid") Then
