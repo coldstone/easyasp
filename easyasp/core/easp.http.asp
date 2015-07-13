@@ -5,7 +5,7 @@
 '## Feature     :   EasyASP XMLHTTP Class
 '## Version     :   3.0
 '## Author      :   Coldstone(coldstone[at]qq.com)
-'## Update Date :   2014-10-08 01:12:24
+'## Update Date :   2015-07-14 7:07:07
 '## Description :   Request XMLHttp Data in EasyASP
 '## 
 '######################################################################
@@ -128,9 +128,7 @@ Class EasyASP_Http
   
   '获取远程页完整参数模式
   Public Function GetData(ByVal uri, ByVal m, ByVal async, ByVal data, ByVal u, ByVal p)
-    Dim a_http, i, ht, chru, s_serData
-    a_http = Split("Msxml2.ServerXMLHTTP.6.0 MSXML2.serverXMLHTTP MSXML2.XMLHTTP Microsoft.XMLHTTP")
-    i = 0
+    Dim a_http, i, ht, chru, s_serData, isWinhttp
     '抓取地址
     If Easp.IsN(uri) Then Exit Function
     '通过URL临时指定编码
@@ -146,75 +144,59 @@ Class EasyASP_Http
     '构造Get传数据的URL
     If Easp.Has(data) Then s_serData = Serialize__(data)
     If m = "GET" And Easp.Has(data) Then uri = uri & Easp.IIF(Instr(uri,"?")>0, "&", "?") & s_serData
-    'Easp.Console m & "/" & uri & "/" & async & "/" & u & "/" & p
-    Do While True
-      On Error Resume Next
-      If Easp.isInstall(a_http(i)) Then
-        Set ht = Server.CreateObject(a_http(i))
-        If Instr(a_http(i), "server") Then
-        '设置超时时间
-          ht.SetTimeOuts ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout
-        End If
-        '打开远程页
-        If Easp.Has(u) Then
-          '如果有用户名和密码
-          ht.open m, uri, async, u, p
-        Else
-          '匿名
-          ht.open m, uri, async
-        End If
-        If m = "POST" Then
-          If Not o_rh.Has("Content-Type") Then
-            o_rh("Content-Type") = "application/x-www-form-urlencoded"
-          End If
-          SetHeaderTo ht
-          '有发送的数据
-          ht.send s_serData
-        Else
-          SetHeaderTo ht
-          ht.send
-        End If
-        'Easp.Console a_http(i)
-        If Err.Number = 0 Then
-          'Easp.Console a_http(i)
-          Exit Do
-        End If
+    On Error Resume Next
+    a_http = Split("WinHttp.WinHttpRequest.5.1 MSXML2.XMLHTTP Microsoft.XMLHTTP")
+    i = 0
+    For i = 0 To Ubound(a_http)
+      Err.Clear
+      Set ht = Server.CreateObject(a_http(i))
+      isWinhttp = Easp.Str.StartsWith(a_http(i), "WinHttp")
+      If isWinhttp Then
+        ht.SetTimeOuts ResolveTimeout, ConnectTimeout, SendTimeout, ReceiveTimeout
+        ht.Option(4) = 13056 '忽略错误标志
+        ht.Option(6) = True '自动跳转
       End If
-      If i < Ubound(a_http) Then
-        i = i + 1
+      ht.open m, uri, async
+      If m = "POST" or m = "PUT" Then
+        If Not o_rh.Has("Content-Type") Then
+          o_rh("Content-Type") = "application/x-www-form-urlencoded"
+        End If
+        SetHeaderTo ht
+        '有发送的数据
+        ht.send s_serData
       Else
-        If Easp.Debug Then
-          Easp.Error.FunctionName = "Http.GetData"
-          Easp.Error.Raise "error-http-object"
+        SetHeaderTo ht
+        ht.send
+      End If
+      If isWinhttp Then ht.WaitForResponse
+      'Easp.Console a_http(i)
+      If Err.Number = 0 Then
+        Exit For
+      Else
+        If i = Ubound(a_http) Then
+          If Easp.Debug Then
+            Easp.Error.FunctionName = "Http.GetData"
+            Easp.Error.Raise "error-http-object"
+          End If
         End If
-        Exit Do
       End If
-      On Error Goto 0
-    Loop
-    '检测返回数据
-    If ht.readyState <> 4 Then
-      GetData = "error:server is down"
-      Set ht = Nothing
-      If Easp.Debug Then
-        Easp.Error.FunctionName = "Http.GetData"
-        Easp.Error.Detail = uri
-        Easp.Error.Raise "error-http-serverdown"
-      End If
-      Exit Function
-    ElseIf ht.Status = 200 Then
+    Next
+    
+    If ht.Status = 200 Then
       Headers = ht.getAllResponseHeaders()
-      Body = ht.responseBody
+      Body = ht.ResponseBody
       If Easp.IsN(CharSet) Then
-        Text = ht.responseText
+        Text = ht.ResponseText
         '从Header中提取编码信息
-        If Easp.Str.Test(Headers,"charset=([\w-]+)") Then
-          CharSet = Easp.Str.Replace(Headers,"([\s\S]+)charset=([\w-]+)([\s\S]+)","$2")
+        If Easp.Str.Test(Headers,"charset=([\w\-]+)") Then
+          CharSet = Easp.Str.Match(Headers,"charset=([\w\-]+)")(0).SubMatches(0)
         '如果是Xml文档，从文档中提取编码信息
-        ElseIf Easp.Str.Test(Headers,"Content-Type: ?text/xml") Then
-          CharSet = Easp.Str.Replace(Text,"^<\?xml\s+[^>]+encoding\s*=\s*""([^""]+)""[^>]*\?>([\s\S]+)","$1")
+        ElseIf Easp.Str.Test(Headers,"Content-Type:\s?text/xml") _
+               And Easp.Str.Test(Text,"^<\?xml\s+[^>]+encoding\s*=\s*""([^""]+)""[^>]*\?>") Then
+          CharSet = Easp.Str.Match(Text,"^<\?xml\s+[^>]+encoding\s*=\s*""([^""]+)""[^>]*\?>")(0).SubMatches(0)
         '从文件源码中提取编码
-        ElseIf Easp.Str.Test(Text,"<meta\s+http-equiv\s*=\s*[""']?content-type[""']?\s+content\s*=\s*[""']?[^>]+charset\s*=\s*([\w-]+)[^>]*>") Then
-          CharSet = Easp.Str.Replace(Text,"([\s\S]+)<meta\s+http-equiv\s*=\s*[""']?content-type[""']?\s+content\s*=\s*[""']?[^>]+charset\s*=\s*([\w-]+)[^>]*>([\s\S]+)","$2")
+        ElseIf Easp.Str.Test(Text,"<meta\s+[^>]*charset\s*=\s*[""']?([\w\-]+)[""']?[^>]*>") Then
+          CharSet = Easp.Str.Match(Text,"<meta\s+[^>]*charset\s*=\s*[""']?([\w\-]+)[""']?[^>]*>")(0).SubMatches(0)
         End If
         '如果无法获取远程页的编码则继承Easp的编码设置
         If Easp.IsN(CharSet) Then CharSet = "UTF-8"
@@ -243,7 +225,7 @@ Class EasyASP_Http
     s_ohtml = GetData
     Html = s_ohtml
   End Function
-    
+
   '按正则查找返回HTML中符合的第一个字符串
   Public Function Find(ByVal rule)
     Find = FindString(s_ohtml, rule)
