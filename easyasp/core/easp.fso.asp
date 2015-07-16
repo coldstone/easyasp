@@ -71,9 +71,9 @@ Class EasyASP_Fso
     s_sizeformat = str
   End Property
   '设置UTF-8文件的BOM信息如何处理
+  '注：此属性已废除，EasyASP 读取和写入utf-8编码文件一律去掉BOM。
   Public Property Let FileBom(Byval string)
     s_bom = string
-    '注：此属性已废除，EasyASP 读取utf-8一律去掉BOM，写入一律加上。
   End Property
 
   '检测文件或文件夹是否存在
@@ -105,15 +105,17 @@ Class EasyASP_Fso
         .LoadFromFile p
         .CharSet = "x-ansi"
         .Position = 2
-        '一律去掉BOM
-        If AscB(.ReadText(1)) = 239 And AscB(.ReadText(1)) = 187 And AscB(.ReadText(1)) = 191 Then
-          .Position = 0
-          .Charset = "utf-8"
-          .Position = 5
-        Else
-          .Position = 0
-          .Charset = s_char
-          .Position = 2
+        If .Size > 4 Then
+          '一律去掉BOM
+          If AscB(.ReadText(1)) = 239 And AscB(.ReadText(1)) = 187 And AscB(.ReadText(1)) = 191 Then
+            .Position = 0
+            .Charset = "utf-8"
+            .Position = 5
+          Else
+            .Position = 0
+            .Charset = s_char
+            .Position = 2
+          End If
         End If
         tmpStr = .ReadText
         .Close
@@ -134,7 +136,7 @@ Class EasyASP_Fso
   '将二进制数据保存为文件
   Public Function SaveAs(ByVal filePath, ByVal fileContent)
     On Error Resume Next
-    Dim f,p,t, o_strm
+    Dim p, s_char, o_strm, o_utf8
     p = absPath(filePath)
     SaveAs = MD(Left(p,InstrRev(p,"\")-1))
     If SaveAs Then
@@ -143,7 +145,23 @@ Class EasyASP_Fso
         .Type = 1
         .Open
         .Write fileContent
-        .SaveToFile p,Easp.IIF(b_overwrite,2,1)
+        If .Size > 2 Then
+          .Position = 0
+          If  AscB(.Read(1)) = 239 And AscB(.Read(1)) = 187 And AscB(.Read(1)) = 191 Then
+            Set o_utf8 = Server.CreateObject("ADODB.Stream")
+            o_utf8.Type = 1
+            o_utf8.Open
+            .Position = 3
+            .Copyto o_utf8
+            o_utf8.SaveToFile p, Easp.IIF(b_overwrite, 2, 1)
+            o_utf8.Close
+            Set o_utf8 = Nothing
+          Else
+            .SaveToFile p, Easp.IIF(b_overwrite, 2, 1)
+          End If
+        Else
+          .SaveToFile p, Easp.IIF(b_overwrite, 2, 1)
+        End If
         .Close
       End With
       Set o_strm = Nothing
@@ -161,7 +179,7 @@ Class EasyASP_Fso
   '创建文件并写入内容
   Public Function CreateFile(ByVal filePath, ByVal fileContent)
     On Error Resume Next
-    Dim f,p,t, ch, s_char, o_strm
+    Dim p, ch, s_char, o_strm, o_utf8
     s_char = s_charset
     If Instr(filePath,">")>0 Then
       ch = Easp.Str.GetNameValue(filePath,">")
@@ -173,13 +191,21 @@ Class EasyASP_Fso
     If CreateFile Then
       Set o_strm = Server.CreateObject("ADODB.Stream")
       With o_strm
-        .Type = 2
-        .Mode = 3
-        .Open
         .Charset = s_char
+        .Open
         .WriteText = fileContent
-        .Position = 0
-        .SaveToFile p,Easp.IIF(b_overwrite,2,1)
+        If s_char = "UTF-8" Then
+          Set o_utf8 = Server.CreateObject("ADODB.Stream")
+          o_utf8.type=1
+          o_utf8.Open
+          .Position = 3
+          .Copyto o_utf8
+          o_utf8.SaveToFile p, Easp.IIF(b_overwrite, 2, 1)
+          o_utf8.Close
+          Set o_utf8 = Nothing
+        Else
+          .SaveToFile p, Easp.IIF(b_overwrite, 2, 1)
+        End If
         .Close
       End With
       Set o_strm = Nothing
