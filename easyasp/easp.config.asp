@@ -77,6 +77,19 @@ Easp.Console.Enable        = True
 'Easp.Error.ClassName       = ""
 
 ''====================================
+''  Cache 配置
+''====================================
+
+'是否开启缓存数量计数
+'Easp.Cache.CountEnabled     = True
+'文件缓存默认保存路径
+'Easp.Cache.SavePath         = "/_cache"
+'文件缓存默认保存文件类型
+'Easp.Cache.FileType         = ".easpcache"
+'缓存默认过期时间(分钟或指定时间，如果为0则表示一直不过期)
+'Easp.Cache.Expires          = 5
+
+''====================================
 ''  Fso 配置
 ''====================================
 
@@ -88,8 +101,6 @@ Easp.Console.Enable        = True
 'Easp.Fso.OverWrite         = True
 '设置文件大小显示格式(G,M,K,b,auto)
 'Easp.Fso.SizeFormat        = "K"
-'设置UTF-8文件的BOM信息如何处理(keep/remove/add)
-'Easp.Fso.FileBom           = "keep"
 
 ''====================================
 ''  Http 配置
