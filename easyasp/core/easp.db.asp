@@ -767,7 +767,7 @@ Class EasyASP_Db
     On Error Resume Next
     Dim rsTmp, s_keySql, s_pkey, s_order, s_reOrder
     Dim s_tmp, s_sqlNoOrder, s_sqlCount, i_tmp, i_offset
-    Dim s_dbType, s_dbVer, s_sql, s_osql, b_lowVersion
+    Dim s_dbType, s_dbVer, s_sql, s_osql, b_getPK
     Dim t_start : t_start = Timer : s_osql = sql
     sql = ReplaceStasicParameter(sql)
     If Easp.Console.ShowSql Then
@@ -777,8 +777,13 @@ Class EasyASP_Db
     '取得数据库类型及版本
     s_dbType = GetType(conn)
     s_dbVer = GetVersion(conn)
-    b_lowVersion = s_dbType = "ACCESS" Or (s_dbType = "MSSQL" And Easp.Str.GetName(s_dbVer,".") < 11)
-    If b_lowVersion Then
+    '取排序字段
+    s_tmp = Mid(sql,InStrRev(sql, ")")+1)
+    b_getPK = s_dbType = "ACCESS" Or _
+                     (s_dbType = "MSSQL" And _
+                       (Easp.Str.GetName(s_dbVer,".") < 11 Or _
+                         Not Easp.Str.IsIn(s_tmp, "order by")))
+    If b_getPK Then
       '取主键名
       s_keySql = Replace(sql, "Select", "SELECT TOP 1", 1, 1, 1)
       s_keySql = "SELECT * FROM (" & s_keySql & ") AS EasyASP_Pager_Key_Table WHERE 1=0"
@@ -788,14 +793,12 @@ Class EasyASP_Db
       Close(rsTmp)
       'Easp.Console s_pkey
     End If
-    '取排序字段
-    s_tmp = Mid(sql,InStrRev(sql, ")")+1)
     If Easp.Str.IsIn(s_tmp, "order by") Then
       s_order = Mid(s_tmp, InStrRev(s_tmp, "Order by", -1, 1))
       s_sqlNoOrder = Trim(Left(sql, Len(sql)-Len(s_order)))
     Else
       s_sqlNoOrder = sql
-      If b_lowVersion Then
+      If b_getPK Then
         s_order = "ORDER BY " & s_pkey & " ASC"
         sql = sql & " " & s_order
       End If
