@@ -287,12 +287,14 @@ Class EasyASP
   Public Function UrlDecode(ByVal val)
     If IsN(val) Then UrlDecode = "" : Exit Function
     If Instr(val, "%") <= 0 Then UrlDecode = val : Exit Function
-    Dim count, index, char, charvalue, result
+    Dim count, index, char, uchar, charvalue, result
     count = len(val)
-    If count = 0 then Exit Function
+    Easp.Console val
     For index = 1 To count
       char = Mid(val, index, 1)
-      If char = "%" Then
+      Easp.Console char
+      uchar = Mid(val, index + 1, 1)
+      If char = "%" and Instr("0123456789ABCDEF", uchar) > 0 Then
         charvalue = CInt("&H" & Mid(val, index+1, 2))
         index = index + 2
         result = result & ChrB(charvalue)
