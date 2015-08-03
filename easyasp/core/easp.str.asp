@@ -233,32 +233,39 @@ Class EasyASP_String
 
   '取“A:B”中的A
   Public Function GetColonName(ByVal string)
-    GetColonName = GetNameValue(string, ":", False)(0)
+    GetColonName = GetNameValue_(string, ":", False)(0)
   End Function
   '取“A:B”中的B
   Public Function GetColonValue(ByVal string)
-    GetColonValue = GetNameValue(string, ":", False)(1)
+    GetColonValue = GetNameValue_(string, ":", False)(1)
   End Function
   '取“A分隔符B”中的A，多个分隔符按最左
   Public Function GetName(ByVal string, ByVal separator)
-    GetName = GetNameValue(string, separator, False)(0)
+    GetName = GetNameValue_(string, separator, False)(0)
   End Function
   '取“A分隔符B”中的B，多个分隔符按最左
   Public Function GetValue(ByVal string, ByVal separator)
-    GetValue = GetNameValue(string, separator, False)(1)
+    GetValue = GetNameValue_(string, separator, False)(1)
   End Function
   '取“A分隔符B”中的A，多个分隔符按最右
   Public Function GetNameRev(ByVal string, ByVal separator)
-    GetNameRev = GetNameValue(string, separator, True)(0)
+    GetNameRev = GetNameValue_(string, separator, True)(0)
   End Function
   '取“A分隔符B”中的B，多个分隔符按最右
   Public Function GetValueRev(ByVal string, ByVal separator)
-    GetValueRev = GetNameValue(string, separator, True)(1)
+    GetValueRev = GetNameValue_(string, separator, True)(1)
   End Function
   '取分隔符字符串的两头
   '说明：把“A分隔符B”转为数组 Array(A,B)
   '返回：数组
-  Public Function GetNameValue(ByVal string, ByVal separator, ByVal isRev)
+  Public Function GetNameValue(ByVal string, ByVal separator)
+    GetNameValue = GetNameValue_(string, separator, False)
+  End Function
+  Public Function GetNameValueRev(ByVal string, ByVal separator)
+    GetNameValueRev = GetNameValue_(string, separator, True)
+  End Function
+
+  Private Function GetNameValue_(ByVal string, ByVal separator, ByVal isRev)
     Dim n, arr(1)
     n = Easp.IIF(isRev, InstrRev(string, separator), Instr(string, separator))
     If n > 0 Then
@@ -273,7 +280,7 @@ Class EasyASP_String
         arr(1) = ""
       End If
     End If
-    GetNameValue = arr
+    GetNameValue_ = arr
   End Function
 
   '截取长字符串左边部分并以特殊符号代替
