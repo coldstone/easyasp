@@ -20,7 +20,7 @@ Dim Easp : Set Easp = New EasyASP '实例化Easp
 <%
 Class EasyASP
   '定义Easp公共类
-  Public Lang, [Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml, Tar
+  Public Lang, [Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml, Tar, Log
   '定义Easp预留公共接口
   Public Mo, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, X, Y, Z
   '定义私有变量
@@ -43,7 +43,7 @@ Class EasyASP
     Set o_ext        = Server.CreateObject("Scripting.Dictionary")
     Set Lang         = Server.CreateObject("Scripting.Dictionary")
     Lang.CompareMode = 1
-    s_cores          = "[Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml, Tar"
+    s_cores          = "[Error], Str, Var, Console, [Date], Db, Encrypt, Json, List, Fso, Http, Tpl, Upload, Cache, Xml, Tar, Log"
     Core_Do "on", s_cores
   End Sub
   '析构函数
@@ -816,6 +816,7 @@ Class EasyASP
     Set Cache   = New EasyASP_Cache
     Set Xml     = New EasyASP_Xml
     Set Tar     = New EasyASP_Tar
+    Set Log     = New EasyASP_Log
   End Sub
 
 End Class
@@ -840,3 +841,4 @@ Class EasyASP_object : End Class
 <!--#include file="core/easp.cache.asp"-->
 <!--#include file="core/easp.xml.asp"-->
 <!--#include file="core/easp.tar.asp"-->
+<!--#include file="core/easp.log.asp"-->

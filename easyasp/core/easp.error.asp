@@ -296,6 +296,14 @@ Class EasyASP_Error
               SB.Append "<li><strong>SQL 错误码 : </strong>"
               SB.Append .SQLState
               SB.Append "</li>"
+              If Easp.Log.Enable Then
+                Easp.Log.Error msg(0) & Easp.IfThen(Easp.Has(msg(1)), ", " & Easp.Str.Format(msg(1), a_detail)) & _
+                               " [数据库]" & Easp.Db.GetTypeVersion(e_conn) & ", " & _
+                               "[错误描述]" & .Description & ", " & _
+                               "[源错代码]" & .NativeError & ", " & _
+                               "[错误来源]" & .Source _
+                               , Easp.IIF(Easp.Has(s_funName), "function : " & s_funName, "db error")
+              End If
             End With
           End If
         End If
@@ -349,7 +357,15 @@ Class EasyASP_Error
                 SB.Append o_codeList(i)(1)
                 SB.Append ", line "
                 SB.Append o_codeList(i)(2)
-                If i = (o_codeList.Length - 1) Then SB.Append " (错误行)"
+                If i = (o_codeList.Length - 1) Then
+                  SB.Append " (错误行)"
+                  If Easp.Log.Enable Then
+                    Easp.Log.Error "VBScript 运行时错误。错误代码 : " & e_err.Number & _
+                                   ", 错误描述 : " & e_err.Description & _
+                                   ", 错误来源 : " & e_err.Source, _
+                                   o_codeList(i)(1) & ":" & o_codeList(i)(2)
+                  End If
+                End If
                 SB.Append ": <span class=""code"">"
                 SB.Append Easp.Str.HtmlEncode(o_codeList(i)(0))
                 SB.Append "</span></td>"

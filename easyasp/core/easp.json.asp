@@ -378,6 +378,7 @@ Class EasyASP_Json_Object
   Private o_dic
   Private Sub Class_Initialize()
     Set o_dic = Server.CreateObject("Scripting.Dictionary")
+    o_dic.CompareMode = 1
   End Sub
   Private Sub Class_Terminate()
     Set o_dic = Nothing
@@ -418,6 +419,16 @@ Class EasyASP_Json_Object
   '取得Dictionary对象
   Public Property Get GetDictionary
     Set GetDictionary = o_dic
+  End Property
+  '以对象初始化
+  Public Property Let Source(ByVal obj)
+    If TypeName(obj) = "Dictionary" Then
+      Set o_dic = obj
+    ElseIf TypeName(obj) = "EasyASP_Json_Object" Then
+      Set o_dic = obj.GetDictionary
+    Else
+      Set o_dic = Nothing
+    End If
   End Property
   '设置key/value值
   '参数： @key   - 可以是本对象下的键名，也可以是本对象下的对象字符串，如：
@@ -460,10 +471,26 @@ Class EasyASP_Json_Object
     o_dic.RemoveAll()
     Set o_dic = Nothing
     Set o_dic = Server.CreateObject("Scripting.Dictionary")
+    o_dic.CompareMode = 1
   End Sub
   '把Json Object对象输出为字符串
   Public Function ToString()
     ToString = Easp.Json.ToString(o_dic)
+  End Function
+  '复制为新对象
+  Public Function Clone()
+    Dim o_dicN, key
+    Set o_dicN = Server.CreateObject("Scripting.Dictionary")
+    o_dicN.CompareMode = 1
+    Set Clone = New EasyASP_Json_Object
+    For Each key In o_dic
+      If IsObject(o_dic(key)) Then
+        Set o_dicN(key) = o_dic(key)
+      Else
+        o_dicN(key) = o_dic(key)
+      End If
+    Next
+    Clone.Source = o_dicN
   End Function
 End Class
 'JsonArray构建类

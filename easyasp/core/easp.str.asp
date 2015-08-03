@@ -233,32 +233,45 @@ Class EasyASP_String
 
   '取“A:B”中的A
   Public Function GetColonName(ByVal string)
-    GetColonName = GetNameValue(string, ":")(0)
+    GetColonName = GetNameValue(string, ":", False)(0)
   End Function
   '取“A:B”中的B
   Public Function GetColonValue(ByVal string)
-    GetColonValue = GetNameValue(string, ":")(1)
+    GetColonValue = GetNameValue(string, ":", False)(1)
   End Function
-  '取“A分隔符B”中的A
+  '取“A分隔符B”中的A，多个分隔符按最左
   Public Function GetName(ByVal string, ByVal separator)
-    GetName = GetNameValue(string, separator)(0)
+    GetName = GetNameValue(string, separator, False)(0)
   End Function
-  '取“A分隔符B”中的B
+  '取“A分隔符B”中的B，多个分隔符按最左
   Public Function GetValue(ByVal string, ByVal separator)
-    GetValue = GetNameValue(string, separator)(1)
+    GetValue = GetNameValue(string, separator, False)(1)
+  End Function
+  '取“A分隔符B”中的A，多个分隔符按最右
+  Public Function GetNameRev(ByVal string, ByVal separator)
+    GetNameRev = GetNameValue(string, separator, True)(0)
+  End Function
+  '取“A分隔符B”中的B，多个分隔符按最右
+  Public Function GetValueRev(ByVal string, ByVal separator)
+    GetValueRev = GetNameValue(string, separator, True)(1)
   End Function
   '取分隔符字符串的两头
   '说明：把“A分隔符B”转为数组 Array(A,B)
   '返回：数组
-  Public Function GetNameValue(ByVal string, ByVal separator)
+  Public Function GetNameValue(ByVal string, ByVal separator, ByVal isRev)
     Dim n, arr(1)
-    n = Instr(string, separator)
+    n = Easp.IIF(isRev, InstrRev(string, separator), Instr(string, separator))
     If n > 0 Then
       arr(0) = Left(string, n-1)
       arr(1) = Mid(string, n+Len(separator))      
     Else
-      arr(0) = string
-      arr(1) = ""
+      If isRev Then
+        arr(0) = ""
+        arr(1) = string
+      Else
+        arr(0) = string
+        arr(1) = ""
+      End If
     End If
     GetNameValue = arr
   End Function

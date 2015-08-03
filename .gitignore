@@ -1,3 +1,4 @@
 # fix cache #
 ###################
 !.cache
+!easp.log
